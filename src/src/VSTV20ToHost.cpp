@@ -119,6 +119,8 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 
 	char t[255];
 	long ret = -1L;
+	
+	if (str==NULL) return ret;
 
 	const char* text = env->GetStringUTFChars(str, NULL);
 	strcpy(t, text);
@@ -691,44 +693,44 @@ void InitTimeInfoCache(JNIEnv* env) {
 	TimeInfoObject = env->NewGlobalRef(TimeInfoObject);
 
 
-	TimeInfoFieldSamplePos = env->GetFieldID(TimeInfoClass, "samplePos", "F");
+	TimeInfoFieldSamplePos = env->GetFieldID(TimeInfoClass, "samplePos", "D");
 	if (TimeInfoFieldSamplePos == NULL) {
-		log("** ERROR: cannot find field-id samplePos (F)");
+		log("** ERROR: cannot find field-id samplePos (D)");
 		return;
 	}
-	TimeInfoFieldSampleRate = env->GetFieldID(TimeInfoClass, "sampleRate", "F");
+	TimeInfoFieldSampleRate = env->GetFieldID(TimeInfoClass, "sampleRate", "D");
 	if (TimeInfoFieldSampleRate == NULL) {
-		log("** ERROR: cannot find field-id sampleRate (F)");
+		log("** ERROR: cannot find field-id sampleRate (D)");
 		return;
 	}
-	TimeInfoFieldNanoSeconds = env->GetFieldID(TimeInfoClass, "nanoSeconds", "F");
+	TimeInfoFieldNanoSeconds = env->GetFieldID(TimeInfoClass, "nanoSeconds", "D");
 	if (TimeInfoFieldNanoSeconds == NULL) {
-		log("** ERROR: cannot find field-id nanoSeconds (F)");
+		log("** ERROR: cannot find field-id nanoSeconds (D)");
 		return;
 	}
-	TimeInfoFieldPPQPos = env->GetFieldID(TimeInfoClass, "ppqPos", "F");
+	TimeInfoFieldPPQPos = env->GetFieldID(TimeInfoClass, "ppqPos", "D");
 	if (TimeInfoFieldPPQPos == NULL) {
-		log("** ERROR: cannot find field-id ppqPos (F)");
+		log("** ERROR: cannot find field-id ppqPos (D)");
 		return;
 	}
-	TimeInfoFieldTempo = env->GetFieldID(TimeInfoClass, "tempo", "F");
+	TimeInfoFieldTempo = env->GetFieldID(TimeInfoClass, "tempo", "D");
 	if (TimeInfoFieldTempo == NULL) {
-		log("** ERROR: cannot find field-id tempo (F)");
+		log("** ERROR: cannot find field-id tempo (D)");
 		return;
 	}
-	TimeInfoFieldBarStartPos = env->GetFieldID(TimeInfoClass, "barStartPos", "F");
+	TimeInfoFieldBarStartPos = env->GetFieldID(TimeInfoClass, "barStartPos", "D");
 	if (TimeInfoFieldBarStartPos == NULL) {
-		log("** ERROR: cannot find field-id barStartPos (F)");
+		log("** ERROR: cannot find field-id barStartPos (D)");
 		return;
 	}
-	TimeInfoFieldCycleStartPos = env->GetFieldID(TimeInfoClass, "cycleStartPos", "F");
+	TimeInfoFieldCycleStartPos = env->GetFieldID(TimeInfoClass, "cycleStartPos", "D");
 	if (TimeInfoFieldCycleStartPos == NULL) {
-		log("** ERROR: cannot find field-id cycleStartPos (F)");
+		log("** ERROR: cannot find field-id cycleStartPos (D)");
 		return;
 	}
-	TimeInfoFieldCycleEndPos = env->GetFieldID(TimeInfoClass, "cycleEndPos", "F");
+	TimeInfoFieldCycleEndPos = env->GetFieldID(TimeInfoClass, "cycleEndPos", "D");
 	if (TimeInfoFieldCycleEndPos == NULL) {
-		log("** ERROR: cannot find field-id cycleEndPos (F)");
+		log("** ERROR: cannot find field-id cycleEndPos (D)");
 		return;
 	}
 

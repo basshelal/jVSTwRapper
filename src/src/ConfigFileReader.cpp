@@ -96,23 +96,23 @@ void ConfigFileReader::ReadConfigFile() {
 			else log("**ERROR: finding JVMClassPath token");
 		}
 		if(strcmp(token, "JVMOption1")==0) {
-			token = strtok(NULL, sep);
+			token = strtok(NULL, "\n");
 			if (token != NULL) this->JVMOption1 = strdup(token);
 		}
 		if(strcmp(token, "JVMOption2")==0) {
-			token = strtok(NULL, sep);
+			token = strtok(NULL, "\n");
 			if (token != NULL) this->JVMOption2 = strdup(token);
 		}
 		if(strcmp(token, "JVMOption3")==0) {
-			token = strtok(NULL, sep);
+			token = strtok(NULL, "\n");
 			if (token != NULL) this->JVMOption3 = strdup(token);
 		}
 		if(strcmp(token, "JVMOption4")==0) {
-			token = strtok(NULL, sep);
+			token = strtok(NULL, "\n");
 			if (token != NULL) this->JVMOption4 = strdup(token);
 		}
 		if(strcmp(token, "JVMOption5")==0) {
-			token = strtok(NULL, sep);
+			token = strtok(NULL, "\n");
 			if (token != NULL) this->JVMOption5 = strdup(token);
 		}
 		if(strcmp(token, "SystemClassPath")==0) {

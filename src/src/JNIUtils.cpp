@@ -195,8 +195,12 @@ bool checkException(JNIEnv *env) {
 		
 		if (mid!=NULL) {
 			jstring ret = (jstring)env->CallStaticObjectMethod(c, mid, exc);
+			if (ret==NULL) {
+				log("** ERROR: getStackTrace returned NULL --> aborting!");
+				return true;
+			}
 			const char* jstr = env->GetStringUTFChars(ret, NULL);
-			char buffer[10000]; //stack trace can be very big!
+			char buffer[10000]; //stack trace could be very big!
 			sprintf(buffer, "** %s", jstr); //add the error indicator ('**')
 			log(buffer);
 		}

@@ -129,6 +129,8 @@ void VSTV10ToPlug::getProgramName (char *name) {
 	if (mid == NULL) log("** ERROR: cannot find instance-method getProgramName(Ljava/lang/String;)V");
 	
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid);
+	if (ret==NULL) { strcpy (name, ""); return;}
+
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (name, jstr);
 	this->JEnv->ReleaseStringUTFChars(ret, jstr);
@@ -173,6 +175,8 @@ void VSTV10ToPlug::getParameterName(long index, char *label) {
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterName(I)Ljava/lang/String;");
 
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid, (jint)index);
+	if (ret==NULL) {strcpy (label, ""); return;}
+
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (label, jstr);
 
@@ -186,6 +190,8 @@ void VSTV10ToPlug::getParameterDisplay (long index, char *text) {
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterDisplay(I)Ljava/lang/String;");
 
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid, (jint)index);
+	if (ret==NULL) {strcpy (text, ""); return;}
+
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
@@ -199,6 +205,8 @@ void VSTV10ToPlug::getParameterLabel (long index, char *label) {
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterLabel(I)Ljava/lang/String;");
 
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid, (jint)index);
+	if (ret==NULL) {strcpy (label, ""); return;}
+
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (label, jstr);
 

@@ -123,6 +123,8 @@ bool VSTV20ToPlug::getProgramNameIndexed (long category, long index, char* text)
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getProgramNameIndexed(II)Ljava/lang/String;"); return false;}
 	
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid, (jint)category, (jint)index);
+	if (ret==NULL) return false;
+
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
@@ -138,6 +140,8 @@ bool VSTV20ToPlug::getProductString (char* text) {
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getProductString()Ljava/lang/String;"); return false;}
 	
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid);
+	if (ret==NULL) return false;
+	
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
@@ -153,6 +157,8 @@ bool VSTV20ToPlug::getVendorString (char* text) {
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getVendorString()Ljava/lang/String;"); return false;}
 	
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid);
+	if (ret==NULL) return false;
+
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
@@ -279,6 +285,8 @@ bool VSTV20ToPlug::getEffectName (char* name)   {
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getEffectName()Ljava/lang/String;"); return false;}
 	
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid);
+	if (ret==NULL) return false;
+	
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (name, jstr);
 	
@@ -442,6 +450,8 @@ bool VSTV20ToPlug::getErrorText (char* text) {
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getErrorText()Ljava/lang/String;"); return false;}
 	
 	jstring ret = (jstring)this->JEnv->CallObjectMethod(this->JavaPlugObj, mid);
+	if (ret==NULL) return false;
+	
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
@@ -490,9 +500,10 @@ bool VSTV20ToPlug::getParameterProperties (long index, VstParameterProperties *p
 	fid = this->JEnv->GetFieldID(cls, "label", "Ljava/lang/String;");
 	if (fid == NULL) {log("** ERROR: cannot find field-id label"); return false;}
 	jstr = (jstring)this->JEnv->GetObjectField(obj, fid);
-	str = this->JEnv->GetStringUTFChars(jstr, 0);
-    strncpy(p->label,str,64);
-
+	if (jstr!=NULL) {
+		str = this->JEnv->GetStringUTFChars(jstr, 0);
+		strncpy(p->label,str,64);
+	}
 
 	fid = this->JEnv->GetFieldID(cls, "flags", "I");
 	if (fid == NULL) {log("** ERROR: cannot find field-id flags"); return false;}
@@ -518,8 +529,10 @@ bool VSTV20ToPlug::getParameterProperties (long index, VstParameterProperties *p
 	fid = this->JEnv->GetFieldID(cls, "shortLabel", "Ljava/lang/String;");
 	if (fid == NULL) {log("** ERROR: cannot find field-id shortLabel"); return false;}
 	jstr = (jstring)this->JEnv->GetObjectField(obj, fid);
-	str = this->JEnv->GetStringUTFChars(jstr, 0);
-    strncpy(p->label,str,6);
+	if (jstr!=NULL) {
+		str = this->JEnv->GetStringUTFChars(jstr, 0);
+		strncpy(p->label,str,6);
+	}
 
 	fid = this->JEnv->GetFieldID(cls, "displayIndex", "I");
 	if (fid == NULL) {log("** ERROR: cannot find field-id displayIndex"); return false;}

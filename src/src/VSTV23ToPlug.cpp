@@ -51,15 +51,17 @@ long VSTV23ToPlug::getNextShellPlugin (char* name) {
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getNextShellPlugin", "(Ljava/lang/String;)I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getNextShellPlugin(Ljava/lang/String;)I"); return -1;}
 
-	jstring str = this->JEnv->NewStringUTF("dummy");
+	jstring str = this->JEnv->NewStringUTF("dummy - replace me with REAL name!");
 	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, str);
 	
-	const char* jstr = this->JEnv->GetStringUTFChars(str, NULL);
-	strncpy (name, jstr, 63);
+	if (str!=NULL) {
+		const char* jstr = this->JEnv->GetStringUTFChars(str, NULL);
+		strncpy (name, jstr, 63);
+		this->JEnv->ReleaseStringUTFChars(str, jstr);
+		this->JEnv->DeleteLocalRef(str);
+	} else ret = 0L;
 
-	this->JEnv->ReleaseStringUTFChars(str, jstr);
-	this->JEnv->DeleteLocalRef(str);
-
+	
 	this->checkException();
 
 	return ret;

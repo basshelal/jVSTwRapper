@@ -105,10 +105,12 @@ long VSTV21ToPlug::getMidiProgramName (long channel, MidiProgramName* midiProgra
 	midiProgramName->parentCategoryIndex = this->JEnv->GetIntField(jMidiProgramObject, parentCategoryIndexField);
 	
 	jstring jstr = (jstring)this->JEnv->GetObjectField(jMidiProgramObject, nameField);
-	const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
-	strncpy (midiProgramName->name, str, 63);
-	this->JEnv->ReleaseStringUTFChars(jstr, str);
-	this->JEnv->DeleteLocalRef(jstr);
+	if (jstr!=NULL) {
+		const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
+		strncpy (midiProgramName->name, str, 63);
+		this->JEnv->ReleaseStringUTFChars(jstr, str);
+		this->JEnv->DeleteLocalRef(jstr);
+	}
 
 	midiProgramName->midiBankLsb = this->JEnv->GetByteField(jMidiProgramObject, midiBankLsbField);
 	midiProgramName->midiBankMsb = this->JEnv->GetByteField(jMidiProgramObject, midiBankMsbField);
@@ -193,10 +195,12 @@ long VSTV21ToPlug::getCurrentMidiProgram (long channel, MidiProgramName* midiPro
 	midiProgramName->parentCategoryIndex = this->JEnv->GetIntField(jMidiProgramObject, parentCategoryIndexField);
 	
 	jstring jstr = (jstring)this->JEnv->GetObjectField(jMidiProgramObject, nameField);
-	const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
-	strncpy (midiProgramName->name, str, 63);
-	this->JEnv->ReleaseStringUTFChars(jstr, str);
-	this->JEnv->DeleteLocalRef(jstr);
+	if (jstr!=NULL) {
+		const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
+		strncpy (midiProgramName->name, str, 63);
+		this->JEnv->ReleaseStringUTFChars(jstr, str);
+		this->JEnv->DeleteLocalRef(jstr);
+	}
 
 	midiProgramName->midiBankLsb = this->JEnv->GetByteField(jMidiProgramObject, midiBankLsbField);
 	midiProgramName->midiBankMsb = this->JEnv->GetByteField(jMidiProgramObject, midiBankMsbField);
@@ -265,10 +269,12 @@ long VSTV21ToPlug::getMidiProgramCategory (long channel, MidiProgramCategory* ca
 	category->parentCategoryIndex = this->JEnv->GetIntField(jMidiProgramCategoryObject, parentCategoryIndexField);
 	
 	jstring jstr = (jstring)this->JEnv->GetObjectField(jMidiProgramCategoryObject, nameField);
-	const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
-	strncpy (category->name, str, 63);
-	this->JEnv->ReleaseStringUTFChars(jstr, str);
-	this->JEnv->DeleteLocalRef(jstr);
+	if (jstr!=NULL) {
+		const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
+		strncpy (category->name, str, 63);
+		this->JEnv->ReleaseStringUTFChars(jstr, str);
+		this->JEnv->DeleteLocalRef(jstr);
+	}
 
 	this->checkException();
 
@@ -349,11 +355,13 @@ bool VSTV21ToPlug::getMidiKeyName (long channel, MidiKeyName* keyName) {
 	
 	//read out parameters
 	jstring jstr = (jstring)this->JEnv->GetObjectField(jMidikeyNameObject, keyNameField);
-	const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
-	strncpy (keyName->keyName, str, 63);
-	keyName->keyName[64] = 0;
-	this->JEnv->ReleaseStringUTFChars(jstr, str);
-	this->JEnv->DeleteLocalRef(jstr);
+	if (jstr!=NULL) {
+		const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
+		strncpy (keyName->keyName, str, 63);
+		keyName->keyName[64] = 0;
+		this->JEnv->ReleaseStringUTFChars(jstr, str);
+		this->JEnv->DeleteLocalRef(jstr);
+	}
 	
 	this->checkException();
 
