@@ -309,16 +309,16 @@ int initJVMFunctionPointers(char *vmlibpath) {
 			It seems that you dont have a properly installed Java Virtual Machine (JVM).\n\
 			If so, please download (its free!) and install one from \n\n\
 			http://www.java.com/ \n\n\
-			If you already did that and see this message again, please add the full path \n\
-			containing the jvm.dll to your PATH environment variable.\n\n\
+			If you already did that and see this message again, please add the path \n\
+			where the jvm.dll is located to your PATH environment variable.\n\n\
 			Per default, the jvm.dll is located in 'C:\\j2sdk1.4.2_05\\jre\\bin\\client'. But this \n\
 			may differ depending on your choice during installation. \n\
 			You can modify your PATH variable if you click \n\n\
 			Start/Settings/Control Panel/System/Advanced (Tab)/Environment Variables (Button)\n\
 			/System Variables (the textbox at the bottom).\n\
-			Double-click on the variable called Path, and add a ';the-full-path-containing-jvm.dll' \n\
+			Double-click on the variable called Path, and add a ';the-path-where-jvm.dll-is-located' \n\
 			to the end of its value.\n\
-			Note the ';' add the beginning of the string. close all windows with ok, and you \n\
+			Note the ';' at the beginning of the string. close all windows with ok, and you \n\
 			should be all set.\n\
 			If you still cant use the plugin, contact me at \n\ndaniel309@users.sourgeforge.net"); 
 

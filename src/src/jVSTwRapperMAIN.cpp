@@ -266,6 +266,7 @@ int startJava() {
 
 
 	//USE THE VSTiClassLoaderManager here!!!
+	//load this ClassLoader with the bootstrap ClassLoader
 	jclass manager = env->FindClass("jvst/wrapper/system/VSTiClassLoaderManager");
 	if (manager == NULL) {
 		log("** ERROR: cannot find jvst/wrapper/system/VSTiClassLoaderManager");

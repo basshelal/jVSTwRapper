@@ -353,7 +353,10 @@ bool VSTV20ToPlug::getInputProperties (long index, VstPinProperties *props) {
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getInputProperties(I)Ljvst/wrapper/valueobjects/VSTPinProperties;"); return false;}
 	
 	jobject obj = this->JEnv->CallObjectMethod(this->JavaPlugObj, mid, (jint)index);
-	if (obj == NULL) {log("** ERROR: getInputProperties() not implemented"); return false;}
+	if (obj == NULL) {
+		//log("** ERROR: getInputProperties() not implemented by PLUGIN! please contact Plugin writer."); 
+		return false;
+	}
 
 
 	jfieldID fid;

@@ -208,18 +208,6 @@ SOURCE=.\src\VSTV23ToPlug.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\src\conf\DreiNullDrei.ini
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\conf\JayDLay.ini
-# End Source File
-# Begin Source File
-
-SOURCE=.\src\conf\JayVSTxSynth.ini
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\jVSTwRapper.def
 # End Source File
 # Begin Source File
