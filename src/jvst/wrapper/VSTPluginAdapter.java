@@ -32,7 +32,7 @@ public abstract class VSTPluginAdapter extends VSTV23ToHost implements VSTV23ToP
 
 
 
-  //ignore vst 1.0 OPTIONAL methods
+  //provide defaults for vst 1.0 OPTIONAL methods
   //*************************************
   public void open() { }
   public void close() { }
@@ -45,7 +45,7 @@ public abstract class VSTPluginAdapter extends VSTV23ToHost implements VSTV23ToP
   public void setSampleRate(float sampleRate) { }
 
 
-  //ignore vst 2.0 OPTIONAL methods
+  //provide defaults for vst 2.0 OPTIONAL methods
   //********************************
   public String getEffectName() {return "nix";}
   public int getVendorVersion() {return 1000;}
@@ -62,7 +62,7 @@ public abstract class VSTPluginAdapter extends VSTV23ToHost implements VSTV23ToP
   public int getGetTailSize() {return 0;}
   public VSTParameterProperties getParameterProperties(int index) {return null;}
 
-  public int getVstVersion () {return 2300;}
+  public int getVstVersion () {return 2200;} //TODO: return 2300 when implemented!
   public void inputConnected (int index, boolean state) {}
   public void outputConnected (int index, boolean state) {}
   public boolean keysRequired () {return false;}
@@ -78,7 +78,7 @@ public abstract class VSTPluginAdapter extends VSTV23ToHost implements VSTV23ToP
   }
 
 
-  //ignore vst 2.1 OPTIONAL methods
+  //provide defaults for vst 2.1 OPTIONAL methods
   //********************************
   public int getMidiProgramName (int channel, MidiProgramName midiProgramName) { return 0; }
   public int getCurrentMidiProgram(int channel, MidiProgramName currentProgram) { return -1; }
@@ -89,7 +89,7 @@ public abstract class VSTPluginAdapter extends VSTV23ToHost implements VSTV23ToP
   public boolean endSetProgram() { return false;}
 
 
-  //ignore vst 2.3 OPTIONAL methods
+  //provide defaults for vst 2.3 OPTIONAL methods
   //********************************
   public int setTotalSampleToProcess (int value) { return value; }
   public int getNextShellPlugin(String name) { return 0; }
