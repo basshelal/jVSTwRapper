@@ -46,12 +46,12 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
   public void init(VSTPluginAdapter e) {
     this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
 
-//
-//    this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME) * 100F));
-//    this.Freg1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_FREQ1) * 100F));
-//    this.Freg2Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_FREQ2) * 100F));
-//    this.Level1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME1) * 100F));
-//    this.Level2Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME2) * 100F));
+
+//    this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_VOLUME) * 100F));
+//    this.Freg1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_FREQ1) * 100F));
+//    this.Freg2Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_FREQ2) * 100F));
+//    this.Level1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_VOLUME1) * 100F));
+//    this.Level2Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_VOLUME2) * 100F));
 
     
 
@@ -94,6 +94,13 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
     this.Freg2Text = new JTextField("2345 Hz");
     this.Level1Text = new JTextField("324 db");
     this.Level2Text = new JTextField("345 db");
+    
+    
+    this.VolumeText.setEditable(false);
+    this.Freg1Text.setEditable(false);
+    this.Freg2Text.setEditable(false);
+    this.Level1Text.setEditable(false);
+    this.Level2Text.setEditable(false);
 
 
     JLabel VolumeLabel = new JLabel("Volume");
@@ -137,7 +144,7 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
     Osc2box.add(Level2Label);
     Osc2box.add(this.Level2Slider);
     Osc2box.add(this.Level2Text);
-    Osc2box.setBorder(BorderFactory.createTitledBorder("Osc2"));
+    Osc2box.setBorder(BorderFactory.createTitledBorder("Envelope"));
 
     this.getContentPane().add(Osc1box);
     this.getContentPane().add(Osc2box);

@@ -90,6 +90,11 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
 //    this.Level1Text = new JTextField("324 db");
 //    this.Level2Text = new JTextField("345 db");
 
+    this.VolumeText.setEditable(false);
+    this.Freg1Text.setEditable(false);
+    this.Freg2Text.setEditable(false);
+    this.Level1Text.setEditable(false);
+    this.Level2Text.setEditable(false);
 
     JLabel VolumeLabel = new JLabel("Volume");
     JLabel Freg1Label = new JLabel("Freqency");
