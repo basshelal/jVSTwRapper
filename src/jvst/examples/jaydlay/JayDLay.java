@@ -55,7 +55,7 @@ public class JayDLay extends VSTPluginAdapter {
   public int canDo(String feature) {
     int ret = JayDLay.CANDO_DONT_KNOW;
 
-    if (feature.equals(JayDLay.PLUG_1_IN_2_OUT)) ret = JayDLay.CANDO_YES;
+    if (feature.equals(JayDLay.CANDO_PLUG_1_IN_2_OUT)) ret = JayDLay.CANDO_YES;
 
     log("canDo: " + feature + " = " + ret);
     return ret;
