@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/EclipseVSTwRapper"/>
 	<classpathentry kind="src" path="/EclipseVSTSystemClasses"/>
+	<classpathentry kind="lib" path="napkinlaf.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
