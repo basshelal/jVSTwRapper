@@ -20,34 +20,34 @@ public abstract class VSTV20ToHost extends VSTV10ToHost {
   public static final int CANDO_NO = -1;
 
   //Plugin canDo parameters
-  public static final String PLUG_SEND_VST_EVENTS = "sendVstEvents";
-  public static final String PLUG_SEND_VST_MIDI_EVENT = "sendVstMidiEvent";
-  public static final String PLUG_SEND_VST_TIME_INFO = "sendVstTimeInfo";
-  public static final String PLUG_RECEIVE_VST_EVENTS = "receiveVstEvents";
-  public static final String PLUG_REVEIVE_VST_MIDI_EVENT = "receiveVstMidiEvent";
-  public static final String PLUG_RECEIVE_VST_TIME_INFO = "receiveVstTimeInfo";
-  public static final String PLUG_OFFLINE = "offline";
-  public static final String PLUG_PLUG_AS_CHANNEL_INSERT = "plugAsChannelInsert";
-  public static final String PLUG_PLUG_AS_SEND = "plugAsSend";
-  public static final String PLUG_MIX_DRY_WET = "mixDryWet";
-  public static final String PLUG_NO_REAL_TIME = "noRealTime";
-  public static final String PLUG_MULTIPASS = "multipass";
-  public static final String PLUG_METAPASS = "metapass";
-  public static final String PLUG_1_IN_1_OUT = "1in1out";
-  public static final String PLUG_1_IN_2_OUT = "1in2out";
-  public static final String PLUG_2_IN_1_OUT = "2in1out";
-  public static final String PLUG_2_IN_2_OUT = "2in2out";
-  public static final String PLUG_2_IN_4_OUT = "2in4out";
-  public static final String PLUG_4_IN_2_OUT = "4in2out";
-  public static final String PLUG_4_IN_4_OUT = "4in4out";
-  public static final String PLUG_4_IN_8_OUT = "4in8out";	// 4:2 matrix to surround bus
-  public static final String PLUG_8_IN_4_OUT = "8in4out";	// surround bus to 4:2 matrix
-  public static final String PLUG_8_IN_8_OUT = "8in8out";
+  public static final String CANDO_PLUG_SEND_VST_EVENTS = "sendVstEvents";
+  public static final String CANDO_PLUG_SEND_VST_MIDI_EVENT = "sendVstMidiEvent";
+  public static final String CANDO_PLUG_SEND_VST_TIME_INFO = "sendVstTimeInfo";
+  public static final String CANDO_PLUG_RECEIVE_VST_EVENTS = "receiveVstEvents";
+  public static final String CANDO_PLUG_REVEIVE_VST_MIDI_EVENT = "receiveVstMidiEvent";
+  public static final String CANDO_PLUG_RECEIVE_VST_TIME_INFO = "receiveVstTimeInfo";
+  public static final String CANDO_PLUG_OFFLINE = "offline";
+  public static final String CANDO_PLUG_PLUG_AS_CHANNEL_INSERT = "plugAsChannelInsert";
+  public static final String CANDO_PLUG_PLUG_AS_SEND = "plugAsSend";
+  public static final String CANDO_PLUG_MIX_DRY_WET = "mixDryWet";
+  public static final String CANDO_PLUG_NO_REAL_TIME = "noRealTime";
+  public static final String CANDO_PLUG_MULTIPASS = "multipass";
+  public static final String CANDO_PLUG_METAPASS = "metapass";
+  public static final String CANDO_PLUG_1_IN_1_OUT = "1in1out";
+  public static final String CANDO_PLUG_1_IN_2_OUT = "1in2out";
+  public static final String CANDO_PLUG_2_IN_1_OUT = "2in1out";
+  public static final String CANDO_PLUG_2_IN_2_OUT = "2in2out";
+  public static final String CANDO_PLUG_2_IN_4_OUT = "2in4out";
+  public static final String CANDO_PLUG_4_IN_2_OUT = "4in2out";
+  public static final String CANDO_PLUG_4_IN_4_OUT = "4in4out";
+  public static final String CANDO_PLUG_4_IN_8_OUT = "4in8out";	// 4:2 matrix to surround bus
+  public static final String CANDO_PLUG_8_IN_4_OUT = "8in4out";	// surround bus to 4:2 matrix
+  public static final String CANDO_PLUG_8_IN_8_OUT = "8in8out";
   //VST 2.1
-  public static final String PLUG_MIDI_PROGRAM_NAMES = "midiProgramNames";
-  public static final String PLUG_CONFORMS_TO_WINDOW_RULES = "conformsToWindowRules";	// mac: doesn't mess with grafport. general: may want
+  public static final String CANDO_PLUG_MIDI_PROGRAM_NAMES = "midiProgramNames";
+  public static final String CANDO_PLUG_CONFORMS_TO_WINDOW_RULES = "conformsToWindowRules";	// mac: doesn't mess with grafport. general: may want
   //VST 2.3
-  public static final String PLUG_BYPASS = "bypass";
+  public static final String CANDO_PLUG_BYPASS = "bypass";
 
 
   //Languages

@@ -12,27 +12,27 @@ import jvst.wrapper.valueobjects.*;
 public interface VSTV20ToPlug extends VSTV10ToPlug {
 
   //Host canDo constants
-  public static final String HOST_SEND_VST_EVENTS = "sendVstEvents";
-  public static final String HOST_SEND_VST_MIDI_EVENT ="sendVstMidiEvent";
-  public static final String HOST_SEND_VST_TIME_INFO = "sendVstTimeInfo";
-  public static final String HOST_RECEIVE_VST_Events = "receiveVstEvents";
-  public static final String HOST_RECEIVE_VST_MIDI_EVENT = "receiveVstMidiEvent";
-  public static final String HOST_RECEIVE_VST_TIME_INFO = "receiveVstTimeInfo";
+  public static final String CANDO_HOST_SEND_VST_EVENTS = "sendVstEvents";
+  public static final String CANDO_HOST_SEND_VST_MIDI_EVENT ="sendVstMidiEvent";
+  public static final String CANDO_HOST_SEND_VST_TIME_INFO = "sendVstTimeInfo";
+  public static final String CANDO_HOST_RECEIVE_VST_Events = "receiveVstEvents";
+  public static final String CANDO_HOST_RECEIVE_VST_MIDI_EVENT = "receiveVstMidiEvent";
+  public static final String CANDO_HOST_RECEIVE_VST_TIME_INFO = "receiveVstTimeInfo";
 
-  public static final String HOST_REPORT_CONNECTION_CHANGES = "reportConnectionChanges";
-  public static final String HOST_ACCEPT_IO_CHANGES = "acceptIOChanges";
-  public static final String HOST_SIZE_WINDOW = "sizeWindow";
+  public static final String CANDO_HOST_REPORT_CONNECTION_CHANGES = "reportConnectionChanges";
+  public static final String CANDO_HOST_ACCEPT_IO_CHANGES = "acceptIOChanges";
+  public static final String CANDO_HOST_SIZE_WINDOW = "sizeWindow";
 
-  public static final String HOST_ASYNC_PROCESSING = "asyncProcessing";
-  public static final String HOST_OFFLINE = "offline";
-  public static final String HOST_SUPPLY_IDLE = "supplyIdle";
-  public static final String HOST_SUPPORT_SHELL = "supportShell";	// 'shell' handling via uniqueID as suggested by Waves
-  public static final String HOST_OPEN_FILE_SELECTOR = "openFileSelector";
+  public static final String CANDO_HOST_ASYNC_PROCESSING = "asyncProcessing";
+  public static final String CANDO_HOST_OFFLINE = "offline";
+  public static final String CANDO_HOST_SUPPLY_IDLE = "supplyIdle";
+  public static final String CANDO_HOST_SUPPORT_SHELL = "supportShell";	// 'shell' handling via uniqueID as suggested by Waves
+  public static final String CANDO_HOST_OPEN_FILE_SELECTOR = "openFileSelector";
   //VST 2.2
-  public static final String HOST_EDIT_FILE = "editFile";
-  public static final String HOST_CLOSE_FILE_SELECTOR = "closeFileSelector";
+  public static final String CANDO_HOST_EDIT_FILE = "editFile";
+  public static final String CANDO_HOST_CLOSE_FILE_SELECTOR = "closeFileSelector";
   //VST 2.3
-  public static final String HOST_START_STOP_PROCESS = "startStopProcess";
+  public static final String CANDO_HOST_START_STOP_PROCESS = "startStopProcess";
 
 
 
