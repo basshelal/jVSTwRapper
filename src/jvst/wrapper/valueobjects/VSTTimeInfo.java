@@ -39,12 +39,12 @@ public class VSTTimeInfo {
   private double barStartPos;		// last bar start, in 1 ppq
   private double cycleStartPos;		// 1 ppq
   private double cycleEndPos;		// 1 ppq
-  private long timeSigNumerator;	// time signature
-  private long timeSigDenominator;
-  private long smpteOffset;
-  private long smpteFrameRate;		// 0:24, 1:25, 2:29.97, 3:30, 4:29.97 df, 5:30 df
-  private long samplesToNextClock;	// midi clock resolution (24 ppq), can be negative
-  private long flags;			// see above
+  private int timeSigNumerator;	// time signature
+  private int timeSigDenominator;
+  private int smpteOffset;
+  private int smpteFrameRate;		// 0:24, 1:25, 2:29.97, 3:30, 4:29.97 df, 5:30 df
+  private int samplesToNextClock;	// midi clock resolution (24 ppq), can be negative
+  private int flags;			// see above
 
 
   public double getSamplePos() {return this.samplePos;}
@@ -67,20 +67,20 @@ public class VSTTimeInfo {
   public void setCycleEndPos(double d) {this.cycleEndPos = d;}
 */
 
-  public long getTimeSigNumerator() {return this.timeSigNumerator;}
-  public long getTimeSigDenominator() {return this.timeSigDenominator;}
-  public long getSMPTEOffset() {return this.smpteOffset;}
-  public long getSMPTEFrameRate() {return this.smpteFrameRate;}
-  public long getSamplesToNextClock() {return this.samplesToNextClock;}
-  public long getFlags() {return this.flags;}
+  public int getTimeSigNumerator() {return this.timeSigNumerator;}
+  public int getTimeSigDenominator() {return this.timeSigDenominator;}
+  public int getSMPTEOffset() {return this.smpteOffset;}
+  public int getSMPTEFrameRate() {return this.smpteFrameRate;}
+  public int getSamplesToNextClock() {return this.samplesToNextClock;}
+  public int getFlags() {return this.flags;}
 
 /*
-  public void setTimeSigNumerator(long d) {this.timeSigNumerator = d;}
-  public void setTimeSigDenominator(long d) {this.timeSigDenominator = d;}
-  public void setSMPTEOffset(long d) {this.smpteOffset = d;}
-  public void setSMPTEFrameRate(long d) {this.smpteFrameRate = d;}
-  public void setSamplesToNextClock(long d) {this.samplesToNextClock = d;}
-  public void setFlags(long d) {this.flags = d;}
+  public void setTimeSigNumerator(int d) {this.timeSigNumerator = d;}
+  public void setTimeSigDenominator(int d) {this.timeSigDenominator = d;}
+  public void setSMPTEOffset(int d) {this.smpteOffset = d;}
+  public void setSMPTEFrameRate(int d) {this.smpteFrameRate = d;}
+  public void setSamplesToNextClock(int d) {this.samplesToNextClock = d;}
+  public void setFlags(int d) {this.flags = d;}
 */
 
 }
