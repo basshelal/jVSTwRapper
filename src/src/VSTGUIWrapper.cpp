@@ -68,7 +68,12 @@ long VSTGUIWrapper::open (void *ptr) {
 	
 	
 #ifndef MACX
-	DestroyWindow(GetParent((HWND)ptr));	
+	ConfigFileReader *cfg = new ConfigFileReader();
+
+	if (cfg->CloseNativePluginWindow==1)
+		DestroyWindow(GetParent((HWND)ptr));	
+
+	if (cfg) delete cfg;
 #endif
 	
 	/*

@@ -50,6 +50,8 @@ ConfigFileReader::ConfigFileReader() {
 	this->JVMOption5 = NULL;
 	this->SystemClassPath = NULL;
 	this->IsLoggingEnabled = 0;
+	this->CloseNativePluginWindow = 1;
+
 
 	this->ReadConfigFile();
 
@@ -118,6 +120,7 @@ void ConfigFileReader::ReadConfigFile() {
 		if(strcmp(token, "SystemClassPath")==0) {
 			token = strtok(NULL, sep);
 			if (token != NULL) this->SystemClassPath = strdup(token);
+			else log("**ERROR: finding SystemClassPath token");
 		}
 		if(strcmp(token, "IsLoggingEnabled")==0) {
 			token = strtok(NULL, sep);
@@ -126,6 +129,14 @@ void ConfigFileReader::ReadConfigFile() {
 				this->IsLoggingEnabled = atoi(tmp);
 			}
 			else log("**ERROR: finding IsLoggingEnabled token");
+		}
+		if(strcmp(token, "CloseNativePluginWindow")==0) {
+			token = strtok(NULL, sep);
+			if (token != NULL) {
+				char* tmp = strdup(token);
+				this->CloseNativePluginWindow = atoi(tmp);
+			}
+			else log("**ERROR: finding CloseNativePluginWindow token");
 		}
 	}
 

@@ -29,6 +29,8 @@ class ConfigFileReader {
 		char* JVMOption5;
 		char* SystemClassPath;
 		int IsLoggingEnabled;
+		int CloseNativePluginWindow;
+
 
 	protected:
 		virtual void ReadConfigFile ();
