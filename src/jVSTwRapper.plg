@@ -6,6 +6,41 @@
 --------------------Configuration: jVSTwRapper - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating temporary file "c:\temp\RSP5C2.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JVSTWRAPPER_EXPORTS" /Fp"Debug/jVSTwRapper.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\data\private\jvstwrapper\dll\src\VSTGUIWrapper.cpp"
+]
+Creating command line "cl.exe @c:\temp\RSP5C2.tmp" 
+Creating temporary file "c:\temp\RSP5C3.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:yes /pdb:"Debug/jVSTwRapper.pdb" /debug /machine:I386 /def:".\src\jVSTwRapper.def" /out:"C:\Program Files\Tracktion\plugins\3rd Party\jVSTwRapper\jVSTwRapper.dll" /implib:"Debug/jVSTwRapper.lib" /pdbtype:sept 
+.\Debug\ConfigFileReader.obj
+.\Debug\JNIUtils.obj
+.\Debug\jVSTwRapperMAIN.obj
+.\Debug\VSTGUIWrapper.obj
+.\Debug\VSTV10ToHost.obj
+.\Debug\VSTV10ToPlug.obj
+.\Debug\VSTV20ToHost.obj
+.\Debug\VSTV20ToPlug.obj
+.\Debug\VSTV21ToHost.obj
+.\Debug\VSTV21ToPlug.obj
+.\Debug\VSTV22ToHost.obj
+.\Debug\VSTV22ToPlug.obj
+.\Debug\VSTV23ToHost.obj
+.\Debug\VSTV23ToPlug.obj
+.\Debug\AudioEffect.obj
+.\Debug\audioeffectx.obj
+.\Debug\aeffguieditor.obj
+.\Debug\vstcontrols.obj
+.\Debug\vstgui.obj
+]
+Creating command line "link.exe @c:\temp\RSP5C3.tmp"
+<h3>Output Window</h3>
+Compiling...
+VSTGUIWrapper.cpp
+Linking...
+   Creating library Debug/jVSTwRapper.lib and object Debug/jVSTwRapper.exp
 
 
 
