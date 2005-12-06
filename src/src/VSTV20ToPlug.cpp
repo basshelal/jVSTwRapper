@@ -682,6 +682,7 @@ long VSTV20ToPlug::processEvents (VstEvents* events) {
 			this->ProcessEventsJEnv->SetByteArrayRegion(barr, 0, 3, b);
 			this->ProcessEventsJEnv->SetObjectField(jevent, this->VSTEventFieldData, barr);	
 			this->ProcessEventsJEnv->DeleteLocalRef(barr);	
+			delete [] b;
 		}
 		else {
 			//any other event
@@ -704,6 +705,7 @@ long VSTV20ToPlug::processEvents (VstEvents* events) {
 			this->ProcessEventsJEnv->SetByteArrayRegion(barr, 0, 15, b);
 			this->ProcessEventsJEnv->SetObjectField(jevent, this->VSTEventFieldData, barr);	
 			this->ProcessEventsJEnv->DeleteLocalRef(barr);
+			delete [] b;
 		}
 
 		this->ProcessEventsJEnv->SetObjectArrayElement(jevents, i, jevent);
@@ -916,6 +918,7 @@ bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, Vs
 		this->JEnv->SetObjectArrayElement(jInProps, i, jSpeakerPropsObject);
 
 		this->JEnv->DeleteLocalRef(jSpeakerPropsObject);
+		delete [] c;
 	}
 
 
@@ -955,6 +958,7 @@ bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, Vs
 		this->JEnv->SetObjectArrayElement(jOutProps, i, jSpeakerPropsObject);
 
 		this->JEnv->DeleteLocalRef(jSpeakerPropsObject);
+		delete [] c;
 	}
 
 	this->JEnv->SetObjectField(this->jSpeakerArrInObject, this->speakersField, jInProps);
