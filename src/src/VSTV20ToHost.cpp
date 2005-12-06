@@ -108,6 +108,15 @@ jfieldID propsTypeField = NULL;
 jfieldID futureField = NULL;
 
 
+#define VST_EVENTS_MAX 256
+
+struct BigVstEvents
+{
+    long numEvents;
+    long reserved;
+    VstEvent* events[VST_EVENTS_MAX];
+};
+
 /*
  * Class:     jvst_wrapper_communication_VSTV20ToHost
  * Method:    canHostDo
@@ -193,29 +202,32 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 	
 
 		if (WrapperInstance!=NULL) {
+			
+            BigVstEvents vstEventsToHost;
+            VstMidiEvent vstMidiEventsToHost[VST_EVENTS_MAX];  
+            VstEvent vstEventToHost[VST_EVENTS_MAX];        
+
 			if (IsEventsCacheInitialised==false) InitEventsCache(env);
 
 
-			VstEvents* evts = new VstEvents();
+			VstEvents* evts = (VstEvents*)&vstEventsToHost;
 			evts->numEvents = env->GetIntField(events, EventsFieldNumEvents);
 			evts->reserved = env->GetIntField(events, EventsFieldReserved);
 
 			jobjectArray jevents = (jobjectArray)env->GetObjectField(events, EventsFieldEvents);
 			for (int i=0; i < env->GetArrayLength(jevents); i++) {
 				
-				//CAUTION: I only care about the first 2 events!!!
+				//CAUTION: I only VST_EVENTS_MAX events will be transmited to Host
 
-				//why the hell did I do that??? anyone who knows the reason 
-				//please write it to daniel309@users.sourgeforge.net
-				if (i>=2) break;
+				if (i>=VST_EVENTS_MAX) break; 
 
 				VstEvent* event;
 				jobject jevent = env->GetObjectArrayElement(jevents, i);
 
 				long typ = env->GetIntField(jevent, EventFieldType);
 
-				if (typ==kVstMidiType) {
-					VstMidiEvent* mevent = new VstMidiEvent();
+				if (typ==kVstMidiType) {					
+					VstMidiEvent* mevent = &(vstMidiEventsToHost[i]);
 					
 					mevent->type = typ;
 					mevent->byteSize = env->GetIntField(jevent, EventFieldByteSize);
@@ -225,7 +237,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 					jbyteArray jdata = (jbyteArray)env->GetObjectField(jevent, EventFieldData);
 					jbyte* elmts = env->GetByteArrayElements(jdata, NULL);
 					for (int j=0; j<env->GetArrayLength(jdata); j++) {
-						if (j>=3) break; //again ?!? WHY???
+						if (j>=3) break; // 3 Bytes of midi data
 						mevent->midiData[j] = elmts[j];
 					}
 					mevent->midiData[3] = 0; //reserved
@@ -243,7 +255,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 					event = (VstEvent*)mevent;
 				}
 				else {
-					event = new VstEvent();
+					event = &(vstEventToHost[i]);
 
 					event->type = typ;
 					event->byteSize = env->GetIntField(jevent, EventFieldByteSize);
@@ -253,7 +265,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 					jbyteArray jdata = (jbyteArray)env->GetObjectField(jevent, EventFieldData);
 					jbyte* elmts = env->GetByteArrayElements(jdata, NULL);
 					for (int j=0; j<env->GetArrayLength(jdata); j++) {
-						if (j>=16) break; //well, i dont care anymore why I did that...
+						if (j>=16) break; //16 Bytes Data
 						event->data[j] = elmts[j];
 					}
 					env->ReleaseByteArrayElements(jdata, elmts, 0);
@@ -263,8 +275,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 				evts->events[i] = event;
 			}
 
-			checkAndThrowException(env);
-
+			checkAndThrowException(env);			
 			return WrapperInstance->sendVstEventsToHost(evts);
 		}
 		else return 0;
@@ -512,6 +523,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getSpeak
 			env->SetObjectArrayElement(jInProps, i, jSpeakerPropsObject);
 
 			env->DeleteLocalRef(jSpeakerPropsObject);
+			delete [] c;
 		}
 
 
@@ -546,6 +558,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getSpeak
 			env->SetObjectArrayElement(jOutProps, i, jSpeakerPropsObject);
 
 			env->DeleteLocalRef(jSpeakerPropsObject);
+			delete[] c;
 		}
 
 		env->SetObjectField(jinput, speakersField, jInProps);
@@ -787,9 +800,9 @@ void InitEventsCache(JNIEnv* env) {
 	}
 
 
-	EventsFieldEvents = env->GetFieldID(VSTEventsClass, "events", "Ljvst/wrapper/valueobjects/VSTEvents;");
+	EventsFieldEvents = env->GetFieldID(VSTEventsClass, "events", "[Ljvst/wrapper/valueobjects/VSTEvent;");
 	if (EventsFieldEvents == NULL) {
-		log("** ERROR: cannot find field-id events (Ljvst/wrapper/valueobjects/VSTEvents;)");
+		log("** ERROR: cannot find field-id events ([Ljvst/wrapper/valueobjects/VSTEvent;)");
 		return;
 	}
 	EventsFieldNumEvents = env->GetFieldID(VSTEventsClass, "numEvents", "I");
