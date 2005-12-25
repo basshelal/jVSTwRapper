@@ -50,6 +50,7 @@ ConfigFileReader::ConfigFileReader() {
 	this->JVMOption5 = NULL;
 	this->SystemClassPath = NULL;
 	this->IsLoggingEnabled = 0;
+	this->AttachToNativePluginWindow = 1;
 	this->CloseNativePluginWindow = 1;
 
 
@@ -137,6 +138,14 @@ void ConfigFileReader::ReadConfigFile() {
 				this->CloseNativePluginWindow = atoi(tmp);
 			}
 			else log("**ERROR: finding CloseNativePluginWindow token");
+		}
+		if(strcmp(token, "AttachToNativePluginWindow")==0) {
+			token = strtok(NULL, sep);
+			if (token != NULL) {
+				char* tmp = strdup(token);
+				this->AttachToNativePluginWindow = atoi(tmp);
+			}
+			else log("**ERROR: finding AttachToNativePluginWindow token");
 		}
 	}
 

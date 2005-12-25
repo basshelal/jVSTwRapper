@@ -25,10 +25,14 @@ class VSTGUIWrapper : public AEffGUIEditor {
 
 		virtual long open (void *ptr);
 		virtual void close ();
+		virtual long getRect (ERect **ppRect);
 		
 		//Utility
-		int initJavaSide(jclass gui);
-	
+		int initJavaSide(jclass gui);	
+
+#ifndef MACX
+		HWND JavaWindowHandle;
+#endif
 
 	protected:
 		bool checkException();
@@ -39,6 +43,7 @@ class VSTGUIWrapper : public AEffGUIEditor {
 
 #ifndef MACX
 		DWORD ThreadID;
+		
 #else
 		pthread_t ThreadID;
 #endif
@@ -48,6 +53,8 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		jobject JavaPlugObj;
 		jobject JavaPlugGUIObj;
 		jclass JavaPlugGUIClass;
+
+		bool AttachWindow;
 
 		// Bitmap
 		//CBitmap *hBackground;

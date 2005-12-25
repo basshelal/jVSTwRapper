@@ -30,6 +30,7 @@ class ConfigFileReader {
 		char* SystemClassPath;
 		int IsLoggingEnabled;
 		int CloseNativePluginWindow;
+		int AttachToNativePluginWindow;
 
 
 	protected:

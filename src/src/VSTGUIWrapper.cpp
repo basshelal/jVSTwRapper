@@ -22,6 +22,8 @@
 #include "JNIUtils.h"
 #endif
 
+#include "jawt_md.h"
+
 #ifndef MACX
 #include <windows.h>
 #else
@@ -32,10 +34,58 @@
 VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect) 
 	: AEffGUIEditor (effect) {
 
-	this->ThreadID = 0;
+	this->ThreadID = 0;	
+	this->JavaWindowHandle = 0;
 	this->Jvm = ((VSTV10ToPlug*)effect)->Jvm;
 	this->JEnv = ((VSTV10ToPlug*)effect)->JEnv;
-	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;
+	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;	
+#ifndef MACX
+	ConfigFileReader *cfg = new ConfigFileReader();
+	if(cfg!=NULL)
+	{
+	  this->AttachWindow=(cfg->AttachToNativePluginWindow==1);
+	  delete cfg;
+	}
+#else
+	this->AttachWindow=0;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+long VSTGUIWrapper::getRect (ERect **ppErect)
+{
+	if(this->AttachWindow) {
+	   //Set Size
+	   this->ensureJavaThreadAttachment();
+       //Get Width
+	   jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "getWidth", "()I");
+	   this->checkException();
+	   if (mid == NULL) log("** ERROR: cannot find GUI instance-method getWidth()I");
+	
+	   jint width=this->JEnv->CallIntMethod(this->JavaPlugGUIObj, mid);
+
+	   this->checkException();
+       //Get Height
+	   mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "getHeight", "()I");
+	   this->checkException();
+	   if (mid == NULL) log("** ERROR: cannot find GUI instance-method getHeight()I");
+	
+	   jint height=this->JEnv->CallIntMethod(this->JavaPlugGUIObj, mid);
+
+	   this->checkException();
+
+	   rect.left   = 0;
+       rect.top    = 0;
+	   rect.right  = width;
+       rect.bottom = height;
+	} else {
+       rect.left   = 0;
+       rect.top    = 0;
+	   rect.right  = 0;
+       rect.bottom = 0;
+	}
+	*ppErect = &rect;
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -56,92 +106,142 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 	log("GUI Wrapper destroyed!");
 }
 
+
 //-----------------------------------------------------------------------------
-long VSTGUIWrapper::open (void *ptr) {
-	this->ensureJavaThreadAttachment();
-	
-	// !!! always call this !!!
-	//AEffGUIEditor::open (ptr);
 
-	//close the native plugin window
-	//-->we use our own
-	
-	
 #ifndef MACX
-	ConfigFileReader *cfg = new ConfigFileReader();
 
-	if (cfg->CloseNativePluginWindow==1)
-		DestroyWindow(GetParent((HWND)ptr));	
-
-	if (cfg) delete cfg;
+static WNDPROC oldWndProcEdit;
+LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{	
+	switch (message)
+	{
+		case WM_ERASEBKGND :
+		{		
+			CFrame* frame=(CFrame*)GetWindowLong(hwnd,GWL_USERDATA);
+			HWND javaHandle=((VSTGUIWrapper*)frame->getEditor())->JavaWindowHandle;
+			RedrawWindow(javaHandle,NULL,NULL,RDW_NOERASE);
+			return 1;
+		}	
+	}
+	return CallWindowProc (oldWndProcEdit, hwnd, message, wParam, lParam);
+}
 #endif
+
+long VSTGUIWrapper::open (void *ptr) {
+
+    this->ensureJavaThreadAttachment();
+
+#ifndef MACX
+    ConfigFileReader *cfg = new ConfigFileReader();
+	JAWT awt;	
+	jboolean result;
+	bool isAttached = false;
+	if (this->AttachWindow){  
+	   this->AttachWindow=false;
+	   jfieldID libraryOk = this->JEnv->GetStaticFieldID(this->JavaPlugGUIClass, "libraryOk", "Z");	
+	   this->checkException();
+	   if (libraryOk != NULL) {
+		   jboolean lOk = this->JEnv->GetStaticBooleanField(this->JavaPlugGUIClass,libraryOk);
+		   this->checkException();
+		   if(lOk==JNI_TRUE) {  
+				// Get the AWT
+				awt.version = JAWT_VERSION_1_3;
+				result = JAWT_GetAWT(this->JEnv, &awt);
+				if(result != JNI_FALSE)  { 
+				  //Inform the class
+				  jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
+   			      jboolean val=JNI_TRUE;
+				  this->checkException();
+                  if (attachField != NULL) 
+				  this->JEnv->SetBooleanField(this->JavaPlugGUIObj,attachField,val);
+				  this->checkException();    
+				  isAttached=true;
+				  this->AttachWindow=true;
+				}
+		   }
+	   }
+	}	
+	if ((!isAttached)&&(cfg->CloseNativePluginWindow==1)) {
+		DestroyWindow(GetParent((HWND)ptr));	
+	} 
+	if (cfg) delete cfg;
+
+	if(isAttached) {
+        // Call Undecorate
+        jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "undecorate", "()V");
+	    if (mid == NULL) log("** ERROR: cannot find GUI instance-method undecorate()V");
 	
-	/*
-	This would be the point, to 'inject' the hwnd from 
-	the native app (plugin window) into an swing (awt) frame 
-	via jni calls, to have the swing window embedded (as mdi) 
-	into the native audio app.
+   	    this->checkException();
 
-    use sun.com.awt.WEmbeddedFrame to embedd into native app
-	this class takes a hwnd as constructor argument
+  	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 
-	NOTE:
-	this is an internal class and may change without notice. 
-	If we use this class, were bound to AWT AND to a specific 
-	release of the Sun JVM. This kills portability of the wrapper, 
-	so the strategy would be, check for the WEmbeddedFrame class first (try to load 
-	it via a native call...), if its there try to use it... on any error, 
-	fall back to the normal swing use.
+	    this->checkException();
 
+	   //Try to attach the Window
+		log("Attach Winow");
+		JAWT_DrawingSurface* ds;
+		JAWT_DrawingSurfaceInfo* dsi;
+		JAWT_Win32DrawingSurfaceInfo* dsi_win;
+		
+		jint lock;				
+  	    // Get the drawing surface
+		ds = awt.GetDrawingSurface(this->JEnv, this->JavaPlugGUIObj);
+		if(ds != NULL){
+          // Lock the drawing surface
+		  lock = ds->Lock(ds);
+		  if((lock & JAWT_LOCK_ERROR) == 0) {
+   		    // Get the drawing surface info
+			dsi = ds->GetDrawingSurfaceInfo(ds);
+			if(dsi!=NULL) {
+   			  // Get the platform-specific drawing info
+			  dsi_win = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
 
-	NOTE2:
-	There must be a better way than destroying the native window (sometimes this kills 
-	the entire host app). so, the plan here would be, install a window handler, 
-	everytime there is a show message on the native handle, do a hide.
-	I need to look at the winapi window proc thing again...
-	
+			  //Create Frame to embedd the java Frame
+			  ERect* thissize;
+			  this->getRect(&thissize);
+			  CRect size (
+				0,
+				0,
+				thissize->right,
+				thissize->bottom
+			  );
+			  if(frame!=NULL) delete frame;
+			  frame = new CFrame (size, ptr, this);
+			  HWND frhwnd=(HWND)frame->getSystemWindow();
+			  //Get Java Window-Handle
+			  this->JavaWindowHandle=dsi_win->hwnd;
+			  //Set Parent Window
+              SetParent((HWND)JavaWindowHandle,(HWND)frhwnd);
+			  //Set Windows Styles
+			  long style;
+			  style=(LONG)GetWindowLong(((HWND)frhwnd),GWL_STYLE);
+			  SetWindowLong((HWND)frhwnd,GWL_STYLE,style|WS_CLIPCHILDREN);
 
-    
-    I know, that every swing or awt window keeps a native hwnd in  
-	a private member variable... privates are accesible via jni, so 
-	maybe heres the point to inject the native hwnd to the swing window...
+			  style=(LONG)GetWindowLong(((HWND)ptr),GWL_STYLE);
+			  SetWindowLong((HWND)ptr,GWL_STYLE,style|WS_CLIPCHILDREN);
+			  
+			  style=GetWindowLong((HWND)JavaWindowHandle,GWL_STYLE);
+			  SetWindowLong(dsi_win->hwnd,GWL_STYLE,style|WS_CHILD);
 
-	
-	I am still looking how to do this... Anyone got some suggestions?
-
-	any comments on that are highly appreciated --> daniel309@users.sourceforge.net
-	*/
-
-
-
-	//this code works everywhere except in cubase sx!
-	/*
-	SendMessage((HWND)ptr, WM_CLOSE, 0, 0);
-	PostQuitMessage(0);
-	*/
-
-	//PostQuitMessage(WM_QUIT);
-
-	//SendMessage((HWND)ptr, WS_MINIMIZE, 0, 0);
-	//ShowWindow(GetParent((HWND)ptr), SW_HIDE);
-
-	//PostMessage((HWND)ptr, WM_CLOSE, 0, 0);
-	//CloseWindow((HWND)ptr);
-	//DestroyWindow((HWND)ptr);
-
-	//AEffGUIEditor::close();
-
-	/*
-	SendMessage((HWND)ptr, WM_DESTROY, 0, 0);
-	SendMessage((HWND)ptr, WM_QUIT, 0, 0);
-    
-	PostMessage((HWND)ptr, WM_DESTROY, 0, 0);
-	PostMessage((HWND)ptr, WM_QUIT, 0, 0);
-	*/
-
-	//hier java swing gui open aufrufen...
-	//frame.show()
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
+			  //Set new Paint-Method	
+			  oldWndProcEdit = (WNDPROC)SetWindowLong ((HWND)frhwnd, GWL_WNDPROC, (long)WindowProcEdit);
+			  
+			  // Free the drawing surface info
+              ds->FreeDrawingSurfaceInfo(dsi);
+			}
+ 
+            // Unlock the drawing surface
+			ds->Unlock(ds);
+		  }
+ 		  // Free the drawing surface
+		  awt.FreeDrawingSurface(ds);
+		} //Drawng Surface Ok!
+	} //Attaching    
+#endif		
+	// Call Open
+    jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
 	
 	this->checkException();
@@ -149,7 +249,6 @@ long VSTGUIWrapper::open (void *ptr) {
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 
 	this->checkException();
-
 	return true;
 }
 
@@ -159,12 +258,37 @@ void VSTGUIWrapper::close () {
 
 	//hier swing gui close aufrufen...
 	//frame.hide();
+    
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
 	
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 
 	this->checkException();
+
+#ifndef MACX
+	//Inform the class
+	if(this->AttachWindow) {
+	  jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
+   	  jboolean val=JNI_FALSE;
+	  this->checkException();
+      if (attachField != NULL) 
+	  val=this->JEnv->GetBooleanField(this->JavaPlugGUIObj,attachField);
+	  this->checkException();                
+      if(val==JNI_TRUE) // Detach the Window
+	  {   
+		if(this->JavaWindowHandle!=NULL)
+		{
+			SetParent(this->JavaWindowHandle,NULL);
+			this->JavaWindowHandle=NULL;
+		}
+		if(frame!=NULL) {
+			delete frame;
+		    frame=NULL;
+		}	   
+	  }
+	}
+#endif
 }
 
 
