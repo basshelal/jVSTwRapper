@@ -31,7 +31,7 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
     this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
     //IMPORTANT: hide window
-    this.hide();
+    this.hide(); //keep hide() to be backward compatible to 1.4!
         
     //Prepare attaching window
     WindowAttached=false;
@@ -70,13 +70,13 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
   //*********************************************************************
   public void open() {
     log("GUI open");
-    this.show();
+    this.show(); //keep show() to be backward compatible to 1.4!
     this.toFront();
   }
 
   public void close() {
     this.log("GUI close");
-    this.hide();
+    this.hide(); //keep hide() to be backward compatible to 1.4!
   }
 
   public void destroy() {
