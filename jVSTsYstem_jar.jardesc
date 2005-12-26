@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-    <jar path="C:/data/private/jVSTsYstem_bin.jar"/>
-    <options overwrite="false" compress="true" exportErrors="true" exportWarnings="true" saveDescription="true" descriptionLocation="/EcplipseVSTSystemClasses/jVSTsYstem_jar.jardesc" useSourceFolders="false" buildIfNeeded="true"/>
-    <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="false" saveManifest="false" generateManifest="true" manifestLocation="">
-        <sealing sealJar="false">
-            <packagesToSeal/>
-            <packagesToUnSeal/>
-        </sealing>
-    </manifest>
-    <selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="false">
-        <javaElement handleIdentifier="=EcplipseVSTSystemClasses/src"/>
-    </selectedElements>
+<jar path="jVSTsYstem_bin.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/jvst_system/jVSTsYstem_jar.jardesc" exportErrors="true" exportWarnings="true" overwrite="false" saveDescription="true" useSourceFolders="false"/>
+<manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+<sealing sealJar="false">
+<packagesToSeal/>
+<packagesToUnSeal/>
+</sealing>
+</manifest>
+<selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+<javaElement handleIdentifier="=jvst_system/src"/>
+</selectedElements>
 </jardesc>
