@@ -64,7 +64,8 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 
 
 
-  public JayVSTxSynth() {
+  public JayVSTxSynth(long wrapper) {
+    super(wrapper);
     log("Construktor jVSTxSynth() START!");
 
     for (int i = 0; i < this.programs.length; i++) this.programs[i] = new JayVSTxSynthProgram();

@@ -14,7 +14,8 @@ public class JayDLay extends VSTPluginAdapter {
   private int currentProgram;
 
 
-  public JayDLay() {
+  public JayDLay(long wrapper) {
+    super(wrapper);
     log("Construktor JayDLay() START!");
 
     this.size = 44100;

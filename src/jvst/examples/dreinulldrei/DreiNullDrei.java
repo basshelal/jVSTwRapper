@@ -39,7 +39,8 @@ public class DreiNullDrei extends VSTPluginAdapter {
 
 
 
-  public DreiNullDrei() {
+  public DreiNullDrei(long wrapper) {
+    super(wrapper);
     log("Construktor DreiNullDrei() START!");
 
 
