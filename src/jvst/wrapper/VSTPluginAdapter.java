@@ -30,8 +30,11 @@ public abstract class VSTPluginAdapter extends VSTV23ToHost implements VSTV23ToP
   public static final int PAN_LAW_LINEAR = 0;	  // L = pan * M; R = (1 - pan) * M;
   public static final int PAN_LAW_EQUAL_POWER = 1;// L = pow (pan, 0.5) * M; R = pow ((1 - pan), 0.5) * M;
 
+  public VSTPluginAdapter(long Wrapper) { this.WrapperInstance=Wrapper;}
 
-
+  //Pointer to C++-Wrapper
+  public long WrapperInstance; 
+  
   //provide defaults for vst 1.0 OPTIONAL methods
   //*************************************
   public void open() { }
