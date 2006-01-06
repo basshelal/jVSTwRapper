@@ -360,8 +360,7 @@ void VSTV10ToPlug::setSampleRate(float sampleRt) {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::process (float** inputs, float** outputs, long sampleFrames) {
-
-		
+	
 #ifndef MACX
 		DWORD threadID;
 		threadID = GetCurrentThreadId();
@@ -558,18 +557,18 @@ int VSTV10ToPlug::initJavaSide(jclass effectClass, bool hasGUI) {
 	if(effectClass==NULL) return -1;
 	this->JavaPlugClass = effectClass;
 
-
+    jlong wri=((jlong)((long)this));
 	//JAVA Konstruktor
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "<init>", "()V");
+	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "<init>", "(J)V");
 	if (mid == NULL) {
-		log("** ERROR: cannot find default contructor");
+		log("** ERROR: cannot find contructor <init>(long)");
 		this->checkException(); //print stack trace!
 		return -1;
 	}
 
 	if (this->checkException()) return -1;
 
-	this->JavaPlugObj = this->JEnv->NewObject(this->JavaPlugClass, mid);
+	this->JavaPlugObj = this->JEnv->NewObject(this->JavaPlugClass, mid,wri);
 	if (this->JavaPlugObj == NULL) {	
 		log("** ERROR: cannot instantiate Java Plugin Object, \nException occured in constructor?\nPlease look at the generated LOG files.");
 		this->checkException(); //print stack trace!
@@ -612,8 +611,7 @@ int VSTV10ToPlug::initJavaSide(jclass effectClass, bool hasGUI) {
 
 	if (this->checkException()) return -1;
 
-
-
+    
 	//init gui wrapper
 	if (hasGUI) this->editor = new VSTGUIWrapper (this);
 	else {

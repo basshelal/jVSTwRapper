@@ -49,11 +49,11 @@
 extern int IsLogEnabled;
 
 //------------------------------------------------------------------------
-VSTV23ToPlug* WrapperInstance;
+//VSTV23ToPlug* WrapperInstance;
 
 //------------------------------------------------------------------------
 void calculatePaths();
-int startJava();
+VSTV23ToPlug* startJava();
 
 
 #ifdef MACX
@@ -114,9 +114,9 @@ AEffect *main_macho (audioMasterCallback pAudioMaster) {
 		log("** ERROR: cant init jvm interface pointers!");
 		return 0;
 	}
-
+    VSTV23ToPlug* WrapperInstance = startJava();
 	//start the jvm
-	if (startJava() != 0) {
+	if (WrapperInstance == NULL) {
 		log("**ERROR in startJava()");
 		return 0;
 	}
@@ -130,7 +130,7 @@ AEffect *main_macho (audioMasterCallback pAudioMaster) {
 }
 
 
-int startJava() {
+VSTV23ToPlug* startJava() {
 
 	//Create JVM
 	//**********************************************
@@ -141,6 +141,8 @@ int startJava() {
 	JavaVMOption options[6]; //assume the max number of options...
 	char java_path[1024]; //we need to add jVSTsYstem_bin.jar to the ClassPath of the Bootstrap ClassLoader!
 	char class_path[1024];
+
+	VSTV23ToPlug* WrapperInstance;
 
 	ConfigFileReader *cfg = new ConfigFileReader();
 	IsLogEnabled = cfg->IsLoggingEnabled;
@@ -217,7 +219,7 @@ int startJava() {
 #endif
 	if (res < 0) {
 		log("** ERROR: Can't get created Java VMs");
-		return -1;
+		return 0;
 	}
 
 	if (nVMs>0) {
@@ -238,7 +240,7 @@ int startJava() {
 		if (res < 0) {
 			log("** ERROR: getting Java env!");
 			if (res==JNI_EVERSION) log("GetEnv Error because of different JNI Version!");
-			return -1;
+			return 0;
 		}
 	} 
 	else {
@@ -253,14 +255,14 @@ int startJava() {
 		
 		if (res < 0) {
 			log("** ERROR: Can't create Java VM (are your VM options correct?)");
-			return -1;
+			return 0;
 		}
-		if (checkException(env)) return -1;
+		if (checkException(env)) return 0;
 	}
 	//***********************************************
 
 	//IMPORTANT: clear possible pending exceptions...
-	if (checkException(env)) return -1;
+	if (checkException(env)) return 0;
 
 	/* Get a reference to obj's class */
 
@@ -271,21 +273,21 @@ int startJava() {
 	if (manager == NULL) {
 		log("** ERROR: cannot find jvst/wrapper/system/VSTiClassLoaderManager");
 		checkException(env); //print statck trace...
-		return -1;
+		return 0;
 	}
 
 	jmethodID loadcl_mid = env->GetStaticMethodID(manager, "loadVSTiClass", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class;");
 	if (loadcl_mid == NULL)  {
 		log("** ERROR: cannot find static method loadVSTiClass(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class;");
 		checkException(env); //print statck trace...
-		return -1;
+		return 0;
 	}
 
 	jstring dllloc = env->NewStringUTF(DllLocation);
 	jstring plug = env->NewStringUTF(cfg->PluginClass);
 	jstring cp = env->NewStringUTF(class_path);
 	jclass clazz = (jclass)env->CallStaticObjectMethod(manager, loadcl_mid, dllloc, plug, cp);
-	if (checkException(env)) return -1;
+	if (checkException(env)) return 0;
 
 
 	//calling static _initPlugFromNative
@@ -294,13 +296,13 @@ int startJava() {
 	if (init_mid == NULL)  {
 		log("** ERROR: cannot find static method _initPlugFromNative(Ljava/lang/String;Z)V");
 		checkException(env); //print statck trace...
-		return -1;
+		return 0;
 	}
 	jstring dll = env->NewStringUTF(DllLocation);
 	jboolean doLogging = cfg->IsLoggingEnabled;
 	env->CallStaticVoidMethod(clazz, init_mid, dll, doLogging);
 
-	if (checkException(env)) return -1;
+	if (checkException(env)) return 0;
 
 
 	// Create the AudioEffect
@@ -310,7 +312,7 @@ int startJava() {
 		log("** ERROR: Error Creating VST Wrapper instance");
 		delete WrapperInstance;
 		checkException(env); //print statck trace...
-		return -1;
+		return 0;
 	}
 
 	//test if we can load the GUI class
@@ -336,18 +338,18 @@ int startJava() {
 
 	//calling Java side constructors
 	log("calling effects java construtor!");
-	if (WrapperInstance->initJavaSide(clazz, hasGUI)) return -1;
+	if (WrapperInstance->initJavaSide(clazz, hasGUI)) return 0;
 
-	if (checkException(env)) return -1;
+	if (checkException(env)) return 0;
 
 
 
 	//calling java guis init!
 	if((WrapperInstance->getEditor() != NULL) && hasGUI) {
-		if (((VSTGUIWrapper*)WrapperInstance->getEditor())->initJavaSide(guiClass)) return -1;
+		if (((VSTGUIWrapper*)WrapperInstance->getEditor())->initJavaSide(guiClass)) return 0;
 	}
 
-	if (checkException(env)) return -1;
+	if (checkException(env)) return 0;
 
 	delete cfg;
 
@@ -355,7 +357,7 @@ int startJava() {
 	CFRunLoopStop((CFRunLoopRef)runLoop);
 #endif
 
-	return 0; //everythings fine...
+	return WrapperInstance; //everythings fine...
 }
 
 //------------------------------------------------------------------------

@@ -20,7 +20,7 @@
 #endif
 
 
-extern VSTV23ToPlug* WrapperInstance;
+extern VSTV23ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 
 
 

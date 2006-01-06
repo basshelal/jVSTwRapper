@@ -18,7 +18,7 @@
 #endif
 
 
-extern VSTV23ToPlug* WrapperInstance;
+extern VSTV23ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 
 
 
@@ -36,7 +36,7 @@ extern VSTV23ToPlug* WrapperInstance;
  */
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_setPanLaw
   (JNIEnv* env, jobject obj, jint type, jfloat val) {
-
+      VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	  if (WrapperInstance!=NULL) return WrapperInstance->setPanLaw(type, val);
 	  else return 0;
 }
@@ -48,7 +48,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_setPanLa
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_beginLoadBank
   (JNIEnv *env, jobject obj, jobject bank) {
-
+      VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	  return 0;
 }
 
@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_beginLoadBan
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_beginLoadProgram
 	(JNIEnv *env, jobject obj, jobject prog) {
-
+        VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 		return 0;
 }
 
@@ -70,7 +70,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_beginLoadPro
  */
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_copySpeaker
   (JNIEnv *env, jobject obj, jobject from, jobject to) {
-
+    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	return 0;
 }
 
@@ -81,7 +81,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_copySpea
  */
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV23ToHost_matchArrangement
   (JNIEnv *env, jobject obj, jobject obj1, jobject obj2) {
-
+  VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
   return 0;
 }
 
