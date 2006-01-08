@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="javadoc">
-    <target name="javadoc">
-        <javadoc destdir="doc" access="package" use="true" notree="false" nonavbar="false" noindex="false" splitindex="true" author="true" version="true" nodeprecatedlist="false" nodeprecated="false" packagenames="jvst.wrapper.system,jvst.wrapper.valueobjects,jvst.wrapper.gui,jvst.wrapper.communication" sourcefiles="src/jvst/wrapper/VSTPluginAdapter.java,src/jvst/wrapper/VSTPluginGUIAdapter.java" sourcepath="src;../EclipseVSTSystemClasses/src" classpath="../EclipseVSTSystemClasses/bin;bin" doctitle="jVSTwRapper v0.7">
-            <link href="http://java.sun.com/j2se/1.4.2/docs/api"/>
-            <link href="file:/C:/data/private/EclipseVSTwRapper/doc/"/>
-        </javadoc>
-    </target>
+<target name="javadoc">
+<javadoc access="protected" author="true" classpath="bin;../jvst_examples/bin;../jvst_system/bin;../jvst_examples/napkinlaf.jar" destdir="doc" doctitle="jVSTwRapper v0.8" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="jvst.wrapper.communication,jvst.wrapper.gui,jvst.examples.jaydlay,jvst.examples.jayvstxsynth,jvst.wrapper.system,jvst.examples.dreinulldrei,jvst.wrapper.valueobjects" sourcefiles="src/jvst/wrapper/VSTPluginGUIAdapter.java,src/jvst/wrapper/VSTPluginAdapter.java" sourcepath="../jvst_examples/src;src;../jvst_system/src" splitindex="true" use="true" version="true"/>
+</target>
 </project>
