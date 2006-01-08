@@ -627,9 +627,6 @@ int VSTV10ToPlug::initJavaSide(jclass effectClass, bool hasGUI) {
 //-----------------------------------------------------------------------------
 void VSTV10ToPlug::ensureJavaThreadAttachment() {
 	
-	//ultra important, if a pending exception isnt cleared, all following calls will fail...
-	this->checkException();
-
 #ifndef MACX
 	DWORD threadID;
 	threadID = GetCurrentThreadId();
@@ -649,6 +646,9 @@ void VSTV10ToPlug::ensureJavaThreadAttachment() {
 		sprintf(temp, "New wrapper ThreadID=%i", this->ThreadID);
 		log(temp);
 	}
+	
+	//ultra important, if a pending exception isnt cleared, all following calls will fail...
+	this->checkException();
 }
 
 
