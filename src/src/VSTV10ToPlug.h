@@ -60,8 +60,8 @@ class VSTV10ToPlug : public AudioEffectX {
 		virtual void close ();
 
 		virtual float getVu();
-		virtual long getChunk(float** data, bool isPreset);
-		virtual long setChunk(float* data, long byteSize, bool isPreset);
+		virtual long getChunk(void** data, bool isPreset = false);
+		virtual long setChunk(void* data, long byteSize, bool isPreset = false);
 		virtual void setBlockSize(long blockSize);
 		virtual void setSampleRate(float sampleRate);
 
@@ -100,6 +100,10 @@ class VSTV10ToPlug : public AudioEffectX {
 		//cached methods ids;
 		jmethodID GetParameterMethod;
 		jmethodID SetParameterMethod;
+
+		//cached pointer to chunk-data
+		void* chunkdata;
+		long chunksize;
 
 };
 

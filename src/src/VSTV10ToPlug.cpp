@@ -66,12 +66,15 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 	GetParameterMethod = NULL;
 	SetParameterMethod = NULL;
 
+	chunkdata = NULL;
+	chunksize = 0;
+
 	this->ensureJavaThreadAttachment();
  }
 
 //------------------------------------------------------------------------
 VSTV10ToPlug::~VSTV10ToPlug () {
-	log("Destroying Wrapper");
+	log("Destroying Wrapper");	
 	this->ensureJavaThreadAttachment();
 
 	/*
@@ -82,6 +85,8 @@ VSTV10ToPlug::~VSTV10ToPlug () {
 
 	//Delete global reference
 	this->JEnv->DeleteGlobalRef(this->JavaPlugObj);
+
+	if(chunkdata!=NULL) { free(chunkdata); chunkdata = NULL; chunksize=0; }
 
 	//hier wird nur gewartet bis der haupt jvm thread der einzigste 
 	//java thread ist. die jvm wird aber trotzdem nicht entladen...
@@ -277,57 +282,63 @@ float VSTV10ToPlug::getVu() {
 }
 
 //------------------------------------------------------------------------
-long VSTV10ToPlug::getChunk(float** data, bool isPreset) {
+long VSTV10ToPlug::getChunk(void** data, bool isPreset) {
 	this->ensureJavaThreadAttachment();
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getChunk", "([[FZ)I");
-	if (mid == NULL) log("** ERROR: cannot find instance-method getChunk([[FZ)I");
+	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getChunk", "([[BZ)I");
+	if (mid == NULL) log("** ERROR: cannot find instance-method getChunk([[BZ)I");
 
 	jobjectArray  jdata;//dummy
-	jclass floatClass;
-	float buf[1] = {-1.0F};//dummy
+	jclass byteClass;
+	jbyte buf[1] = {-1};//dummy
 
-	floatClass = this->JEnv->FindClass("[F");
-	if (floatClass==NULL) log("** ERROR: cannot find Class [F");
-	jdata = this->JEnv->NewObjectArray(1, floatClass, NULL);
-	jfloatArray farr = this->JEnv->NewFloatArray(1);
-	this->JEnv->SetFloatArrayRegion(farr, 0, 1, buf);
-    this->JEnv->SetObjectArrayElement(jdata, 0, farr);
-    this->JEnv->DeleteLocalRef(farr);
+	byteClass = this->JEnv->FindClass("[B");
+	if (byteClass==NULL) log("** ERROR: cannot find Class [B");
+	jdata = this->JEnv->NewObjectArray(1, byteClass, NULL);
+	jbyteArray barr = this->JEnv->NewByteArray(1);
+	this->JEnv->SetByteArrayRegion(barr, 0, 1, buf);
+    this->JEnv->SetObjectArrayElement(jdata, 0, barr);
+    this->JEnv->DeleteLocalRef(barr);
 
 	long data_len = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, jdata, (jboolean)isPreset);
 	
 	//jetzt elemente von jdata[][] nach **data umkopieren...
 	//for (int i=0; i<data_len; i++) {
 	for (int i=0; i<this->JEnv->GetArrayLength(jdata) ; i++) {
-		float* dat = data[i];
-		jfloatArray jdat;
-		jfloat *jval;
+		if(chunksize!=data_len){
+			if(chunkdata!=NULL) free(chunkdata); 
+			chunkdata=malloc(data_len*sizeof(jbyte));
+			chunksize=data_len;
+		}
+		data[i] = chunkdata;
+		jbyte* dat = (jbyte*)data[i];
+		jbyteArray jdat;
+		jbyte *jval;
 
-		jdat = (jfloatArray)this->JEnv->GetObjectArrayElement(jdata, i);
-		jval = this->JEnv->GetFloatArrayElements(jdat, NULL);
+		jdat = (jbyteArray)this->JEnv->GetObjectArrayElement(jdata, i);
+		jval = this->JEnv->GetByteArrayElements(jdat, NULL);
 			
-		memcpy(dat, jval, data_len * sizeof(float));
+		memcpy(dat, jval, data_len * sizeof(jbyte));
 		
-		this->JEnv->ReleaseFloatArrayElements(jdat, jval, 0);
+		this->JEnv->ReleaseByteArrayElements(jdat, jval, 0);
 		this->JEnv->DeleteLocalRef(jdat);
 	}
 	
 	this->checkException();
 
-	return data_len;
+	return data_len*sizeof(jbyte);
 }
 
 //------------------------------------------------------------------------
-long VSTV10ToPlug::setChunk(float* data, long byteSize, bool isPreset) {
+long VSTV10ToPlug::setChunk(void* data, long byteSize, bool isPreset) {
 	this->ensureJavaThreadAttachment();
 	jint ret = -1;
 
-	jfloatArray jdata = this->JEnv->NewFloatArray(byteSize);
-	this->JEnv->SetFloatArrayRegion(jdata, 0, byteSize, data);
+	jbyteArray jdata = this->JEnv->NewByteArray(byteSize/sizeof(jbyte));
+	this->JEnv->SetByteArrayRegion(jdata, 0, byteSize/sizeof(jbyte), (jbyte*)data);
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setChunk", "([FIZ)I");
-	if (mid == NULL) log("** ERROR: cannot find instance-method setChunk([FIZ)I");
-	ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, jdata, (jint)byteSize, (jboolean)isPreset);
+	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setChunk", "([BIZ)I");
+	if (mid == NULL) log("** ERROR: cannot find instance-method setChunk([BIZ)I");
+	ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, jdata, (jint)(byteSize/sizeof(jbyte)), (jboolean)isPreset);
 
     this->JEnv->DeleteLocalRef(jdata);
 
