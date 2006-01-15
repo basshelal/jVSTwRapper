@@ -35,8 +35,8 @@ public interface VSTV10ToPlug {
   public void suspend();
   public void resume();
   public float getVu();
-  public int getChunk(float data[][], boolean isPreset);
-  public int setChunk(float data[], int byteSize, boolean isPreset);
+  public int getChunk(byte data[][], boolean isPreset);
+  public int setChunk(byte data[], int byteSize, boolean isPreset);
   public void setBlockSize(int blockSize);
   public void setSampleRate(float sampleRate);
 

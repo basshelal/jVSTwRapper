@@ -44,8 +44,8 @@ public abstract class VSTPluginAdapter extends VSTV23ToHost implements VSTV23ToP
   public void suspend() { }
   public void resume() { }
   public float getVu() {return 0F;}
-  public int getChunk(float[][] data, boolean isPreset) {return 0;}
-  public int setChunk(float data[], int byteSize, boolean isPreset) {return 0;}
+  public int getChunk(byte[][] data, boolean isPreset) {return 0;}
+  public int setChunk(byte data[], int byteSize, boolean isPreset) {return 0;}
   public void setBlockSize(int blockSize) { }
   public void setSampleRate(float sampleRate) { }
 
