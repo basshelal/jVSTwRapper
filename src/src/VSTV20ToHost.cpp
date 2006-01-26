@@ -141,6 +141,18 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 
 /*
  * Class:     jvst_wrapper_communication_VSTV20ToHost
+ * Method:    sizeWindow
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sizeWindow
+(JNIEnv * env, jobject obj, jint width, jint height){
+    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+	if (WrapperInstance!=NULL) return WrapperInstance->sizeWindow(width,height);
+	else return false;
+}
+
+/*
+ * Class:     jvst_wrapper_communication_VSTV20ToHost
  * Method:    ioChanged
  * Signature: ()Z
  */

@@ -38,6 +38,14 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 
 /*
  * Class:     jvst_wrapper_communication_VSTV20ToHost
+ * Method:    sizeWindow
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sizeWindow
+  (JNIEnv *, jobject, jint,jint);
+
+/*
+ * Class:     jvst_wrapper_communication_VSTV20ToHost
  * Method:    ioChanged
  * Signature: ()Z
  */
