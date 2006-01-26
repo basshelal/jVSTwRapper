@@ -77,15 +77,15 @@ public abstract class VSTV20ToHost extends VSTV10ToHost {
 //We have our own UI handling
 /*
  public native int closeWindow();
- public native int openWindow();
- public native int sizeWindow();
-*/
+ public native int openWindow(); */
+ public native boolean sizeWindow(int width, int height);
+
 
   public native boolean ioChanged();
   public native VSTTimeInfo getTimeInfo(int filter);
   public native boolean sendVstEventsToHost(VSTEvents events);
   public native boolean needIdle();
-
+  
   public native double updateSampleRate();
   public native int updateBlockSize();
   public native int getAutomationState();
