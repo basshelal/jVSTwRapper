@@ -26,12 +26,17 @@ public abstract class VSTV10ToHost  {
   public native void setUniqueID(int id);
   public native void setNumInputs(int num);
   public native void setNumOutputs(int num);
-  public native void hasVu(boolean state);
-  public native void hasClip(boolean state);
-  public native void canMono(boolean state);
+//deprecated as of vst2.4
+  //public native void hasVu(boolean state);
+//deprecated as of vst2.4
+  //public native void hasClip(boolean state);
+//deprecated as of vst2.4
+  //public native void canMono(boolean state);
   public native void canProcessReplacing(boolean state);
-  public native void setRealtimeQualities(int qualities);
-  public native void setOfflineQualities(int qualities);
+//deprecated as of vst2.4
+  //public native void setRealtimeQualities(int qualities);
+//deprecated as of vst2.4
+  //public native void setOfflineQualities(int qualities);
   public native void setInitialDelay(int delay);
   public native void programsAreChunks(boolean state);
   public native float getSampleRate();

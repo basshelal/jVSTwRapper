@@ -84,7 +84,8 @@ public abstract class VSTV20ToHost extends VSTV10ToHost {
   public native boolean ioChanged();
   public native VSTTimeInfo getTimeInfo(int filter);
   public native boolean sendVstEventsToHost(VSTEvents events);
-  public native boolean needIdle();
+//deprecated as of vst2.4
+  //public native boolean needIdle();
   
   public native double updateSampleRate();
   public native int updateBlockSize();
@@ -121,18 +122,21 @@ public abstract class VSTV20ToHost extends VSTV10ToHost {
   public native int getPreviousPlug();
   */
 
-  public native int getNumAutomatableParameters();
+//deprecated as of vst2.4
+  //public native int getNumAutomatableParameters();
 
 
 
-
-  public native int getParameterQuantization();
+//deprecated as of vst2.4
+  //public native int getParameterQuantization();
   //0 : Not implemented.
   //1 : Full single float precision is maintained in automation.
   //other : The integer value that represents +1.0.
 
   public native boolean getSpeakerArrangement(VSTSpeakerArrangement inputs, VSTSpeakerArrangement outputs);
-  public native void hasExternalBuffer(boolean state);
+  
+//deprecated as of vst2.4
+  //public native void hasExternalBuffer(boolean state);
 
 // not supported, void* parameter!
 //public native int hostVendorSpecific();
@@ -148,19 +152,28 @@ public abstract class VSTV20ToHost extends VSTV10ToHost {
   public native int offlineStart();
   public native int offlineWrite();
   */
-
-  public native void setOutputSamplerate(float rate);
-  public native int tempoAt(int position);
+  
+  
+//deprecated as of vst2.4
+  //public native void setOutputSamplerate(float rate);
+  
+//deprecated as of vst2.4
+  //public native int tempoAt(int position);
   public native boolean updateDisplay();
-  public native void wantAsyncOperation(boolean state);
+  
+//deprecated as of vst2.4
+  //public native void wantAsyncOperation(boolean state);
 
 /*
  Asks the host to send VstEvents, as would request an instrument.
  This call can't be issued at construction time,
  it should be done in the resume method instead.
 */
-  public native void wantEvents(int filter);
-  public native int willProcessReplacing();
+//deprecated as of vst2.4
+  //public native void wantEvents(int filter);
+  
+//deprecated as of vst2.4
+  //public native int willProcessReplacing();
   //0 : Not implemented. we don't know whether process or processReplacing is called.
   //1 : Indicates that host will call processReplacing .
   //other : process (accumulating) will be used.
