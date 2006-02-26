@@ -52,8 +52,8 @@ public class DreiNullDrei extends VSTPluginAdapter {
 
     this.setNumInputs(0);// no input
     this.setNumOutputs(NUM_OUTPUTS);// mono output
-    this.hasVu(false);
-    this.hasClip(false);
+    //this.hasVu(false); //deprecated as of vst2.4
+    //this.hasClip(false); //deprecated as of vst2.4
     this.canProcessReplacing(true);
 
     this.isSynth(true);
@@ -91,7 +91,9 @@ public class DreiNullDrei extends VSTPluginAdapter {
 
 
   public void setSampleRate(float s) {this.srate = s;}
-  public void resume() { this.wantEvents(1); }
+  public void resume() { 
+	  //this.wantEvents(1); //deprecated as of vst2.4
+  }
 
 
 

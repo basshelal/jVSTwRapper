@@ -76,8 +76,8 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 
     this.setNumInputs(0);// no input
     this.setNumOutputs(2);// 2 outputs, 1 for each oscillator
-    this.hasVu(false);
-    this.hasClip(false);
+    //this.hasVu(false); //deprecated as of vst2.4
+    //this.hasClip(false); //deprecated as of vst2.4
     this.canProcessReplacing(true);
 
     this.isSynth(true);
@@ -96,7 +96,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 
 
   public void resume() {
-    this.wantEvents(1);
+    // this.wantEvents(1); //deprecated as of vst2.4
   }
 
   public void setSampleRate(float sampleRate) {

@@ -35,7 +35,7 @@ public class JayDLay extends VSTPluginAdapter {
     //communicate with the host
     this.setNumInputs(1);// mono input
     this.setNumOutputs(2);// stereo output
-    this.hasVu(false);
+    //this.hasVu(false); //deprecated as of vst2.4
     this.canProcessReplacing(true);
     this.setUniqueID(9876543);//random unique number registered at steinberg (4 byte)
 
