@@ -31,7 +31,7 @@ VSTV23ToPlug::~VSTV23ToPlug () {
 }
 
 //-----------------------------------------------------------------------------------------
-long VSTV23ToPlug::setTotalSampleToProcess (long value) {	
+VstInt32 VSTV23ToPlug::setTotalSampleToProcess (long value) {	
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setTotalSampleToProcess", "(I)I");
@@ -45,7 +45,7 @@ long VSTV23ToPlug::setTotalSampleToProcess (long value) {
 } 
 
 //-----------------------------------------------------------------------------------------
-long VSTV23ToPlug::getNextShellPlugin (char* name) { 
+VstInt32 VSTV23ToPlug::getNextShellPlugin (char* name) { 
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getNextShellPlugin", "(Ljava/lang/String;)I");
@@ -68,7 +68,7 @@ long VSTV23ToPlug::getNextShellPlugin (char* name) {
 }
 
 //-----------------------------------------------------------------------------------------
-long VSTV23ToPlug::startProcess () { 
+VstInt32 VSTV23ToPlug::startProcess () { 
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "startProcess", "()I");
@@ -82,7 +82,7 @@ long VSTV23ToPlug::startProcess () {
 }	
 
 //-----------------------------------------------------------------------------------------
-long VSTV23ToPlug::stopProcess () { 
+VstInt32 VSTV23ToPlug::stopProcess () { 
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "stopProcess", "()I");

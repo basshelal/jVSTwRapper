@@ -12,7 +12,7 @@
 
 
 #ifndef __audioeffectx__
-#include "vst/audioeffectx.h"
+#include "public.sdk/vst2.x/audioeffectx.h"
 #endif
 
 

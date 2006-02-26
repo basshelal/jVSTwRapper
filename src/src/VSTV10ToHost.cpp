@@ -84,11 +84,15 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setNumOutput
  * Method:    hasVu
  * Signature: ()V
  */
+
+//dm: deprecated as of vst2.4
+/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_hasVu(JNIEnv *env, jobject obj, jboolean state) {
 	log("hasVu");
 	VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->hasVu(state != 0 ? true : false);
 }
+*/
 
 //------------------------------------------------------------------------
 /*
@@ -96,11 +100,16 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_hasVu(JNIEnv
  * Method:    hasClip
  * Signature: ()Z
  */
+
+//dm: deprecated as of vst2.4
+/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_hasClip(JNIEnv *env, jobject obj, jboolean state) {
 	log("hasClip");
 	VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->hasClip(state != 0 ? true : false);
 }
+*/
+
 
 //------------------------------------------------------------------------
 /*
@@ -108,11 +117,16 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_hasClip(JNIE
  * Method:    canMono
  * Signature: ()Z
  */
+
+//dm: deprecated as of vst2.4
+/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_canMono(JNIEnv *env, jobject obj, jboolean state) {
 	log("canMono");
 	VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->canMono(state != 0 ? true : false);
 }
+*/
+
 
 //------------------------------------------------------------------------
 /*
@@ -135,11 +149,16 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_canProcessRe
  * Method:    setRealtimeQualities
  * Signature: (I)V
  */
+
+//dm: deprecated as of vst2.4
+/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setRealtimeQualities(JNIEnv *env, jobject obj, jint quality) {
 	log("setRealtimeQualities");
 	VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->setRealtimeQualities(quality);
 }
+*/
+
 
 //------------------------------------------------------------------------
 /*
@@ -147,11 +166,16 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setRealtimeQ
  * Method:    setOfflineQualities
  * Signature: (I)V
  */
+
+//dm: deprecated as of vst2.4
+/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setOfflineQualities(JNIEnv *env, jobject obj, jint quality) {
 	log("setOfflineQualities");
 	VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->setOfflineQualities(quality);
 }
+*/
+
 
 //------------------------------------------------------------------------
 /*

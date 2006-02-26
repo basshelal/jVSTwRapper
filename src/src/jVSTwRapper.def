@@ -1,2 +1,3 @@
-LIBRARY			jVSTwRapper
-EXPORTS			main
+EXPORTS
+	VSTPluginMain
+	main=VSTPluginMain

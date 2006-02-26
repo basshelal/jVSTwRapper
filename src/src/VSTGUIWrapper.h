@@ -12,7 +12,7 @@
 #include <jni.h>
 
 #ifndef __vstgui__
-#include "vst/vstgui.h"
+#include "vstgui/vstgui.h"
 #endif
 
 
@@ -23,9 +23,9 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		VSTGUIWrapper (AudioEffect *effect);
 		virtual ~VSTGUIWrapper ();
 
-		virtual long open (void *ptr);
+		virtual bool open (void *ptr);
 		virtual void close ();
-		virtual long getRect (ERect **ppRect);
+		virtual bool getRect (ERect **ppRect);
 		
 		//Utility
 		int initJavaSide(jclass gui);	

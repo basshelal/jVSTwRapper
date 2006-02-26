@@ -33,7 +33,7 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 		virtual bool getProductString (char* text);
 		virtual bool getVendorString (char* text);
 		virtual VstPlugCategory getPlugCategory ();
-		virtual long canDo (char* text);
+		virtual VstInt32 canDo (char* text);
 		virtual bool string2parameter (long index, char *text);
 		virtual bool setBypass (bool onOff);
 		
@@ -42,28 +42,28 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 		//vst 2.0 OPTIONAL
 		//*****************
 		virtual bool getEffectName (char* name);
-		virtual long getVendorVersion ();
+		virtual VstInt32 getVendorVersion ();
 
 		virtual bool canParameterBeAutomated(long index);
 		virtual bool copyProgram(long destination);
-		virtual long fxIdle();
+		virtual VstInt32 fxIdle();
 		virtual float getChannelParameter(long channel, long index);
-		virtual long getNumCategories();
+		virtual VstInt32 getNumCategories();
 
 		virtual bool getInputProperties (long index, VstPinProperties *properties);
 		virtual bool getOutputProperties (long index, VstPinProperties * properties);
 		virtual bool getErrorText (char* text);
-		virtual long getGetTailSize ();
+		virtual VstInt32 getGetTailSize ();
 		virtual bool getParameterProperties (long index, VstParameterProperties *p);
 
-		virtual long getVstVersion ();
+		virtual VstInt32 getVstVersion ();
 		virtual void inputConnected (long index, bool state);
 		virtual void outputConnected (long index, bool state);
 		virtual bool keysRequired ();
 
-		virtual long processEvents (VstEvents* events);
+		virtual VstInt32 processEvents (VstEvents* events);
 		virtual bool processVariableIo ( VstVariableIo* varIo);
-		virtual long reportCurrentPosition ();
+		virtual VstInt32 reportCurrentPosition ();
 		virtual float* reportDestinationBuffer ();
 		virtual void setBlockSizeAndSampleRate (long blockSize, float sampleRate);
 

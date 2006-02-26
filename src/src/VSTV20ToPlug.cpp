@@ -220,7 +220,7 @@ VstPlugCategory VSTV20ToPlug::getPlugCategory() {
 	}
 }
 
-long VSTV20ToPlug::canDo (char* text) {
+VstInt32 VSTV20ToPlug::canDo (char* text) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "canDo", "(Ljava/lang/String;)I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method canDo(Ljava/lang/String;)I");
@@ -265,7 +265,7 @@ bool VSTV20ToPlug::setBypass (bool onOff) {
 //OPTIONAL
 
 
-long VSTV20ToPlug::getVendorVersion() {
+VstInt32 VSTV20ToPlug::getVendorVersion() {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getVendorVersion", "()I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getVendorVersion()I");
@@ -319,7 +319,7 @@ bool VSTV20ToPlug::copyProgram(long destination) {
 	return ret!=0;
 }
 
-long VSTV20ToPlug::fxIdle() {
+VstInt32 VSTV20ToPlug::fxIdle() {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "fxIdle", "()I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method fxIdle()I");
@@ -343,7 +343,7 @@ float VSTV20ToPlug::getChannelParameter(long channel, long index) {
 	return ret;
 }
 
-long VSTV20ToPlug::getNumCategories() {
+VstInt32 VSTV20ToPlug::getNumCategories() {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getNumCategories", "()I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getNumCategories()I");
@@ -460,7 +460,7 @@ bool VSTV20ToPlug::getErrorText (char* text) {
 	return true;
 }
 
-long VSTV20ToPlug::getGetTailSize () {
+VstInt32 VSTV20ToPlug::getGetTailSize () {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getGetTailSize", "()I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getGetTailSize()I");
@@ -565,7 +565,7 @@ bool VSTV20ToPlug::getParameterProperties (long index, VstParameterProperties *p
 }
 
 
-long VSTV20ToPlug::getVstVersion () {
+VstInt32 VSTV20ToPlug::getVstVersion () {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getVstVersion", "()I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getVstVersion()I");
@@ -610,7 +610,7 @@ bool VSTV20ToPlug::keysRequired () {
 }
 
 
-long VSTV20ToPlug::processEvents (VstEvents* events) {
+VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 
 		
 #ifndef MACX
@@ -806,7 +806,7 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 		this->JEnv->ReleaseFloatArrayElements(jout, jval, 0);
 		this->JEnv->DeleteLocalRef(jout);
 	}
-	long x = 0;
+	VstInt32 x = 0;
 	varIo->numSamplesInput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput);
 	x = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed);
 	varIo->numSamplesInputProcessed = &x;
@@ -823,7 +823,7 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 	return ret!=0;
 }
 
-long VSTV20ToPlug::reportCurrentPosition () {
+VstInt32 VSTV20ToPlug::reportCurrentPosition () {
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "reportCurrentPosition", "()I");

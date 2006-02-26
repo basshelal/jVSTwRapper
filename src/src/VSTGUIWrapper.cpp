@@ -52,7 +52,7 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 }
 
 //-----------------------------------------------------------------------------
-long VSTGUIWrapper::getRect (ERect **ppErect)
+bool VSTGUIWrapper::getRect (ERect **ppErect)
 {
 	if(this->AttachWindow) {
 	   //Set Size
@@ -76,8 +76,8 @@ long VSTGUIWrapper::getRect (ERect **ppErect)
 
 	   rect.left   = 0;
        rect.top    = 0;
-	   rect.right  = width;
-       rect.bottom = height;
+	   rect.right  = (short)width;
+       rect.bottom = (short)height;
 	} else {
        rect.left   = 0;
        rect.top    = 0;
@@ -129,7 +129,7 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 }
 #endif
 
-long VSTGUIWrapper::open (void *ptr) {
+bool VSTGUIWrapper::open (void *ptr) {
 
     this->ensureJavaThreadAttachment();
 

@@ -11,7 +11,7 @@
 
 
 #ifndef __audioeffectx__
-#include "vst/audioeffectx.h"
+#include "public.sdk/vst2.x/audioeffectx.h"
 #endif
 
 #ifndef __VSTGUIWrapper__
@@ -39,10 +39,10 @@ class VSTV10ToPlug : public AudioEffectX {
 		virtual void setParameter (long index, float value);
 		virtual float getParameter (long index);
 		
-		virtual void process (float **inputs, float **outputs, long sampleframes);
-		virtual void processReplacing (float **inputs, float **outputs, long sampleFrames);
+		virtual void process (float **inputs, float **outputs, VstInt32 sampleframes);
+		virtual void processReplacing (float **inputs, float **outputs, VstInt32 sampleFrames);
 		
-		virtual long getProgram();
+		virtual VstInt32 getProgram();
 		virtual void setProgram (long program);
 		virtual void setProgramName (char *name);
 		virtual void getProgramName (char *name);
@@ -60,8 +60,8 @@ class VSTV10ToPlug : public AudioEffectX {
 		virtual void close ();
 
 		virtual float getVu();
-		virtual long getChunk(void** data, bool isPreset = false);
-		virtual long setChunk(void* data, long byteSize, bool isPreset = false);
+		virtual VstInt32 getChunk(void** data, bool isPreset = false);
+		virtual VstInt32 setChunk(void* data, long byteSize, bool isPreset = false);
 		virtual void setBlockSize(long blockSize);
 		virtual void setSampleRate(float sampleRate);
 

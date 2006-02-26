@@ -73,11 +73,11 @@ char LogFileName[100];
 audioMasterCallback audioMaster;
 
 
+//new vst2.4 main
 //------------------------------------------------------------------------
-#ifndef MACX
-AEffect *main (audioMasterCallback pAudioMaster) {
-#else	
-AEffect *main_macho (audioMasterCallback pAudioMaster) {	
+
+AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {
+#ifdef MACX
 	pthread_t *newThread;
 #endif
 
@@ -128,6 +128,13 @@ AEffect *main_macho (audioMasterCallback pAudioMaster) {
 
 	return WrapperInstance->getAeffect();
 }
+
+//------------------------------------------------------------------------
+#ifndef MACX
+AEffect *main (audioMasterCallback pAudioMaster) {return VSTPluginMain (pAudioMaster);}
+#else	
+AEffect *main_macho (audioMasterCallback pAudioMaster) {return VSTPluginMain (pAudioMaster);}
+#endif
 
 
 VSTV23ToPlug* startJava() {

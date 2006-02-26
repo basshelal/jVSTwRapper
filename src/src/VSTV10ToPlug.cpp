@@ -104,7 +104,7 @@ void VSTV10ToPlug::setProgram (long program) {
 	this->checkException();
 }
 
-long VSTV10ToPlug::getProgram () {
+VstInt32 VSTV10ToPlug::getProgram () {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getProgram", "()I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getProgram()I");
@@ -282,7 +282,7 @@ float VSTV10ToPlug::getVu() {
 }
 
 //------------------------------------------------------------------------
-long VSTV10ToPlug::getChunk(void** data, bool isPreset) {
+VstInt32 VSTV10ToPlug::getChunk(void** data, bool isPreset) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getChunk", "([[BZ)I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getChunk([[BZ)I");
@@ -329,7 +329,7 @@ long VSTV10ToPlug::getChunk(void** data, bool isPreset) {
 }
 
 //------------------------------------------------------------------------
-long VSTV10ToPlug::setChunk(void* data, long byteSize, bool isPreset) {
+VstInt32 VSTV10ToPlug::setChunk(void* data, long byteSize, bool isPreset) {
 	this->ensureJavaThreadAttachment();
 	jint ret = -1;
 
@@ -370,7 +370,7 @@ void VSTV10ToPlug::setSampleRate(float sampleRt) {
 }
 
 //------------------------------------------------------------------------
-void VSTV10ToPlug::process (float** inputs, float** outputs, long sampleFrames) {
+void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFrames) {
 	
 #ifndef MACX
 		DWORD threadID;
@@ -461,7 +461,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, long sampleFrames) 
 }
 
 //---------------------------------------------------------------------------
-void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, long sampleFrames) {
+void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames) {
 	
 	
 #ifndef MACX

@@ -31,19 +31,19 @@ class VSTV23ToPlug : public VSTV22ToPlug {
 		//VST2.3 Optional
 		//******************************
 
-		virtual long setTotalSampleToProcess (long value);
+		virtual VstInt32 setTotalSampleToProcess (long value);
 		// Called in offline (non RealTime) Process before process is called, indicates how many sample will be processed
 
-		virtual long getNextShellPlugin (char* name);
+		virtual VstInt32 getNextShellPlugin (char* name);
 		// Tthis opcode is only called, if Plugin is of type kPlugCategShell.
 		// should return the next plugin's uniqueID.
 		// name points to a char buffer of size 64, which is to be filled
        	// with the name of the plugin including the terminating zero.
 		
-		virtual long startProcess ();
+		virtual VstInt32 startProcess ();
 		// Called one time before the start of process call
 
-		virtual long stopProcess ();
+		virtual VstInt32 stopProcess ();
 		// Called after the stop of process call
 
 };
