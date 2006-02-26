@@ -3,9 +3,8 @@
 // VSTGUI: Graphical User Interface Framework for VST plugins : 
 // Standard Control Objects
 //
-// Version 2.2         Date : 14/05/03
+// Version 3.0       $Date: 2006/02/26 00:14:06 $
 //
-// First version            : Wolfgang Kundrus         06.97
 // Added new objects        : Michael Schmidt          08.97
 // Added new objects        : Yvan Grabit              01.98
 // Added BeOS version       : Georges-Edouard Berenger 05.99
@@ -13,7 +12,7 @@
 //
 //-----------------------------------------------------------------------------
 // VSTGUI LICENSE
-// © 2003, Steinberg Media Technologies, All Rights Reserved
+// © 2004, Steinberg Media Technologies, All Rights Reserved
 //-----------------------------------------------------------------------------
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -48,9 +47,9 @@
 #include "vstcontrols.h"
 #endif
 
-BEGIN_NAMESPACE_VSTGUI
+#include "vstkeycode.h"
 
-#ifdef __MACH__
+#if (__MACH__ && __MWERKS__)
  #ifndef cosf
  #define cosf (float)cos
  #endif
@@ -60,14 +59,28 @@ BEGIN_NAMESPACE_VSTGUI
  #endif
 #endif
 
+BEGIN_NAMESPACE_VSTGUI
+
+// some external variables (vstgui.cpp)
+extern long gStandardFontSize [];
+extern const char *gStandardFontName [];
+
 //------------------------------------------------------------------------
 // CControl
 //------------------------------------------------------------------------
+/*! @class CControl
+This object manages the tag identification and the value of a control object.
+
+Note:
+Since version 2.1, when an object uses the transparency for its background and draws on it (tranparency area)
+or the transparency area changes during different draws (CMovieBitmap ,...), the background will be false (not updated),
+you have to rewrite the draw function in order to redraw the background and then call the draw of the object.
+*/
 CControl::CControl (const CRect &size, CControlListener *listener, long tag,
- CBitmap *pBackground)
+					CBitmap *pBackground)
 :	CView (size), 
 	listener (listener), tag (tag), oldValue (1), defaultValue (0.5f),
-	value (0), vmin (0), vmax (1.f), wheelInc (0.1f), lastTicks (-1), pBackground (pBackground)
+	value (0), vmin (0), vmax (1.f), wheelInc (0.1f), lastTicks (-1)
 {
 	#if WINDOWS
 		delta = GetDoubleClickTime ();
@@ -84,19 +97,31 @@ CControl::CControl (const CRect &size, CControlListener *listener, long tag,
 	setMouseEnabled (true);
 	backOffset (0 ,0);
 
-	if (pBackground)
-		pBackground->remember ();
+	setBackground (pBackground);
 }
 
 //------------------------------------------------------------------------
 CControl::~CControl ()
 {
-	if (pBackground)
-		pBackground->forget ();
 }
 
 //------------------------------------------------------------------------
-bool CControl::isDirty ()
+void CControl::beginEdit ()
+{
+	// begin of edit parameter
+	getFrame ()->setFocusView(this);
+	getFrame ()->beginEdit (tag);
+}
+
+//------------------------------------------------------------------------
+void CControl::endEdit ()
+{
+	// end of edit parameter
+	getFrame ()->endEdit (tag);
+}
+
+//------------------------------------------------------------------------
+bool CControl::isDirty () const
 {
 	if (oldValue != value || CView::isDirty ())
 		return true;
@@ -119,15 +144,6 @@ void CControl::setDirty (const bool val)
 }
 
 //------------------------------------------------------------------------
-void CControl::setBackground (CBitmap *_pBackground)
-{
-	if (pBackground)
-		pBackground->forget ();
-	pBackground = _pBackground;
-	if (pBackground)
-		pBackground->remember ();
-}
-//------------------------------------------------------------------------
 void CControl::setBackOffset (CPoint &offset)
 {
 	backOffset = offset;
@@ -147,10 +163,30 @@ void CControl::bounceValue ()
 	else if (value < vmin)
 		value = vmin;
 }
+
+//-----------------------------------------------------------------------------
+bool CControl::checkDefaultValue (CDrawContext *pContext, long button)
+{
+	if (button == (kControl|kLButton))
+	{
+		// begin of edit parameter
+		beginEdit ();
+	
+		value = getDefaultValue ();
+		if (isDirty () && listener)
+			listener->valueChanged (pContext, this);
+
+		// end of edit parameter
+		endEdit ();
+		return true;
+	}
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 bool CControl::isDoubleClick ()
 {
-	long ticks = getParent ()->getTicks ();
+	long ticks = getFrame ()->getTicks ();
 	if (lastTicks <= 0)
 	{
 		lastTicks = ticks;
@@ -170,9 +206,15 @@ bool CControl::isDoubleClick ()
 //------------------------------------------------------------------------
 // COnOffButton
 //------------------------------------------------------------------------
+/*! @class COnOffButton
+Define a button with 2 positions.
+The pixmap includes the 2 subpixmaps (i.e the rectangle used for the display of this button is half-height of the pixmap).
+When its value changes, the listener is called.
+*/
 COnOffButton::COnOffButton (const CRect &size, CControlListener *listener, long tag,
-                            CBitmap *background)
-:	CControl (size, listener, tag, background)
+                            CBitmap *background, long style)
+: CControl (size, listener, tag, background)
+, style (style)
 {}
 
 //------------------------------------------------------------------------
@@ -182,7 +224,7 @@ COnOffButton::~COnOffButton ()
 //------------------------------------------------------------------------
 void COnOffButton::draw (CDrawContext *pContext)
 {
-	long off;
+	CCoord off;
 
 	if (value && pBackground)
 		off = pBackground->getHeight () / 2;
@@ -200,25 +242,57 @@ void COnOffButton::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void COnOffButton::mouse (CDrawContext *pContext, CPoint &where)
+void COnOffButton::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 
- 	long button = pContext->getMouseButtons ();
+ 	if (button == -1) button = pContext->getMouseButtons ();
 	if (!(button & kLButton))
 		return;
 
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
 	value = ((long)value) ? 0.f : 1.f;
-	doIdleStuff ();
-	if (listener)
+	
+	if (listener && style == kPostListenerUpdate)
+	{
+		// begin of edit parameter
+		beginEdit ();
+	
 		listener->valueChanged (pContext, this);
+	
+		// end of edit parameter
+		endEdit ();
+	}
+	
+	doIdleStuff ();
+	
+	if (listener && style == kPreListenerUpdate)
+	{
+		// begin of edit parameter
+		beginEdit ();
+	
+		listener->valueChanged (pContext, this);
+	
+		// end of edit parameter
+		endEdit ();
+	}
 }
 
 
 //------------------------------------------------------------------------
 // CKnob
 //------------------------------------------------------------------------
+/*! @class CKnob
+Define a knob with a given background and foreground handle.
+The handle describes a circle over the background (between -45deg and +225deg).
+By clicking Alt+Left Mouse the default value is used.
+By clicking Alt+Left Mouse the value changes with a vertical move (version 2.1)
+*/
 CKnob::CKnob (const CRect &size, CControlListener *listener, long tag,
               CBitmap *background, CBitmap *handle, const CPoint &offset)
 :	CControl (size, listener, tag, background), offset (offset), pHandle (handle)
@@ -239,6 +313,8 @@ CKnob::CKnob (const CRect &size, CControlListener *listener, long tag,
 	setStartAngle ((float)(5.f * kPI / 4.f));
 	setRangeAngle ((float)(-3.f * kPI / 2.f));
 	zoomFactor = 1.5f;
+
+	setWantsFocus (true);
 }
 
 //------------------------------------------------------------------------
@@ -270,8 +346,8 @@ void CKnob::drawHandle (CDrawContext *pContext)
 
 	if (pHandle)
 	{
-		long width  = pHandle->getWidth ();
-		long height = pHandle->getHeight ();
+		long width  = (long)pHandle->getWidth ();
+		long height = (long)pHandle->getHeight ();
 		where.offset (size.left - width / 2, size.top - height / 2);
 
 		CRect handleSize (0, 0, width, height);
@@ -297,35 +373,36 @@ void CKnob::drawHandle (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void CKnob::mouse (CDrawContext *pContext, CPoint &where)
+void CKnob::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
 	if (!(button & kLButton))
 		return;
 
-	// set the default value
-	if (button == (kControl|kLButton))
+	if (listener && button & (kAlt | kShift | kControl | kApple))
 	{
-		value = getDefaultValue ();
-		if (isDirty () && listener)
-			listener->valueChanged (pContext, this);
-		return;
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
 	}
+
+	// check if default value wanted
+	if (checkDefaultValue (pContext, button))
+		return;
 
 	float old = oldValue;
 	CPoint firstPoint;
 	bool  modeLinear = false;
 	float fEntryState = value;
-	float middle = (vmax - vmin) / 2.f;
+	float middle = (vmax - vmin) * 0.5f;
 	float range = 200.f;
 	float coef = (vmax - vmin) / range;
 	long  oldButton = button;
 
 	long mode    = kCircularMode;
-	long newMode = getParent ()->getKnobMode ();
+	long newMode = getFrame ()->getKnobMode ();
 	if (kLinearMode == newMode)
 	{
 		if (!(button & kAlt))
@@ -352,8 +429,7 @@ void CKnob::mouse (CDrawContext *pContext, CPoint &where)
 	CPoint oldWhere (-1, -1);
 
 	// begin of edit parameter
-	getParent ()->beginEdit (tag);
-	getParent ()->setEditView (this);
+	beginEdit ();
 	do
 	{
 		button = pContext->getMouseButtons ();
@@ -362,7 +438,7 @@ void CKnob::mouse (CDrawContext *pContext, CPoint &where)
 			oldWhere = where;
 			if (modeLinear)
 			{
-				long diff = (firstPoint.v - where.v) + (where.h - firstPoint.h);
+				CCoord diff = (firstPoint.v - where.v) + (where.h - firstPoint.h);
 				if (button != oldButton)
 				{
 					range = 200.f;
@@ -391,14 +467,13 @@ void CKnob::mouse (CDrawContext *pContext, CPoint &where)
 			if (isDirty () && listener)
 				listener->valueChanged (pContext, this);
 		}
-
-		pContext->getMouseLocation (where);
+		getMouseLocation (pContext, where);
 		doIdleStuff ();
-	
+
 	} while (button & kLButton);
 
 	// end of edit parameter
-	getParent ()->endEdit (tag);
+	endEdit ();
 }
 
 //------------------------------------------------------------------------
@@ -415,14 +490,21 @@ bool CKnob::onWheel (CDrawContext *pContext, const CPoint &where, float distance
 	bounceValue ();
 
 	if (isDirty () && listener)
+	{
+		// begin of edit parameter
+		beginEdit ();
+	
 		listener->valueChanged (pContext, this);
+	
+		// end of edit parameter
+		endEdit ();
+	}
 	return true;
 }
 
 //------------------------------------------------------------------------
 long CKnob::onKeyDown (VstKeyCode& keyCode)
 {
-#if !PLUGGUI
 	switch (keyCode.virt)
 	{
 	case VKEY_UP :
@@ -441,10 +523,17 @@ long CKnob::onKeyDown (VstKeyCode& keyCode)
 			bounceValue ();
 
 			if (isDirty () && listener)
+			{
+				// begin of edit parameter
+				beginEdit ();
+				
 				listener->valueChanged (0, this);
+			
+				// end of edit parameter
+				endEdit ();
+			}
 		} return 1;
 	}
-#endif
 	return -1;
 }
 
@@ -467,12 +556,12 @@ void CKnob::compute ()
 {
 	aCoef = (vmax - vmin) / rangeAngle;
 	bCoef = vmin - aCoef * startAngle;
-	halfAngle = ((float)k2PI - fabsf (rangeAngle)) / 2.f;
+	halfAngle = ((float)k2PI - fabsf (rangeAngle)) * 0.5f;
 	setDirty ();
 }
 
 //------------------------------------------------------------------------
-void CKnob::valueToPoint (CPoint &point)
+void CKnob::valueToPoint (CPoint &point) const
 {
 	float alpha = (value - bCoef) / aCoef;
 	point.h = (long)(radius + cosf (alpha) * (radius - inset) + 0.5f);
@@ -480,7 +569,7 @@ void CKnob::valueToPoint (CPoint &point)
 }
 
 //------------------------------------------------------------------------
-float CKnob::valueFromPoint (CPoint &point)
+float CKnob::valueFromPoint (CPoint &point) const
 {
 	float v;
 	float alpha = (float)atan2 (radius - point.v, point.h - radius);
@@ -568,6 +657,11 @@ void CKnob::setHandleBitmap (CBitmap *bitmap)
 //------------------------------------------------------------------------
 // CParamDisplay
 //------------------------------------------------------------------------
+/*! @class CParamDisplay
+Define a rectangle view where a text-value can be displayed with a given font and color.
+The user can specify its convert function (from float to char) by default the string format is "%2.2f".
+The text-value is centered in the given rect.
+*/
 CParamDisplay::CParamDisplay (const CRect &size, CBitmap *background, const long style)
 :	CControl (size, 0, 0, background), stringConvert (0), stringConvert2 (0), string2FloatConvert (0),
 	horiTxtAlign (kCenterText), style (style), bTextTransparencyEnabled (true)
@@ -603,17 +697,12 @@ void CParamDisplay::setStyle (long val)
 void CParamDisplay::draw (CDrawContext *pContext)
 {
 	char string[256];
+	string[0] = 0;
 
 	if (stringConvert2)
-	{
-		string[0] = 0;
 		stringConvert2 (value, string, userData);
-	}
 	else if (stringConvert)
-	{
-		string[0] = 0;
 		stringConvert (value, string);
-	}
 	else
 		sprintf (string, "%2.2f", value);
 
@@ -650,7 +739,7 @@ void CParamDisplay::drawText (CDrawContext *pContext, char *string, CBitmap *new
 			pContext->setFillColor (backColor);
 			pContext->fillRect (size);
 	
-			if (!(style & (k3DIn|k3DOut))) 
+			if (!(style & (k3DIn|k3DOut|kNoFrame))) 
 			{
 				pContext->setFrameColor (frameColor);
 				pContext->drawRect (size);
@@ -680,6 +769,11 @@ void CParamDisplay::drawText (CDrawContext *pContext, char *string, CBitmap *new
 
 	if (!(style & kNoTextStyle) && string)
 	{
+		CRect oldClip;
+		pContext->getClipRect (oldClip);
+		CRect newClip (size);
+		newClip.bound (oldClip);
+		pContext->setClipRect (newClip);
 		pContext->setFont (fontID, 0, txtFace);
 	
 		// draw darker text (as shadow)
@@ -692,6 +786,7 @@ void CParamDisplay::drawText (CDrawContext *pContext, char *string, CBitmap *new
 		}
 		pContext->setFontColor (fontColor);
 		pContext->drawString (string, size, !bTextTransparencyEnabled, horiTxtAlign);
+		pContext->setClipRect (oldClip);
 	}
 }
 
@@ -778,10 +873,65 @@ void CParamDisplay::setString2FloatConvert (void (*convert) (char *string, float
 	string2FloatConvert = convert;
 }
 
+//------------------------------------------------------------------------
+// CTextLabel
+//------------------------------------------------------------------------
+/*! @class CTextLabel
+*/
+CTextLabel::CTextLabel (const CRect& size, const char* txt, CBitmap* background, const long style)
+: CParamDisplay (size, background, style)
+, text (0)
+{
+	setText (txt);
+}
+
+//------------------------------------------------------------------------
+CTextLabel::~CTextLabel ()
+{
+	freeText ();
+}
+
+//------------------------------------------------------------------------
+void CTextLabel::freeText ()
+{
+	if (text)
+		free (text);
+	text = 0;
+}
+
+//------------------------------------------------------------------------
+void CTextLabel::setText (const char* txt)
+{
+	freeText ();
+	if (txt)
+	{
+		text = (char*)malloc (strlen (txt)+1);
+		strcpy (text, txt);
+	}
+}
+
+//------------------------------------------------------------------------
+const char* CTextLabel::getText () const
+{
+	return text;
+}
+
+//------------------------------------------------------------------------
+void CTextLabel::draw (CDrawContext *pContext)
+{
+	drawText (pContext, text);
+	setDirty (false);
+}
+
 
 //------------------------------------------------------------------------
 // CTextEdit
 //------------------------------------------------------------------------
+/*! @class CTextEdit
+Define a rectangle view where a text-value can be displayed and edited with a given font and color.
+The user can specify its convert function (from char to char). The text-value is centered in the given rect.
+A pixmap can be used as background.
+*/
 CTextEdit::CTextEdit (const CRect &size, CControlListener *listener, long tag,
 	const char *txt, CBitmap *background, const long style)
 :	CParamDisplay (size, background, style), platformFontColor (0), platformControl (0),
@@ -797,6 +947,14 @@ CTextEdit::CTextEdit (const CRect &size, CControlListener *listener, long tag,
 		strcpy (text, txt);
 	else
 		strcpy (text, "");
+#if MAC
+	// remember our VST plugin's resource map ID (it should be the current one at this moment)
+	pluginResID = CurResFile();
+#endif
+#if QUARTZ
+	textControl = 0;
+#endif
+	setWantsFocus (true);
 }
 
 //------------------------------------------------------------------------
@@ -816,10 +974,20 @@ void CTextEdit::setText (char *txt)
 			setDirty ();
 		}
 	}
+	else
+	{
+		if (strcmp (text, ""))
+		{
+			strcpy (text, "");
+
+			// to force the redraw
+			setDirty ();
+		}
+	}
 }
 
 //------------------------------------------------------------------------
-void CTextEdit::getText (char *txt)
+void CTextEdit::getText (char *txt) const
 {
 	if (txt)
 		strcpy (txt, text);
@@ -831,6 +999,13 @@ void CTextEdit::draw (CDrawContext *pContext)
 	if (platformControl)
 	{
 		#if MACX
+		#if QUARTZ
+		if (textControl)
+		{
+			HIViewSetNeedsDisplay (textControl, true);
+		}
+		else
+		#endif
 		TXNDraw ((TXNObject)platformControl, NULL);
 		#endif
 		setDirty (false);
@@ -838,16 +1013,25 @@ void CTextEdit::draw (CDrawContext *pContext)
 	}
 
 	char string[256];
+	string[0] = 0;
 
 	if (editConvert2)
-	{
-		string[0] = 0;
 		editConvert2 (text, string, userData);
-	}
 	else if (editConvert)
+		editConvert (text, string);
+	// Allow to display strings through the stringConvert
+	// callbacks inherited from CParamDisplay
+	else if (stringConvert2)
 	{
 		string[0] = 0;
-		editConvert (text, string);
+		stringConvert2 (value, string, userData);
+		strcpy(text, string);
+	}
+	else if (stringConvert)
+	{
+		string[0] = 0;
+		stringConvert (value, string);
+		strcpy(text, string);
 	}
 	else
 		sprintf (string, "%s", text);
@@ -857,21 +1041,28 @@ void CTextEdit::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void CTextEdit::mouse (CDrawContext *pContext, CPoint &where)
+void CTextEdit::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
+
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
+
 	if (button & kLButton)
 	{
-		if (getParent ()->getEditView () != this)
+		if (getFrame ()->getFocusView () != this)
 		{
 			if (style & kDoubleClickStyle)
 				if (!isDoubleClick ())
 					return;
 		
-			getParent ()->setEditView (this);
+			beginEdit();
 			takeFocus (pContext);
 		}
 	}
@@ -904,8 +1095,8 @@ extern const char *standardFontName [];
 #endif
 
 static WINDOWSPROC oldWndProcEdit;
-LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+LONG_PTR WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+LONG_PTR WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {	
 	switch (message)
 	{
@@ -919,7 +1110,7 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 		{
 			if (wParam == VK_RETURN)
 			{
-				CTextEdit *textEdit = (CTextEdit*) GetWindowLong (hwnd, GWL_USERDATA);
+				CTextEdit *textEdit = (CTextEdit*) GetWindowLongPtr (hwnd, GWLP_USERDATA);
 				if (textEdit)
 				{
 					textEdit->bWasReturnPressed = true;
@@ -930,7 +1121,7 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
 		case WM_KILLFOCUS:
 		{
-			CTextEdit *textEdit = (CTextEdit*) GetWindowLong (hwnd, GWL_USERDATA);
+			CTextEdit *textEdit = (CTextEdit*) GetWindowLongPtr (hwnd, GWLP_USERDATA);
 			if (textEdit)
 				textEdit->looseFocus ();
 		} break;
@@ -942,7 +1133,7 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 //------------------------------------------------------------------------
 #elif MOTIF
 #include <Xm/Text.h>
-extern XFontStruct *fontStructs[];
+extern XFontStruct *gFontStructs[];
 #endif
 
 //------------------------------------------------------------------------
@@ -953,19 +1144,17 @@ extern XFontStruct *fontStructs[];
 class BeTextView : public BTextView
 {
 public:
-					BeTextView (  CTextEdit* 	cTextEdit,
-								  BRect			frame,
-								  const char	*name,
-								  BRect			textRect);
-			void	MakeFocus (bool focusState = true);
-			void	KeyDown (const char *bytes, int32 numBytes);
+	BeTextView (CTextEdit* cTextEdit, BRect frame,
+				const char *name, BRect textRect);
+	void MakeFocus (bool focusState = true);
+	void KeyDown (const char *bytes, int32 numBytes);
 private:
 	CTextEdit *cTextEdit;
 };
 
 //------------------------------------------------------------------------
-BeTextView::BeTextView (CTextEdit* cTextEdit, BRect frame, const char *name, BRect textRect) :
-				BTextView (frame, name, textRect, B_FOLLOW_NONE), cTextEdit (cTextEdit)
+BeTextView::BeTextView (CTextEdit* cTextEdit, BRect frame, const char *name, BRect textRect)
+: BTextView (frame, name, textRect, B_FOLLOW_NONE), cTextEdit (cTextEdit)
 {}
 
 //------------------------------------------------------------------------
@@ -993,8 +1182,8 @@ pascal OSStatus CarbonEventsTextControlProc (EventHandlerCallRef inHandlerCallRe
 pascal OSStatus CarbonEventsTextControlProc (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus result = eventNotHandledErr;
-	EventClass eventClass = GetEventClass (inEvent);
-	EventKind eventKind = GetEventKind (inEvent);
+	UInt32 eventClass = GetEventClass (inEvent);
+	UInt32 eventKind = GetEventKind (inEvent);
 	CTextEdit* textEdit = (CTextEdit*)inUserData;
 
 	switch (eventClass)
@@ -1018,8 +1207,71 @@ pascal OSStatus CarbonEventsTextControlProc (EventHandlerCallRef inHandlerCallRe
 							gTextEditCanceled = true;
 						else
 							textEdit->bWasReturnPressed = true;
+
+						WindowRef window = (WindowRef) (textEdit->getFrame ()->getSystemWindow());
+						GrafPtr	savedPort;
+						bool portChanged = window ? QDSwapPort (GetWindowPort (window), &savedPort) : false;
+
+						// remember the current resource map ID
+						short currentResID = CurResFile();
+						short vstResFileID = textEdit->pluginResID;
+						// if it's different (and if it's valid), set the current resource map ID to our plugin's resource map
+						if ( (vstResFileID != currentResID) && (vstResFileID > 0) )
+							UseResFile(vstResFileID);
+
 						textEdit->looseFocus ();
+
+						// revert the window port, if we changed it
+						if (portChanged)
+							QDSwapPort (savedPort, NULL);
+						// revert the current resource map, if we changed it
+						if ( (currentResID > 0) && (vstResFileID != currentResID) && (vstResFileID > 0) )
+							UseResFile(currentResID);
+
 						result = noErr;
+					}
+					#if QUARTZ
+					else if (textEdit->textControl)
+						break;
+					#endif
+					else if (modifiers & cmdKey)
+					{
+						result = noErr;
+						TXNObject text_edit = (TXNObject) (textEdit->platformControl);
+						switch (toupper(macCharCode))
+						{
+							// copy
+							case 'C':
+								if (!TXNIsSelectionEmpty(text_edit))
+								{
+									OSStatus scrapErr = ClearCurrentScrap();
+									scrapErr = TXNCopy(text_edit);
+									result = noErr;
+								}
+								break;
+							// cut
+							case 'X':
+								if (!TXNIsSelectionEmpty(text_edit))
+								{
+									OSStatus scrapErr = ClearCurrentScrap();
+									scrapErr = TXNCut(text_edit);
+									result = noErr;
+								}
+								break;
+							// paste
+							case 'V':
+								TXNPaste(text_edit);
+								result = noErr;
+								break;
+
+							// select all
+							case 'A':
+								TXNSelectAll(text_edit);
+								break;
+
+							default:
+								break;
+						}
 					}
 					else
 					{
@@ -1068,14 +1320,35 @@ pascal OSStatus CarbonEventsTextControlProc (EventHandlerCallRef inHandlerCallRe
 		case kEventClassWindow:
 		{
 			WindowRef window;
-			GetEventParameter (inEvent, kEventParamDirectObject, typeWindowRef, NULL, sizeof (WindowRef), NULL, &window);
+			if (GetEventParameter (inEvent, kEventParamDirectObject, typeWindowRef, NULL, sizeof (WindowRef), NULL, &window) != noErr)
+				break;
 			switch (eventKind)
 			{
 				case kEventWindowDeactivated:
 				{
 					result = CallNextEventHandler (inHandlerCallRef, inEvent);
 					ClearKeyboardFocus (window);
+
+					// set up the correct drawing port for the window
+					GrafPtr	savedPort;
+					bool portChanged = QDSwapPort (GetWindowPort (window), &savedPort);
+
+					// remember the current resource map ID
+					short currentResID = CurResFile();
+					short vstResFileID = textEdit->pluginResID;
+					// if it's different (and if it's valid), set the current resource map ID to our plugin's resource map
+					if ( (vstResFileID != currentResID) && (vstResFileID > 0) )
+						UseResFile(vstResFileID);
+
 					textEdit->looseFocus ();
+
+					// revert the window port, if we changed it
+					if (portChanged)
+						QDSwapPort (savedPort, NULL);
+					// revert the current resource map, if we changed it
+					if ( (currentResID > 0) && (vstResFileID != currentResID) && (vstResFileID > 0) )
+						UseResFile(currentResID);
+
 					break;
 				}
 			}
@@ -1086,10 +1359,34 @@ pascal OSStatus CarbonEventsTextControlProc (EventHandlerCallRef inHandlerCallRe
 }
 #endif
 
+#if MAC && CALL_NOT_IN_CARBON
+#include <Scrap.h>
+#include <ctype.h>
+#define ClearCurrentScrap	ZeroScrap
+#endif
+
 //------------------------------------------------------------------------
 void CTextEdit::takeFocus (CDrawContext *pContext)
 {
 	bWasReturnPressed = false;
+
+#if WINDOWS || MACX
+	// calculate offset for CViewContainers
+	CRect rect (size);
+	CView* parent = getParentView ();
+	CRect vSize;
+	while (parent)
+	{
+		if (parent->notify (this, kMsgCheckIfViewContainer) == kMessageNotified)
+		{
+			parent->getViewSize (vSize);
+			rect.offset (vSize.left, vSize.top);
+		}
+		parent = parent->getParentView ();
+	}
+	if (pContext)
+		rect.offset (pContext->offset.h, pContext->offset.v);
+#endif
 
 #if WINDOWS
 	int wstyle = 0;
@@ -1100,27 +1397,23 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 	else
 		wstyle |= ES_CENTER;
 
-	CRect rect (size);
-	if (pContext)
-		rect.offset (pContext->offset.h, pContext->offset.v);
-
 	wstyle |= WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
 	platformControl = (void*)CreateWindow (
 		"EDIT", text, wstyle,
 		rect.left, rect.top, rect.width () + 1, rect.height () + 1,
-		(HWND)getParent ()->getSystemWindow (), NULL, GetInstance (), 0);
+		(HWND)getFrame ()->getSystemWindow (), NULL, GetInstance (), 0);
 
 	// get/set the current font
 	LOGFONT logfont = {0};
 
-	long fontH = standardFontSize [fontID];
+	long fontH = gStandardFontSize [fontID];
 	if (fontH > rect.height () - 2)
 		fontH = rect.height () - 2;
 
 	logfont.lfWeight = FW_NORMAL;
 	logfont.lfHeight = -fontH;
 	logfont.lfPitchAndFamily = VARIABLE_PITCH | FF_SWISS;
-	strcpy (logfont.lfFaceName, standardFontName[fontID]);
+	strcpy (logfont.lfFaceName, gStandardFontName[fontID]);
 
 	logfont.lfClipPrecision	 = CLIP_STROKE_PRECIS;
 	logfont.lfOutPrecision	 = OUT_STRING_PRECIS;
@@ -1130,56 +1423,121 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 	platformFont = (HANDLE)CreateFontIndirect (&logfont);
 	platformFontColor = 0;
 
-	SetWindowLong ((HWND)platformControl, GWL_USERDATA, (long)this);
-	SendMessage ((HWND)platformControl, WM_SETFONT, (unsigned int)platformFont, true);
+	SetWindowLongPtr ((HWND)platformControl, GWLP_USERDATA, (LONG_PTR)this);
+	SendMessage ((HWND)platformControl, WM_SETFONT, (WPARAM)platformFont, true);
 	SendMessage ((HWND)platformControl, EM_SETMARGINS, EC_LEFTMARGIN|EC_RIGHTMARGIN, MAKELONG (0, 0));
 	SendMessage ((HWND)platformControl, EM_SETSEL, 0, -1);
 	SendMessage ((HWND)platformControl, EM_LIMITTEXT, 255, 0);
 	SetFocus ((HWND)platformControl);
 
-	oldWndProcEdit = (WINDOWSPROC)SetWindowLong ((HWND)platformControl, GWL_WNDPROC, (long)WindowProcEdit);
+	oldWndProcEdit = (WINDOWSPROC)SetWindowLongPtr ((HWND)platformControl, GWLP_WNDPROC, (LONG_PTR)WindowProcEdit);
 
 #elif MAC
-	extern long standardFontSize[];
 #if MACX
+	WindowRef window = (WindowRef)getFrame ()->getSystemWindow ();
+	#if QUARTZ
+	WindowAttributes winAttributes;
+	GetWindowAttributes (window, &winAttributes);
+	if (winAttributes & kWindowCompositingAttribute)
+	{
+		Rect r;
+		r.left   = (short)rect.left;// + 2;
+		r.right  = (short)rect.right;// - 4;
+		r.top    = (short)rect.top;// + 2;
+		r.bottom = (short)rect.bottom;// - 4;
+		if (rect.getHeight () > gStandardFontSize [fontID])
+		{
+			r.top = (short)(rect.top + rect.getHeight () / 2 - gStandardFontSize [fontID] / 2 + 1);
+			r.bottom = (short)(r.top + gStandardFontSize [fontID]);
+		}
+		if (CreateEditUnicodeTextControl (NULL, &r, NULL, false, NULL, &textControl) == noErr)
+		{
+			HIViewAddSubview ((HIViewRef)getFrame ()->getPlatformControl (), textControl);
+			HIViewSetFirstSubViewFocus ((HIViewRef)getFrame ()->getPlatformControl (), textControl);
+			HIViewAdvanceFocus ((HIViewRef)getFrame ()->getPlatformControl (), 0);
+			EventTypeSpec eventTypes[] = { { kEventClassWindow, kEventWindowDeactivated }, { kEventClassKeyboard, kEventRawKeyDown }, { kEventClassKeyboard, kEventRawKeyRepeat } };
+			InstallControlEventHandler (textControl, CarbonEventsTextControlProc, GetEventTypeCount (eventTypes), eventTypes, this, &gTextEditEventHandler);
+			platformControl = textControl;
+			if (strlen (text) > 0)
+			{
+				CFStringRef textString = CFStringCreateWithCString (NULL, text, kCFStringEncodingUTF8);
+				if (textString)
+				{
+					SetControlData (textControl, kControlEditTextPart, kControlEditTextCFStringTag, sizeof (CFStringRef), &textString);
+					CFRelease (textString);
+				}
+				ControlEditTextSelectionRec selection;
+				selection.selStart = 0;
+				selection.selEnd = strlen (text);
+				SetControlData (textControl, kControlEditTextPart, kControlEditTextSelectionTag, sizeof (ControlEditTextSelectionRec), &selection);
+			}
+			Boolean singleLineStyle = true;
+			SetControlData (textControl, kControlEditTextPart, kControlEditTextSingleLineTag, sizeof (Boolean), &singleLineStyle);
+			ControlFontStyleRec fontStyle;
+			memset (&fontStyle, 0, sizeof (fontStyle));
+			fontStyle.flags = kControlUseJustMask | kControlUseSizeMask | kControlUseFontMask;
+			switch (horiTxtAlign)
+			{
+				case kLeftText: fontStyle.just = teFlushLeft; break;
+				case kRightText: fontStyle.just = teFlushRight; break;
+				default: fontStyle.just = teCenter; break;
+			}
+			fontStyle.size = gStandardFontSize [fontID];
+			extern const char* gMacXfontNames[];
+			Str255 fontName;
+			CopyCStringToPascal ((const char*)gMacXfontNames[fontID], fontName); 
+			GetFNum (fontName, &fontStyle.font);
+			SetControlData (textControl, kControlEditTextPart, kControlFontStyleTag, sizeof (fontStyle), &fontStyle);
+			HIViewSetVisible (textControl, true);
+		}
+		return;
+	}
+	if (pContext)
+		rect.offset (pContext->offsetScreen.h, pContext->offsetScreen.v);
+	#endif
+	static bool gTXNInititalized = false;
+	if (!gTXNInititalized)
+	{
+		TXNMacOSPreferredFontDescription defaults;  // fontID, pointSize, encoding, and fontStyle
+		defaults.fontID = 0;
+		defaults.pointSize = kTXNDefaultFontSize;
+		defaults.encoding = CreateTextEncoding(kTextEncodingMacRoman, kTextEncodingDefaultVariant, kTextEncodingDefaultFormat);
+		defaults.fontStyle = kTXNDefaultFontStyle;
+		TXNInitOptions options = 0;
+		TXNInitTextension(&defaults, 1, options);
+		gTXNInititalized = true;
+	}
 	gTextEditCanceled = false;
-	WindowRef window = (WindowRef)getParent ()->getSystemWindow ();
-	TXNFrameOptions iFrameOptions = kTXNMonostyledTextMask | kTXNDisableDragAndDropMask; //kTXNNoKeyboardSyncMask | kTXNDisableDragAndDropMask | kTXNSingleLineOnlyMask | kTXNMonostyledTextMask;
-	TXNObject txnObj = 0;
+	TXNFrameOptions iFrameOptions = kTXNMonostyledTextMask | kTXNDisableDragAndDropMask | kTXNSingleLineOnlyMask; //kTXNNoKeyboardSyncMask | kTXNDisableDragAndDropMask | kTXNSingleLineOnlyMask | kTXNMonostyledTextMask;
 	TXNFrameID frameID = 0;
 	TXNObjectRefcon iRefCon = 0;
-	Rect rect;
-	rect.left   = size.left;
-	rect.right  = size.right;
-	rect.top    = size.top;
-	rect.bottom = size.bottom;
-	if (pContext)
-	{
-		rect.left   += pContext->offset.h;
-		rect.right  += pContext->offset.h;
-		rect.top    += pContext->offset.v;
-		rect.bottom += pContext->offset.v;
-	}
-	OSStatus err = TXNNewObject (NULL, window, &rect, iFrameOptions, kTXNTextEditStyleFrameType, kTXNSingleStylePerTextDocumentResType, kTXNMacOSEncoding, &txnObj, &frameID, iRefCon);
+	TXNObject object;
+	Rect r;
+	r.left   = (short)rect.left;
+	r.right  = (short)rect.right;
+	r.top    = (short)rect.top;
+	r.bottom = (short)rect.bottom;
+	OSStatus err;
+	err = TXNNewObject (NULL, window, &r, iFrameOptions, kTXNTextEditStyleFrameType, kTXNSingleStylePerTextDocumentResType, kTXNMacOSEncoding, &object, &frameID, iRefCon);
 	if (err == noErr)
 	{
-		TXNSetFrameBounds (txnObj, rect.top, rect.left, rect.bottom, rect.right, frameID);
-		platformControl = txnObj;
+		platformControl = object;
+		TXNSetFrameBounds ((TXNObject)platformControl, r.top, r.left, r.bottom, r.right, frameID);
 
 		if (strlen (text) > 0)
 			TXNSetData ((TXNObject)platformControl, kTXNTextData, (void*)text, strlen (text), kTXNStartOffset, kTXNEndOffset);
 		// set background
 		extern void CColor2RGBColor (const CColor &cc, RGBColor &rgb);
-		RGBColor rgbBackColor;
-		CColor2RGBColor (backColor, rgbBackColor);
-		RGBColor rgbTextColor = { 0, 0, 0 };
-		CColor2RGBColor (fontColor, rgbTextColor);
+		RGBColor rgbBackColor = { 0, 0, 0};
+		CColor2RGBColor (kWhiteCColor /*backColor*/, rgbBackColor);
+		RGBColor rgbTextColor = { 32767, 32767, 32767 };
+		CColor2RGBColor (kBlackCColor /*fontColor*/, rgbTextColor);
 		RGBBackColor (&rgbBackColor);
 		RGBForeColor (&rgbTextColor);
 		TXNBackground txnBackground;
 		txnBackground.bgType = kTXNBackgroundTypeRGB;
 		txnBackground.bg.color = rgbBackColor;
-		TXNSetBackground (txnObj, &txnBackground);
+		TXNSetBackground ((TXNObject)platformControl, &txnBackground);
 		// set justification
 		TXNControlTag	controlTag[1];
 		TXNControlData	controlData[1];
@@ -1192,14 +1550,20 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 		}
 		controlTag[0] = kTXNJustificationTag;
 		controlData[0].sValue = just;
-		TXNSetTXNObjectControls (txnObj, false, 1, controlTag, controlData);
+		TXNSetTXNObjectControls ((TXNObject)platformControl, false, 1, controlTag, controlData);
 		// set font
 		TXNTypeAttributes attributes[3];
 		// font name
-		extern const unsigned char* macXfontNames[];
+		extern const unsigned char* gMacXfontNames[];
 		
 		short familyID;
-		GetFNum (macXfontNames[fontID], &familyID);
+		#if QUARTZ
+		Str255 fontName;
+		CopyCStringToPascal ((const char*)gMacXfontNames[fontID], fontName); 
+		GetFNum (fontName, &familyID);
+		#else
+		GetFNum (gMacXfontNames[fontID], &familyID);
+		#endif
 
 		ATSUFontID fontNameID;
 
@@ -1209,7 +1573,7 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 		attributes[0].size = sizeof(ATSUFontID);
 		attributes[0].data.dataPtr = &fontNameID;
 		// size
-		long fontSize = standardFontSize [fontID] << 16; // needs to be in Fixed format
+		long fontSize = gStandardFontSize [fontID] << 16; // needs to be in Fixed format
 		attributes[1].tag = kTXNQDFontSizeAttribute;
 		attributes[1].size = kTXNFontSizeAttributeSize;
 		attributes[1].data.dataValue = fontSize;
@@ -1218,16 +1582,16 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 		attributes[2].size = kTXNQDFontColorAttributeSize;
 		attributes[2].data.dataPtr = &rgbTextColor;
 
-		TXNSetTypeAttributes (txnObj, 3, attributes, kTXNStartOffset, kTXNEndOffset);
+		TXNSetTypeAttributes ((TXNObject)platformControl, 3, attributes, kTXNStartOffset, kTXNEndOffset);
 
-		TXNActivate (txnObj, frameID, false);
 		SetUserFocusWindow (window);
 		AdvanceKeyboardFocus (window);
-		TXNFocus (txnObj, true);
-		TXNSelectAll ((TXNObject)platformControl);
-			
+		TXNActivate ((TXNObject)platformControl, frameID, false);
+		TXNFocus ((TXNObject)platformControl, true);
 		EventTypeSpec eventTypes[] = { { kEventClassMouse, kEventMouseMoved }, { kEventClassMouse, kEventMouseDown }, { kEventClassMouse, kEventMouseUp }, { kEventClassWindow, kEventWindowDeactivated }, { kEventClassKeyboard, kEventRawKeyDown }, { kEventClassKeyboard, kEventRawKeyRepeat } };
 		InstallWindowEventHandler (window, CarbonEventsTextControlProc, GetEventTypeCount (eventTypes), eventTypes, this, &gTextEditEventHandler);
+		TXNSelectAll ((TXNObject)platformControl);
+
 	}
 
 #else
@@ -1242,7 +1606,7 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 	rect.right  = size.right;
 	rect.top    = size.top;
 	rect.bottom = size.bottom;
-	#if !CARBON
+	#if !TARGET_API_MAC_CARBON
 	rect.bottom++;
 	rect.right++;
 	#endif
@@ -1259,7 +1623,7 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 	vrect.top++;
 	vrect.left++;
 	vrect.right--;
-	#if CARBON
+	#if TARGET_API_MAC_CARBON
 	vrect.bottom--;
 	#endif
 			
@@ -1270,12 +1634,12 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 
 	EraseRect (&rect);
 	//FrameRect (&rect); // Dave
-	#if !CARBON
+	#if !TARGET_API_MAC_CARBON
 	InsetRect (&vrect, 0, -2);
 	#endif
 	
 	TextFont (kFontIDHelvetica);
-	TextSize (standardFontSize [fontID]);
+	TextSize (gStandardFontSize [fontID]);
 
 	text_edit = TENew (&rect, &vrect);
 	
@@ -1331,7 +1695,46 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 					else
 						c = -1;
 				}
-				if (!ende)
+				if (theEvent.modifiers & cmdKey)
+				{
+					switch (toupper(c))
+					{
+						// copy
+						case 'C':
+							if ((**(TEHandle)text_edit).selEnd > (**(TEHandle)text_edit).selStart)
+							{
+								OSStatus scrapErr = ClearCurrentScrap();
+								TECopy((TEHandle)text_edit);
+								if (scrapErr == noErr)
+									scrapErr = TEToScrap();
+							}
+							break;
+						// cut
+						case 'X':
+							if ((**(TEHandle)text_edit).selEnd > (**(TEHandle)text_edit).selStart)
+							{
+								OSStatus scrapErr = ClearCurrentScrap();
+								TECut((TEHandle)text_edit);
+								if (scrapErr == noErr)
+									scrapErr = TEToScrap();
+							}
+							break;
+						// paste
+						case 'V':
+							{
+								OSErr scrapErr = TEFromScrap();
+								TEPaste((TEHandle)text_edit);
+							}
+							break;
+						// select all
+						case 'A':
+							TESetSelect(0, (**(TEHandle)text_edit).teLength, (TEHandle)text_edit);
+							break;
+						default:
+							break;
+					}
+				}
+				else if (!ende)
 					TEKey (c, (TEHandle)text_edit);
 				break;
 			case mouseDown :
@@ -1363,7 +1766,7 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 #elif MOTIF
 	// we have to add the Text to the parent !!
 	Dimension posX, posY;
-	Widget widget = (Widget)(getParent ()->getSystemWindow ());
+	Widget widget = (Widget)(getFrame ()->getSystemWindow ());
 	XtVaGetValues (widget, XmNx, &posX, XmNy, &posY, 0);
   
 	Arg args[20];
@@ -1403,9 +1806,9 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 	XmTextSetHighlight ((Widget)platformControl, 0, strlen (text), XmHIGHLIGHT_SELECTED);
 
 #elif BEOS
-	BView* plugView = (BView*) getParent ()->getSystemWindow ();
+	BView* plugView = (BView*) getFrame ()->getSystemWindow ();
 	CRect rect;
-	getParent ()->getSize (&rect);
+	getFrame ()->getSize (&rect);
 	BRect r (rect.left + size.left, rect.top + size.top, rect.left + size.right, rect.top + size.bottom);
 	BRect tr = r;
 	tr.OffsetTo (B_ORIGIN);
@@ -1416,11 +1819,9 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 	BFont	font;
 	if (fontID < 0 || fontID >= kNumStandardFonts)
 		fontID = kSystemFont;
-	extern long standardFontSize[];
-	extern const char* standardFontName[];
-	extern const char* standardFontStyle[];
-	font.SetFamilyAndStyle (standardFontName[fontID], standardFontStyle[fontID]);
-	font.SetSize (standardFontSize[fontID]);
+	extern const char* gStandardFontStyle[];
+	font.SetFamilyAndStyle (gStandardFontName[fontID], gStandardFontStyle[fontID]);
+	font.SetSize (gStandardFontSize[fontID]);
 	rgb_color c = { fontColor.red, fontColor.green, fontColor.blue, 255 };
 	textView->SetFontAndColor (&font, B_FONT_FAMILY_AND_STYLE | B_FONT_SIZE, &c);
 	rgb_color cv = { backColor.red, backColor.green, backColor.blue, 255 };
@@ -1447,23 +1848,18 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 //------------------------------------------------------------------------
 void CTextEdit::looseFocus (CDrawContext *pContext)
 {
-	#if MACX
+	// Call this yet to avoid recursive call
+	endEdit();
+	if (getFrame ()->getFocusView () == this)
+		getFrame ()->setFocusView (0);
+
 	if (platformControl == 0)
 		return;
-	#else
-	if (platformControl == 0 || getParent ()->getEditView () != this) 
-		return;
-	#endif
-	
-	// Call this yet to avoid recursive call
-	getParent ()->setEditView (0);
 
 	char oldText[256];
 	strcpy (oldText, text);
 	
 #if WINDOWS
-	HWND hwnd;
-	HDC hdc;
 	char newText[255];
 	GetWindowText ((HWND)platformControl, newText, 255);
 	strcpy (text, newText);
@@ -1489,29 +1885,57 @@ void CTextEdit::looseFocus (CDrawContext *pContext)
 	if (gTextEditEventHandler)
 		RemoveEventHandler (gTextEditEventHandler);
 	gTextEditEventHandler = 0;
-
-	if (!gTextEditCanceled)
+	#if QUARTZ
+	if (textControl)
 	{
-		CharsHandle dataHandle;
-		TXNGetDataEncoded ((TXNObject)platformControl, kTXNStartOffset, kTXNEndOffset, &dataHandle, kTXNTextData);
-		if (dataHandle != NULL && GetHandleSize (dataHandle) > 0)
+		CFStringRef cfstr;
+		if (!gTextEditCanceled && GetControlData (textControl, kControlEditTextPart, kControlEditTextCFStringTag, sizeof cfstr, (void*)&cfstr, NULL) == noErr)
 		{
-			long s = GetHandleSize (dataHandle);
-			strncpy (text, *dataHandle, (s > 255) ? 255 : s);
-			text [(s > 255) ? 255 : s] = 0;
-			DisposeHandle (dataHandle);
+			CFStringGetCString (cfstr, text, 255, kCFStringEncodingUTF8);
+			CFRelease (cfstr);
 		}
+		HIViewSetVisible (textControl, false);
+		HIViewRemoveFromSuperview (textControl);
+		textControl = 0;
+		pParentFrame->setCursor (kCursorDefault);
 	}
-
-	TXNFocus ((TXNObject)platformControl, false);
+	else
+	#endif
+	{
+		if (!gTextEditCanceled)
+		{
+			CharsHandle dataHandle;
+			TXNGetDataEncoded ((TXNObject)platformControl, kTXNStartOffset, kTXNEndOffset, &dataHandle, kTXNTextData);
+			if (dataHandle != NULL && GetHandleSize (dataHandle) > 0)
+			{
+				long s = GetHandleSize (dataHandle);
+				strncpy (text, *dataHandle, (s > 255) ? 255 : s);
+				text [(s > 255) ? 255 : s] = 0;
+				DisposeHandle (dataHandle);
+			}
+			else
+				text[0] = 0;
+		}
+		TXNFocus ((TXNObject)platformControl, false);
+		TXNDeleteObject ((TXNObject)platformControl);
+	}
 	
-	Rect size;
-	TXNGetViewRect ((TXNObject)platformControl, &size);
-	TXNDeleteObject ((TXNObject)platformControl);
 	platformControl = 0;
 
 	setDirty (true);
-	doIdleStuff ();
+
+	#if 0//QUARTZ
+	CRect fr (size);
+	CPoint offset;
+	localToFrame (offset);
+	fr.offset (offset.x, offset.y);
+	
+	RgnHandle rgn = NewRgn ();
+	MacSetRectRgn (rgn, fr.left, fr.top, fr.right, fr.bottom);
+	HIViewSetNeedsDisplayInRegion ((HIViewRef)getFrame ()->getPlatformControl () , rgn, true);
+	DisposeRgn (rgn);
+	#endif
+//	doIdleStuff ();
 	
 	#else
 
@@ -1538,56 +1962,53 @@ void CTextEdit::looseFocus (CDrawContext *pContext)
 	delete textView;
 
 #endif
-	CDrawContext *pContextTemp = 0;
+	CPoint origOffset;
+	bool resetContextOffset = false;
 	if (!pContext)
 	{
 		// create a local context
-#if WINDOWS
-		hwnd = (HWND)getParent ()->getSystemWindow ();
-		hdc = GetDC (hwnd);
-		pContextTemp = new CDrawContext (getParent (), hdc, hwnd);
-
-#elif MAC
-		pContextTemp = new CDrawContext (getParent (), getParent ()->getSystemWindow (), getParent ()->getSystemWindow ());
-
-#elif MOTIF
-		pContextTemp = new CDrawContext (getParent (), getParent ()->getGC (), (void *)getParent ()->getWindow ());
-
-#elif BEOS
-		pContextTemp = new CDrawContext (getParent (), getParent ()->getSystemWindow (), NULL);
-#endif
+		pContext = getFrame ()->createDrawContext ();
 		if (getParentView ())
 		{
+			resetContextOffset = true;
+			origOffset.x = pContext->offset.x;
+			origOffset.y = pContext->offset.y;
 			CView *view= getParentView ();
 			CRect rect2;
 			view->getViewSize (rect2);
-			pContextTemp->offset.h = rect2.left;
-			pContextTemp->offset.v = rect2.top;
+			CPoint offset;
+			view->localToFrame (offset);
+			rect2.offset (offset.x, offset.y);
+			pContext->offset.h = rect2.left;
+			pContext->offset.v = rect2.top;
 		}
 	}
 	else
-		pContextTemp = pContext;
+		pContext->remember ();
 
 	// update dependency
-	if (strcmp (oldText, text) && listener)
-		listener->valueChanged (pContextTemp, this);
-	
-	if (!pContext)
+	bool change = false;
+	if (strcmp (oldText, text))
 	{
-		if (pContextTemp)
-			delete pContextTemp;
-
-		#if WINDOWS
-		ReleaseDC (hwnd, hdc);
-		#endif
+		change = true;
+		if (listener)
+			listener->valueChanged (pContext, this);
 	}
 
 	platformControl = 0;
+	if (resetContextOffset)
+	{
+		pContext->offset.x = origOffset.x;
+		pContext->offset.y = origOffset.y;
+	}
+	pContext->forget ();
 
-	CView* receiver = pParentView ? pParentView : pParent;
+	if (change)
+		doIdleStuff ();
+
+	CView* receiver = pParentView ? pParentView : pParentFrame;
 	if (receiver)
 		receiver->notify (this, "LooseFocus");
-
 }
 
 //------------------------------------------------------------------------
@@ -1607,9 +2028,18 @@ void CTextEdit::setTextEditConvert (void (*convert) (char *input, char *string,
 //------------------------------------------------------------------------
 // COptionMenuScheme
 //------------------------------------------------------------------------
+/*! @class COptionMenuScheme
+Used to define the appearance (font color, background color...) of a popup-menu.
+To define the scheme of a menu, use the appropriate setScheme method (see COptionMenu).
+@section coptionmenuscheme_new_in_3_0 New since 3.0
+You can also use the global variable gOptionMenuScheme to use one scheme on all menus.
+@section coptionmenuscheme_note Note
+If you want to use it on Mac OS X, you must set the macro MAC_ENABLE_MENU_SCHEME (needs Mac OS X 10.3 or higher)
+*/
+COptionMenuScheme* gOptionMenuScheme = 0;
 
+//------------------------------------------------------------------------
 COptionMenuScheme::COptionMenuScheme ()
-: nbReference (1)
 {
 #if WINDOWS
 	COLORREF c = GetSysColor (COLOR_MENU);
@@ -1630,23 +2060,17 @@ COptionMenuScheme::COptionMenuScheme ()
 	disableTextColor = kWhiteCColor;
 #endif
 	font = kNormalFontSmall;
+	#if MAC_ENABLE_MENU_SCHEME
+	registerWithToolbox ();
+	#endif
 }
 
 //------------------------------------------------------------------------
-void COptionMenuScheme::remember ()
+COptionMenuScheme::~COptionMenuScheme ()
 {
-	nbReference++;
-}
-
-//------------------------------------------------------------------------
-void COptionMenuScheme::forget ()
-{
-	if (nbReference > 0)
-	{
-		nbReference--;
-		if (nbReference == 0)
-			delete this;
-	}
+	#if MAC_ENABLE_MENU_SCHEME
+	unregisterWithToolbox ();
+	#endif
 }
 
 //------------------------------------------------------------------------
@@ -1654,16 +2078,25 @@ void COptionMenuScheme::getItemSize (const char* text, CDrawContext* pContext, C
 {
 	if (!strcmp (text, kMenuSeparator)) // separator
 	{
+		#if MAC
+		size.h = 6;
+		size.v = 9;
+		#else
 		// was: size.h = size.v = 6;
 		size.h = 6;
 		size.v = 18;
 		// separators must have same height, otherwise we have problems
 		// in multi-column menus :(
+		#endif
 	}
 	else
 	{
+		pContext->setFont (font);
 		size.h = pContext->getStringWidth (text) + 18;
 		size.v = 18;
+		#if MAC
+		size.h += 18;
+		#endif
 	}
 }
 
@@ -1686,12 +2119,15 @@ void COptionMenuScheme::drawItem (const char* text, long itemId, long state, CDr
 
 	if (!strcmp (text, kMenuSeparator))
 	{
-		long y = rect.top + rect.height () / 2;
+		CCoord y = rect.top + rect.height () / 2;
+
+		const CColor bc = { 0, 0, 0, 150};
+		const CColor wc = { 255, 255, 255, 150};
 		
-		pContext->setFrameColor (kBlackCColor);
+		pContext->setFrameColor (bc);
 		pContext->moveTo (CPoint (rect.left + 2, y - 1));
 		pContext->lineTo (CPoint (rect.right - 2, y - 1));
-		pContext->setFrameColor (kWhiteCColor);
+		pContext->setFrameColor (wc);
 		pContext->moveTo (CPoint (rect.left + 2, y));
 		pContext->lineTo (CPoint (rect.right - 2, y));
 		return;
@@ -1722,7 +2158,8 @@ void COptionMenuScheme::drawItem (const char* text, long itemId, long state, CDr
 			pContext->setFontColor (textColor);
 	}
 
-	char *ptr = strstr (text, "\t");
+	// this needs to be done right, without changing the text pointer in anyway ;-)
+	char *ptr = (char*)strstr (text, "\t");
 	if (ptr)
 	{
 		char modifier[32];
@@ -1738,9 +2175,367 @@ void COptionMenuScheme::drawItem (const char* text, long itemId, long state, CDr
 		pContext->drawString (text, r, false, kLeftText);
 }
 
+#if MAC_ENABLE_MENU_SCHEME
+#define kHIMenuViewClassID              CFSTR("com.apple.HIMenuView")
+
+struct HIMenuScheme
+{
+	HIViewRef hiView;
+	COptionMenuScheme* scheme;
+	COptionMenu* menu;
+	COffscreenContext* offscreenContext;
+	float maxWidth;
+};
+
+const EventParamName kEventParamCOptionMenuScheme = 'COMS';
+const EventParamName kEventParamCOptionMenu = 'COM ';
+
+#define kItemHeight		18
+
+static CFStringRef gOptionMenuSchemeClassID = 0;
+static HIObjectClassRef gMenuClassRef = 0;
+static CFIndex gOptionMenuSchemeClassIDRefCount = 0;
+
+//------------------------------------------------------------------------
+void COptionMenuScheme::registerWithToolbox ()
+{
+	if (gOptionMenuSchemeClassID == 0)
+	{
+		gOptionMenuSchemeClassID = CFStringCreateWithFormat (NULL, NULL, CFSTR("net.sourceforge.vstgui.COptionMenuSchemeClassID.%d"), this);
+
+		static const EventTypeSpec events[] =
+		{
+			{ kEventClassHIObject, kEventHIObjectConstruct } ,
+			{ kEventClassHIObject, kEventHIObjectInitialize },
+			{ kEventClassHIObject, kEventHIObjectDestruct },
+
+			{ kEventClassControl, kEventControlHitTest },
+			{ kEventClassControl, kEventControlGetPartRegion },
+			{ kEventClassControl, kEventControlDraw },
+			{ kEventClassControl, kEventControlGetOptimalBounds },
+
+			{ kEventClassMenu, kEventMenuCreateFrameView },
+
+			{ kEventClassScrollable, kEventScrollableGetInfo },
+		};
+
+		HIObjectRegisterSubclass (	gOptionMenuSchemeClassID,
+									kHIMenuViewClassID,
+									kNilOptions,
+									COptionMenuScheme::eventHandler,
+									GetEventTypeCount (events),
+									events,
+									NULL,
+									&gMenuClassRef);
+		gOptionMenuSchemeClassIDRefCount = CFGetRetainCount (gOptionMenuSchemeClassID);
+	}
+	else
+		CFRetain (gOptionMenuSchemeClassID);
+}
+
+//------------------------------------------------------------------------
+void COptionMenuScheme::unregisterWithToolbox ()
+{
+	if (gOptionMenuSchemeClassID)
+	{
+		if (CFGetRetainCount (gOptionMenuSchemeClassID) == gOptionMenuSchemeClassIDRefCount)
+		{
+			HIObjectUnregisterClass (gMenuClassRef);
+			gMenuClassRef = 0;
+		}
+		CFRelease (gOptionMenuSchemeClassID);
+	}
+}
+
+//------------------------------------------------------------------------
+pascal OSStatus COptionMenuScheme::eventHandler (EventHandlerCallRef inCallRef, EventRef inEvent, void *inUserData)
+{
+	OSStatus err = eventNotHandledErr;
+	UInt32 eventClass = GetEventClass (inEvent);
+	UInt32 eventKind = GetEventKind (inEvent);
+	HIMenuScheme* scheme = (HIMenuScheme*)inUserData;
+	
+	switch (eventClass)
+	{
+		case kEventClassHIObject:
+		{
+			switch (eventKind)
+			{
+				case kEventHIObjectConstruct:
+				{
+					scheme = (HIMenuScheme*)calloc (1, sizeof (HIMenuScheme));
+					GetEventParameter (inEvent, kEventParamHIObjectInstance, typeHIObjectRef, NULL, sizeof (HIObjectRef), NULL, &scheme->hiView);
+					SetEventParameter (inEvent, kEventParamHIObjectInstance, typeVoidPtr, sizeof (HIMenuScheme*), &scheme);
+					scheme->maxWidth = 100;
+					err = noErr;
+					break;
+				}
+				case kEventHIObjectInitialize:
+				{
+					err = CallNextEventHandler (inCallRef, inEvent);
+					if (err == noErr)
+					{
+						GetEventParameter (inEvent, kEventParamCOptionMenuScheme, typeVoidPtr, NULL, sizeof (COptionMenuScheme*), NULL, &scheme->scheme);
+						GetEventParameter (inEvent, kEventParamCOptionMenu, typeVoidPtr, NULL, sizeof (COptionMenu*), NULL, &scheme->menu);
+						scheme->scheme->remember ();
+						scheme->menu->remember ();
+						scheme->offscreenContext = new COffscreenContext (scheme->menu->getFrame (), 600, 100);
+					}
+					break;
+				}
+				case kEventHIObjectDestruct:
+				{
+					delete scheme->offscreenContext;
+					scheme->scheme->forget ();
+					scheme->menu->forget ();
+					free (scheme);
+					err = noErr;
+					break;
+				}
+			}
+			break;
+		}
+		case kEventClassControl:
+		{
+			HIViewRef control;
+			GetEventParameter (inEvent, kEventParamDirectObject, typeControlRef, NULL, sizeof (HIViewRef), NULL, &control);
+			switch (eventKind)
+			{
+				case kEventControlInitialize:
+				{
+					err = CallNextEventHandler (inCallRef, inEvent);
+					break;
+				}
+				case kEventControlHitTest:
+				{
+					HIPoint mouseLoc;
+					GetEventParameter (inEvent, kEventParamMouseLocation, typeHIPoint, NULL, sizeof (mouseLoc), NULL, &mouseLoc);
+					ControlPartCode partHit = mouseLoc.y / kItemHeight + 1;
+					char temp[1024];
+					CPoint size;
+					long yPos = 0;
+					for (long i = 0; i < scheme->menu->getNbEntries (); i++)
+					{
+						scheme->menu->getEntry (i, temp);
+						scheme->scheme->getItemSize (temp, scheme->offscreenContext, size);
+						yPos += size.y;
+						if (yPos >= mouseLoc.y)
+						{
+							partHit = i + 1;
+							break;
+						}
+					}
+					SetEventParameter (inEvent, kEventParamControlPart, typeControlPartCode, sizeof (partHit), &partHit);
+					err = noErr;
+					break;
+				}
+				case kEventControlGetOptimalBounds:
+				{
+					HIRect r = { {0, 0}, { 0, 0 }};
+					r.size.width = scheme->maxWidth;
+					char temp[1024];
+					CPoint size;
+					for (long i = 0; i < scheme->menu->getNbEntries (); i++)
+					{
+						scheme->menu->getEntry (i, temp);
+						scheme->scheme->getItemSize (temp, scheme->offscreenContext, size);
+						if (!strncmp (temp, kMenuSubMenu, 2))
+							size.x += 16;
+						r.size.height += size.y;
+						if (r.size.width < size.x)
+							r.size.width = size.x;
+					}
+					//r.size.height += scheme->menu->getNbEntries ();
+					scheme->maxWidth = r.size.width;
+					SetEventParameter (inEvent, kEventParamControlOptimalBounds, typeHIRect, sizeof (HIRect), &r);
+					err = noErr;
+					break;
+				}
+				case kEventControlGetPartRegion:
+				{
+					HIRect r = { {0, 0}, { 0, 0 }};
+					ControlPartCode whichItem;
+					RgnHandle outRegion = NULL;
+					GetEventParameter (inEvent, kEventParamControlPart, typeControlPartCode, NULL, sizeof (whichItem), NULL, &whichItem);
+					GetEventParameter (inEvent, kEventParamControlRegion, typeQDRgnHandle, NULL, sizeof(outRegion), NULL, &outRegion);
+					if (whichItem <= 0)
+					{
+						r.size.width = scheme->maxWidth;
+						char temp[1024];
+						CPoint size;
+						for (long i = 0; i < scheme->menu->getNbEntries (); i++)
+						{
+							scheme->menu->getEntry (i, temp);
+							scheme->scheme->getItemSize (temp, scheme->offscreenContext, size);
+							if (!strncmp (temp, kMenuSubMenu, 2))
+								size.x += 16;
+							r.size.height += size.y;
+							if (r.size.width < size.x)
+								r.size.width = size.x;
+						}
+						scheme->maxWidth = r.size.width;
+						r.size.height += scheme->menu->getNbEntries ();
+					}
+					else
+					{
+						char temp[1024];
+						CPoint size;
+						for (long i = 0; i < whichItem; i++)
+						{
+							r.origin.y += size.y;
+							scheme->menu->getEntry (i, temp);
+							scheme->scheme->getItemSize (temp, scheme->offscreenContext, size);
+							r.size.height += size.y;
+						}
+						r.size.width = scheme->maxWidth;
+					}
+					SetRectRgn (outRegion, (short) r.origin.x, (short) r.origin.y,(short) r.origin.x + r.size.width, (short) r.origin.y+ r.size.height + 1);
+					err = noErr;
+					break;
+				}
+				case kEventControlDraw:
+				{
+					CGContextRef cgContext;
+					GetEventParameter (inEvent, kEventParamCGContextRef, typeCGContextRef, NULL, sizeof (cgContext), NULL, &cgContext);
+					HIRect r;
+					HIViewGetBounds (control, &r);
+					CGContextClearRect (cgContext, r);
+					if (control != scheme->hiView)
+					{
+						err = noErr;
+						break;
+					}
+					ControlPartCode focusPart;
+					HIViewGetFocusPart (scheme->hiView, &focusPart);
+					focusPart--;
+					WindowRef window = HIViewGetWindow (scheme->hiView);
+					CDrawContext context (NULL, cgContext, window);
+					char entryText[1024];
+					CPoint size;
+					CRect rect (0, 0);
+					rect.setHeight (kItemHeight);
+					rect.setWidth (scheme->maxWidth);
+					for (int i = 0; i < scheme->menu->getNbEntries (); i++)
+					{
+						if (scheme->menu->getEntry (i, entryText))
+						{
+							scheme->scheme->getItemSize (entryText, &context, size);
+							long state = scheme->menu->isCheckEntry (i) ? kChecked : 0;
+							if (focusPart >= 0 && focusPart == i)
+								state |= kSelected;
+							long offset = 0;
+							if (!strncmp (entryText, kMenuSubMenu, 2))
+							{
+								state |= kSubMenu;
+								offset = 2;
+							}
+							else if (!strncmp (entryText, kMenuTitle, 2))
+							{
+								state |= kTitle;
+								offset = 2;
+							}
+							else if (!strncmp (entryText, kMenuDisable, 2))
+							{
+								state |= kDisabled;
+								offset = 2;
+							}
+							rect.setHeight (size.y+1);
+							context.setClipRect (rect);
+							scheme->scheme->drawItem (entryText+offset, i, state, &context, rect);
+							rect.offset (0, size.y);
+						}
+					}
+					break;
+				}
+				case kEventControlGetFrameMetrics:
+				{
+					err = CallNextEventHandler (inCallRef, inEvent);
+					HIViewFrameMetrics	metrics;
+					GetEventParameter (inEvent, kEventParamControlFrameMetrics, typeControlFrameMetrics, NULL, sizeof (metrics), NULL, &metrics);
+					metrics.top = metrics.bottom = 0;
+					SetEventParameter (inEvent, kEventParamControlFrameMetrics, typeControlFrameMetrics, sizeof (metrics), &metrics);
+					break;
+				}
+				case kEventControlOwningWindowChanged:
+				{
+					WindowRef newWindow = GetControlOwner (control);
+					HIWindowChangeFeatures (newWindow, 0, kWindowIsOpaque);
+					err = noErr;
+					HIViewRef root = HIViewGetRoot (newWindow);
+					if (root)
+					{
+						HIRect bounds, frame;
+						HIViewGetBounds (root, &bounds);
+						HIViewGetFrame (root, &frame);
+					}
+					break;
+				}
+			}
+			break;
+		}
+		case kEventClassMenu:
+		{
+			switch (eventKind)
+			{
+				case kEventMenuCreateFrameView:
+				{
+					err = CallNextEventHandler (inCallRef, inEvent);
+					HIViewRef frameView;
+					GetEventParameter (inEvent, kEventParamMenuFrameView, typeControlRef, NULL, sizeof (ControlRef), NULL, &frameView);
+					HIViewFindByID (frameView, kHIViewWindowContentID, &frameView);
+					if (frameView)
+					{
+						EventTypeSpec events [] = { { kEventClassControl, kEventControlDraw }, { kEventClassControl, kEventControlOwningWindowChanged }, { kEventClassControl, kEventControlGetFrameMetrics } };
+						InstallControlEventHandler (frameView, COptionMenuScheme::eventHandler, GetEventTypeCount (events), events, scheme, NULL);
+					}
+					break;
+				}
+			}
+			break;
+		}
+		case kEventClassScrollable:
+		{
+			switch (eventKind)
+			{
+				case kEventScrollableGetInfo:
+				{
+					HISize size;
+					HIPoint origin = { 0, 0 };
+
+					size.width = 200;
+					size.height = kItemHeight * (scheme->menu->getNbEntries () + 1);;
+
+					SetEventParameter(inEvent, kEventParamImageSize, typeHISize, sizeof( size ), &size );
+					SetEventParameter(inEvent, kEventParamViewSize, typeHISize, sizeof( size ), &size );
+					SetEventParameter(inEvent, kEventParamOrigin, typeHIPoint, sizeof( origin ), &origin );
+
+					// line size is 1/10th total size
+					size.width /= 10;
+					size.height /= 10;
+
+					SetEventParameter(inEvent, kEventParamLineSize, typeHISize, sizeof( size ), &size );
+
+					err = noErr;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	
+	return err;
+}
+#endif
+
 //------------------------------------------------------------------------
 // COptionMenu
 //------------------------------------------------------------------------
+/*! @class COptionMenu
+Define a rectangle view where a text-value can be displayed with a given font and color.
+The text-value is centered in the given rect.
+A pixmap can be used as background, a second pixmap can be used when the option menu is popuped.
+There are 2 styles with or without a shadowed text. When a mouse click occurs, a popup menu is displayed.
+*/
 COptionMenu::COptionMenu (const CRect &size, CControlListener *listener, long tag,
                           CBitmap *background, CBitmap *bgWhenClick, const long style)
 :	CParamDisplay (size, background, style), bgWhenClick (bgWhenClick), nbItemsPerColumn (-1),
@@ -1840,6 +2635,14 @@ bool COptionMenu::allocateMenu (long nb)
 }
 
 //------------------------------------------------------------------------
+COptionMenu* COptionMenu::getSubMenu (long idx) const
+{
+	if (submenuEntry && idx < nbSubMenus)
+		return submenuEntry[idx];
+	return 0;
+}
+
+//------------------------------------------------------------------------
 bool COptionMenu::addEntry (COptionMenu *subMenu, char *txt)
 {
 	if (nbEntries >= MAX_ENTRY || !subMenu || !txt)
@@ -1878,6 +2681,9 @@ bool COptionMenu::addEntry (COptionMenu *subMenu, char *txt)
 
 	nbEntries++;
 
+	if (currentIndex < 0)
+		currentIndex = 0;
+	
 	return true;
 }
 
@@ -1939,7 +2745,7 @@ bool COptionMenu::addEntry (char *txt, long index)
 }
 
 //------------------------------------------------------------------------
-long COptionMenu::getCurrent (char *txt, bool countSeparator)
+long COptionMenu::getCurrent (char *txt, bool countSeparator) const
 {
 	if (currentIndex < 0)
 		return -1;
@@ -1990,6 +2796,8 @@ bool COptionMenu::setCurrent (long index, bool countSeparator)
 		}
 		currentIndex = newCurrent - 1;
 	}
+	if (style & (kMultipleCheckStyle & ~kCheckStyle))
+		check[currentIndex] = !check[currentIndex];
 
 	// to force the redraw
 	setDirty ();
@@ -1998,7 +2806,7 @@ bool COptionMenu::setCurrent (long index, bool countSeparator)
 }
 
 //------------------------------------------------------------------------
-bool COptionMenu::getEntry (long index, char *txt)
+bool COptionMenu::getEntry (long index, char *txt) const
 {
 	if (index < 0 || index >= nbEntries)
 		return false;
@@ -2084,7 +2892,7 @@ bool COptionMenu::removeAllEntry ()
 }
 
 //------------------------------------------------------------------------
-long COptionMenu::getIndex (char *txt)
+long COptionMenu::getIndex (char *txt) const
 {
 	if (!txt)
 		return -1;
@@ -2122,7 +2930,7 @@ bool COptionMenu::checkEntryAlone (long index)
 }
 
 //------------------------------------------------------------------------
-bool COptionMenu::isCheckEntry (long index)
+bool COptionMenu::isCheckEntry (long index) const
 {
 	if (index < 0 || index >= nbEntries)
 		return false;
@@ -2140,23 +2948,33 @@ void COptionMenu::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void COptionMenu::mouse (CDrawContext *pContext, CPoint &where)
+void COptionMenu::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
-	if (!bMouseEnabled || !getParent () || !pContext)
+	if (!bMouseEnabled || !getFrame () || !pContext)
 		return;
 
-	lastButton = pContext->getMouseButtons ();
+	lastButton = (button != -1) ? button : pContext->getMouseButtons ();
+
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
+
 	if (lastButton & (kLButton|kRButton|kApple))
 	{
 		if (bgWhenClick)
 		{
 			char string[256];
-			sprintf (string, "%s", entry[currentIndex]);
+			if (currentIndex >= 0)
+				sprintf (string, "%s", entry[currentIndex]);
+			else
+				string[0] = 0;
 		
 			drawText (pContext, string, bgWhenClick);
 		}
 
-		getParent ()->setEditView (this);
+		beginEdit();
 		takeFocus (pContext);
 	}
 }
@@ -2193,7 +3011,7 @@ static void _activateCallback (Widget item, XtPointer clientData, XtPointer call
 #endif
 
 //------------------------------------------------------------------------
-COptionMenu *COptionMenu::getLastItemMenu (long &idxInMenu)
+COptionMenu *COptionMenu::getLastItemMenu (long &idxInMenu) const
 {
 	idxInMenu = lastMenu ? (long)lastMenu->getValue (): -1;
 	return lastMenu;
@@ -2260,7 +3078,7 @@ void *COptionMenu::appendItems (long &offsetIdx)
 #if WINDOWS
 	void *menu = (void*)CreatePopupMenu ();
 	
-	bool ownerDraw = scheme != 0;
+	bool ownerDraw = (scheme != 0) || (gOptionMenuScheme != 0);
 
 	int flags = 0;
 	long idxSubmenu = 0;
@@ -2291,7 +3109,7 @@ void *COptionMenu::appendItems (long &offsetIdx)
 					if (submenu)
 					{
 						idxSubmenu++;
-						AppendMenu ((HMENU)menu, flags|MF_POPUP|MF_ENABLED, (UINT)submenu, entry[i] + 2);
+						AppendMenu ((HMENU)menu, flags|MF_POPUP|MF_ENABLED, (UINT_PTR)submenu, entry[i] + 2);
 					}
 					else
 						continue;
@@ -2333,14 +3151,36 @@ void *COptionMenu::appendItems (long &offsetIdx)
 	//---Get an non-existing ID for the menu:
 	menuID = UniqueID ('MENU');
 		
+	MenuHandle theMenu = 0;
 	//---Create the menu
-	MenuHandle theMenu = NewMenu (menuID, "\pPopUp");
+	#if MAC_ENABLE_MENU_SCHEME
+	extern long pSystemVersion;
+	if ((scheme || gOptionMenuScheme) && pSystemVersion >= 0x1030)
+	{
+		COptionMenuScheme* s = gOptionMenuScheme ? gOptionMenuScheme : scheme;
+		EventRef initEvent = NULL;
+		if (CreateEvent (NULL, kEventClassHIObject, kEventHIObjectInitialize, 0, 0, &initEvent) == noErr)
+		{
+			MenuDefSpec customMenuDef;
+			COptionMenu* optMenu = this;
+			SetEventParameter (initEvent, kEventParamCOptionMenu, typeVoidPtr, sizeof(COptionMenu*), &optMenu);
+			customMenuDef.defType = kMenuDefClassID;
+			customMenuDef.u.view.classID = gOptionMenuSchemeClassID;
+			customMenuDef.u.view.initEvent = initEvent;
+			SetEventParameter (initEvent, kEventParamCOptionMenuScheme, typeVoidPtr, sizeof(COptionMenuScheme*), &s);
+			CreateCustomMenu (&customMenuDef, menuID, 0, &theMenu);
+			ReleaseEvent (initEvent);
+			if (theMenu == NULL)
+				return NULL;
+		}
+	}
+	else
+	#endif
+		theMenu = NewMenu (menuID, "\pPopUp");
 
-	Str255 menuItem;
 	char text2[256];
 	long keyChar;
 	long idxSubmenu = 0;
-	long offset = offsetIdx;
 	offsetIdx += nbEntries;
 	short keyModifiers;
 	bool useGlyph;
@@ -2398,6 +3238,58 @@ void *COptionMenu::appendItems (long &offsetIdx)
 				keyChar = (long)*ptr;	
 			}
 		}
+		#if TARGET_API_MAC_CARBON
+
+		if (!strcmp (entry[i], kMenuSeparator))
+		{
+			AppendMenuItemTextWithCFString (theMenu, CFSTR(""), kMenuItemAttrSeparator, 0, NULL);
+		}
+		else
+		{
+			CFStringRef itemString = 0;
+			MenuItemAttributes itemAttribs = kMenuItemAttrIgnoreMeta;
+			// Submenu
+			if (!strncmp (entry[i], kMenuSubMenu, 2))
+			{
+				if (idxSubmenu < nbSubMenus)
+				{
+					itemString = CFStringCreateWithCString (NULL, entry[i] + 2, kCFStringEncodingUTF8);
+					InsertMenuItemTextWithCFString (theMenu, itemString, i+1, itemAttribs, 0);
+					CFRelease (itemString);
+					void *submenu = submenuEntry[idxSubmenu]->appendItems (offsetIdx);
+					if (submenu)
+					{
+						SetMenuItemHierarchicalID (theMenu, i + 1, submenuEntry[idxSubmenu]->getMenuID ());
+						idxSubmenu++;
+						continue;
+					}
+					else
+						continue;
+				}
+				else
+					continue;
+			}
+			//---Disable/Gray entry-----------
+			else if (!strncmp (entry[i], kMenuDisable, 2))
+			{
+				itemString = CFStringCreateWithCString (NULL, entry[i] + 2, kCFStringEncodingUTF8);
+				itemAttribs |= kMenuItemAttrDisabled;
+			}
+			//---Disable entry--------
+			else if (!strncmp (entry[i], kMenuTitle, 2))
+			{
+				itemString = CFStringCreateWithCString (NULL, entry[i] + 2, kCFStringEncodingUTF8);
+				itemAttribs |= kMenuItemAttrSectionHeader;
+			}
+			else
+				itemString = CFStringCreateWithCString (NULL, entry[i], kCFStringEncodingUTF8);
+
+			InsertMenuItemTextWithCFString (theMenu, itemString, i+1, itemAttribs, 0);
+			CFRelease (itemString);
+		}
+
+		#else
+		Str255 menuItem;
 		strcpy ((char*)menuItem, (const char*)"\p\0");
 		menuItem[0] = strlen ((const char*)text2);
 		AppendMenu (theMenu, "\pjunk");
@@ -2410,7 +3302,7 @@ void *COptionMenu::appendItems (long &offsetIdx)
 			//---Disable item--------
 			if (!strncmp (text2, kMenuDisable, 2))
 			{
-				#if CARBON
+				#if TARGET_API_MAC_CARBON
 				DisableMenuItem (theMenu, i + 1);
 				#else
 				DisableItem (theMenu, i + 1);
@@ -2440,6 +3332,8 @@ void *COptionMenu::appendItems (long &offsetIdx)
 		}
 		SetMenuItemText (theMenu, i + 1, menuItem);
 
+		#endif // !TARGET_API_MAC_CARBON
+
 		//---Set the shortcut
 		if (keyChar != 0)
 		{
@@ -2451,6 +3345,7 @@ void *COptionMenu::appendItems (long &offsetIdx)
 		
 		if (multipleCheck && check[i])
 			CheckMenuItem (theMenu, i + 1, true);
+
 	}
 	
 	// set the check
@@ -2482,19 +3377,20 @@ void COptionMenu::setValue (float val)
 //------------------------------------------------------------------------
 void COptionMenu::takeFocus (CDrawContext *pContext)
 {
-	if (!getParent ())
+	if (!getFrame ())
 		return;
 
 	bool multipleCheck = style & (kMultipleCheckStyle & ~kCheckStyle);
 	lastResult = -1;
 	lastMenu = 0;
 
-#if WINDOWS
-	MSG msg;
-	long result = -1;
-	HWND hwnd = (HWND)getParent ()->getSystemWindow ();
+#if MAC || WINDOWS
+	// calculate Screen Position
+	#if WINDOWS
+	HWND hwnd = (HWND)getFrame ()->getSystemWindow ();
 
-	//---Get the position of the Parent
+	#endif
+
 	CRect rect;
 	if (pContext)
 	{
@@ -2503,11 +3399,47 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 	}
 	else
 	{
+		#if WINDOWS
 		RECT rctWinParent;
 		GetWindowRect (hwnd, &rctWinParent);
 		rect.left = rctWinParent.left;
 		rect.top  = rctWinParent.top;
+		#elif QUARTZ
+		HIRect bounds;
+		HIViewRef control = (HIViewRef)getFrame ()->getPlatformControl ();
+		HIViewGetFrame (control, &bounds);
+		WindowRef window = (WindowRef)getFrame ()->getSystemWindow ();
+		WindowAttributes attr;
+		GetWindowAttributes (window, &attr);
+		if (attr & kWindowCompositingAttribute)
+		{
+			HIViewRef contentView;
+			HIViewFindByID (HIViewGetRoot (window), kHIViewWindowContentID, &contentView);
+			if (HIViewGetSuperview (control) != contentView)
+				HIViewConvertRect (&bounds, control, contentView);
+			bounds.origin.x += getFrame ()->hiScrollOffset.x;
+			bounds.origin.y += getFrame ()->hiScrollOffset.y;
+		}
+		rect.left = (CCoord)bounds.origin.x;
+		rect.top = (CCoord)bounds.origin.y;
+		#endif
 	}
+	CView* parent = getParentView ();
+	while (parent)
+	{
+		if (parent->notify (this, kMsgCheckIfViewContainer) == kMessageNotified)
+		{
+			CRect vSize;
+			parent->getViewSize (vSize);
+			rect.offset (vSize.left, vSize.top);
+		}
+		parent = parent->getParentView ();
+	}
+#endif
+	
+#if WINDOWS
+	MSG msg;
+	long result = -1;
 
 	//---Create the popup menu---
 	long offIdx = 0;
@@ -2540,8 +3472,6 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 	//---Destroy the menu----
 	removeItems ();
 	
-	getParent ()->setEditView (0);
-
 	//---Update the dependencies
 	if (result != -1 || bgWhenClick)
 	{
@@ -2551,7 +3481,7 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 		{
 	 		// create a local context
 			hdc = GetDC (hwnd);
-			pContextTemp = new CDrawContext (getParent (), hdc, hwnd);
+			pContextTemp = new CDrawContext (getFrame (), hdc, hwnd);
 		}
 		else
 			pContextTemp = pContext;
@@ -2592,44 +3522,36 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 	// no entries, no menu
 	if (nbEntries == 0)
 	{
-		getParent ()->setEditView (0);
+		endEdit();
+		getFrame ()->setFocusView (0);
 		return;
 	}
-	
-	//---Get the position of the Parent
-	WindowPtr theWindow = (WindowPtr)getParent ()->getSystemWindow ();
-	
+		
 	//---Transform local coordinates to global coordinates
 	long offset;
+
 	if (style & kPopupStyle)
-		offset = (int)size.top;
+		offset = (long)size.top;
 	else
-		offset = (int)size.bottom;
-	
-	Rect bounds;
-	GetPortBounds (GetWindowPort (theWindow), &bounds);
+		offset = (long)size.bottom;
+
+	CCoord gx = 0, gy = 0;
 	Point LToG;
-	LToG.v = bounds.top + offset;
-	LToG.h = bounds.left + size.left;
-	
-	if (pContext)
-	{
-		LToG.h += pContext->offset.h;
-		LToG.v += pContext->offset.v;
-	}
-	
-	LocalToGlobal (&LToG);
-	
+	getFrame()->getPosition(gx, gy);
+	LToG.v = (short)(gy + rect.top + offset);
+	LToG.h = (short)(gx + rect.left + size.left);
+		
 	//---Create the popup menu---
 	long offIdx = 0;
 	MenuHandle theMenu = (MenuHandle)appendItems (offIdx);
-		
+
 	// Calculate the menu size (height and width)
 	CalcMenuSize (theMenu);
 	
 	// Get a handle to the screen
 	RgnHandle rgn = GetGrayRgn ();
-	#if CARBON
+	#if TARGET_API_MAC_CARBON
+	Rect bounds;
 	GetRegionBounds (rgn, &bounds);
 	int bottom      = bounds.bottom;
 	long menuHeight = GetMenuHeight (theMenu);
@@ -2640,10 +3562,13 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 
 	// Calculate the size of one menu item (round to the next int)
 	int menuItemSize = (menuHeight + nbEntries - 1) / nbEntries;
-	
+
+	setDirty (false);	
+
 	//---Popup the Menu
 	long popUpItem = 1;
 	long PopUpMenuItem = 0;
+
 	if (LToG.v + menuHeight >= bottom - menuItemSize / 2)
 	{
 		if (nbEntries * menuItemSize >= bottom)
@@ -2659,7 +3584,7 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 	}
 	else
 		PopUpMenuItem = PopUpMenuSelect (theMenu, LToG.v, LToG.h, popUpItem);
-		
+
 	//---Destroy the menu----
 	removeItems ();
 	
@@ -2673,14 +3598,13 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 		if (bgWhenClick)
 			setDirty ();
 
-		CDrawContext *pContextTemp = 0;
 		if (!pContext && menuIDResult != 0)
 		{
-			// create a local context
-			pContextTemp = new CDrawContext (getParent (), 0, theWindow);
+			pContext = getFrame ()->createDrawContext ();
 		}
-		else
-			pContextTemp = pContext;
+		else if (pContext)
+			pContext->remember ();
+
 		if (menuIDResult != 0)
 		{
 			long idx = 0;
@@ -2691,19 +3615,13 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 				lastMenu = menu;
 				menu->setValue (result);
 				if (listener)
-					listener->valueChanged (pContextTemp, menu);
+					listener->valueChanged (pContext, menu);
 			}
 		}
 
-		// redraw the display
-		doIdleStuff ();
-		setDirty (false);
-
-		if (!pContext && pContextTemp)
-			delete pContextTemp;
+		if (pContext)
+			pContext->forget ();
 	}
-	if (getParent ()->getEditView () == this)
-		getParent ()->setEditView (0);
 
 #elif MOTIF
 	Arg args[10];
@@ -2711,7 +3629,7 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 	
 	// get the position of the pParent
 	CRect rect;
-	getParent ()->getSize (&rect);
+	getFrame ()->getSize (&rect);
 
 	if (pContext)
 	{
@@ -2731,7 +3649,7 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 	XtSetArg (args[n], XmNmenuHistory, currentIndex); n++;
 	XtSetArg (args[n], XmNtraversalOn, true); n++;
 
-	platformControl = (void*)XmCreatePopupMenu ((Widget)(getParent ()->getSystemWindow ()), 
+	platformControl = (void*)XmCreatePopupMenu ((Widget)(getFrame ()->getSystemWindow ()), 
 			"popup", args, n);
 
 	XtAddCallback ((Widget)platformControl, XmNunmapCallback, _unmapCallback, this);
@@ -2794,7 +3712,7 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 		}
 	}
 	CRect rect;
-	getParent ()->getSize (&rect);
+	getFrame ()->getSize (&rect);
 	if (pContext)
 	{
 		rect.left += pContext->offset.h;
@@ -2806,7 +3724,7 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 	else
 		offset = (int)(rect.top + size.bottom);
 	BPoint where (rect.left + size.left, offset);
-	BView* plugView = (BView*) getParent ()->getSystemWindow ();
+	BView* plugView = (BView*) getFrame ()->getSystemWindow ();
 	plugView->ConvertToScreen (&where);
 	item = popup->Go (where);
 	if (item)
@@ -2817,7 +3735,7 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 			CDrawContext *pContextTemp = pContext;
 			// create a local context
 			if (!pContextTemp)
-				pContextTemp = new CDrawContext (getParent (), plugView, NULL);
+				pContextTemp = new CDrawContext (getFrame (), plugView, NULL);
 
 			setValue (message->what);
 			
@@ -2832,8 +3750,10 @@ void COptionMenu::takeFocus (CDrawContext *pContext)
 		}
 	}
 	delete popup;
-	getParent ()->setEditView (0);
 #endif
+
+	getFrame ()->setFocusView (0);
+	endEdit();
 }
 
 //------------------------------------------------------------------------
@@ -2875,7 +3795,7 @@ void COptionMenu::setCurrentSelected (void *itemSelected)
 	}
 
 	// update dependency
-	CDrawContext *pContext = new CDrawContext (getParent (), (void*)getParent ()->getGC (), (void*)getParent ()->getWindow ());
+	CDrawContext *pContext = new CDrawContext (getFrame (), (void*)getFrame ()->getGC (), (void*)getFrame ()->getWindow ());
 
 	setValue (currentIndex);
 
@@ -2889,9 +3809,23 @@ void COptionMenu::setCurrentSelected (void *itemSelected)
 //------------------------------------------------------------------------
 // CAnimKnob
 //------------------------------------------------------------------------
+/*! @class CAnimKnob
+Such as a CKnob control object, but there is a unique pixmap which contains different views (subpixmaps) of this knob.
+According to the value, a specific subpixmap is displayed. The different subpixmaps are stacked in the pixmap object.
+*/
+CAnimKnob::CAnimKnob (const CRect &size, CControlListener *listener, long tag,
+                      CBitmap *background, CPoint &offset)
+: CKnob (size, listener, tag, background, 0, offset), bInverseBitmap (false)
+{
+	heightOfOneImage = size.height ();
+	subPixmaps = (short)(background->getHeight () / heightOfOneImage);
+	inset = 0;
+}
+
+//------------------------------------------------------------------------
 CAnimKnob::CAnimKnob (const CRect &size, CControlListener *listener, long tag,
                       long subPixmaps,         // number of subPixmaps
-                      long heightOfOneImage,   // height of one image in pixel
+                      CCoord heightOfOneImage,   // height of one image in pixel
                       CBitmap *background, CPoint &offset)
 : CKnob (size, listener, tag, background, 0, offset), 
    subPixmaps (subPixmaps), heightOfOneImage (heightOfOneImage), bInverseBitmap (false)
@@ -2903,18 +3837,31 @@ CAnimKnob::CAnimKnob (const CRect &size, CControlListener *listener, long tag,
 CAnimKnob::~CAnimKnob ()
 {}
 
+//-----------------------------------------------------------------------------------------------
+bool CAnimKnob::isDirty () const
+{
+	if (!bDirty)
+	{
+		CPoint p;
+		valueToPoint (p);
+		if (p == lastDrawnPoint)
+			return false;
+	}
+	return CKnob::isDirty ();
+}
+
 //------------------------------------------------------------------------
 void CAnimKnob::draw (CDrawContext *pContext)
 {
 	CPoint where (0, 0);
 	if (value >= 0.f) 
 	{
-		long tmp = heightOfOneImage * (subPixmaps - 1);
+		CCoord tmp = heightOfOneImage * (subPixmaps - 1);
 		if (bInverseBitmap)
 			where.v = (long)((1 - value) * (float)tmp);
 		else
 			where.v = (long)(value * (float)tmp);
-		for (long realY = 0; realY <= tmp; realY += heightOfOneImage) 
+		for (CCoord realY = 0; realY <= tmp; realY += heightOfOneImage) 
 		{
 			if (where.v < realY) 
 			{
@@ -2933,15 +3880,34 @@ void CAnimKnob::draw (CDrawContext *pContext)
 		else
 			pBackground->draw (pContext, size, where);
 	}
+	valueToPoint (lastDrawnPoint);
 	setDirty (false);
 }
 
 //------------------------------------------------------------------------
 // CVerticalSwitch
 //------------------------------------------------------------------------
+/*! @class CVerticalSwitch
+Define a switch with a given number of positions, the current position is defined by the position
+of the last click on this object (the object is divided in its height by the number of position).
+Each position has its subpixmap, each subpixmap is stacked in the given handle pixmap.
+By clicking Alt+Left Mouse the default value is used.
+*/
+CVerticalSwitch::CVerticalSwitch (const CRect &size, CControlListener *listener, long tag,
+                                  CBitmap *background, CPoint &offset)
+: CControl (size, listener, tag, background), offset (offset)
+{
+	heightOfOneImage = size.height ();
+	subPixmaps = (long)(background->getHeight () / heightOfOneImage);
+	iMaxPositions = subPixmaps;
+
+	setDefaultValue (0.f);
+}
+
+//------------------------------------------------------------------------
 CVerticalSwitch::CVerticalSwitch (const CRect &size, CControlListener *listener, long tag,
                                   long subPixmaps,       // number of subPixmaps
-                                  long heightOfOneImage, // height of one image in pixel
+                                  CCoord heightOfOneImage, // height of one image in pixel
                                   long iMaxPositions,
                                   CBitmap *background, CPoint &offset)
 : CControl (size, listener, tag, background), offset (offset),
@@ -2972,28 +3938,29 @@ void CVerticalSwitch::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void CVerticalSwitch::mouse (CDrawContext *pContext, CPoint &where)
+void CVerticalSwitch::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 	
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
 	if (!(button & kLButton))
 		return;
 
-	// set the default value
-	if (button == (kControl|kLButton))
+	if (listener && button & (kAlt | kShift | kControl | kApple))
 	{
-		value = getDefaultValue ();
-		if (isDirty () && listener)
-			listener->valueChanged (pContext, this);
-		return;
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
 	}
+
+	// check if default value wanted
+	if (checkDefaultValue (pContext, button))
+		return;
 
 	double coef = (double)heightOfOneImage / (double)iMaxPositions;
 
 	// begin of edit parameter
-	getParent ()->beginEdit (tag);
+	beginEdit ();
 	do
 	{
 		value = (long)((where.v - size.top) / coef) / (float)(iMaxPositions - 1);
@@ -3005,28 +3972,40 @@ void CVerticalSwitch::mouse (CDrawContext *pContext, CPoint &where)
 		if (isDirty () && listener)
 			listener->valueChanged (pContext, this);
 		
-		pContext->getMouseLocation (where);
+		getMouseLocation (pContext, where);
 		
 		doIdleStuff ();
 	}
 	while (pContext->getMouseButtons () == button);
 
 	// end of edit parameter
-	getParent ()->endEdit (tag);
+	endEdit ();
 }
 
 
 //------------------------------------------------------------------------
 // CHorizontalSwitch
 //------------------------------------------------------------------------
-CHorizontalSwitch::CHorizontalSwitch (const CRect &size,
-                                  CControlListener *listener,
-                                  long tag,
+/*! @class CHorizontalSwitch
+Same as the CVerticalSwitch but horizontal.
+*/
+CHorizontalSwitch::CHorizontalSwitch (const CRect &size, CControlListener *listener, long tag,
+								  CBitmap *background, CPoint &offset)
+: CControl (size, listener, tag, background), offset (offset)
+{
+	heightOfOneImage = size.width ();
+	subPixmaps = (long)(background->getWidth () / heightOfOneImage);
+	iMaxPositions = subPixmaps;
+
+	setDefaultValue (0.f);
+}
+
+//------------------------------------------------------------------------
+CHorizontalSwitch::CHorizontalSwitch (const CRect &size, CControlListener *listener, long tag,
                                   long subPixmaps,   // number of subPixmaps
-                                  long heightOfOneImage, // height of one image in pixel
+                                  CCoord heightOfOneImage, // height of one image in pixel
                                   long iMaxPositions,
-                                  CBitmap *background,
-                                  CPoint &offset)
+                                  CBitmap *background, CPoint &offset)
 : CControl (size, listener, tag, background), offset (offset),
 	subPixmaps (subPixmaps), heightOfOneImage (heightOfOneImage),
 	iMaxPositions (iMaxPositions)
@@ -3055,29 +4034,30 @@ void CHorizontalSwitch::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void CHorizontalSwitch::mouse (CDrawContext *pContext, CPoint &where)
+void CHorizontalSwitch::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
+
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
+
 	if (!(button & kLButton))
 		return;
 	
-	// set the default value
-	if (button == (kControl|kLButton))
-	{
-		value = getDefaultValue ();
-
-		if (isDirty () && listener)
-			listener->valueChanged (pContext, this);
+	// check if default value wanted
+	if (checkDefaultValue (pContext, button))
 		return;
-	}
 
 	double coef = (double)pBackground->getWidth () / (double)iMaxPositions;
 
 	// begin of edit parameter
-	getParent ()->beginEdit (tag);
+	beginEdit ();
 	do
 	{
 		value = (long)((where.h - size.left) / coef) / (float)(iMaxPositions - 1);
@@ -3089,27 +4069,37 @@ void CHorizontalSwitch::mouse (CDrawContext *pContext, CPoint &where)
 		if (isDirty () && listener)
 			listener->valueChanged (pContext, this);
 		
-		pContext->getMouseLocation (where);
+		getMouseLocation (pContext, where);
 		
 		doIdleStuff ();
 	}
 	while (pContext->getMouseButtons () == button);
 
 	// end of edit parameter
-	getParent ()->endEdit (tag);
+	endEdit ();
 }
 
 
 //------------------------------------------------------------------------
 // CRockerSwitch
 //------------------------------------------------------------------------
-// Switch, which releases itself after being clicked
-CRockerSwitch::CRockerSwitch (const CRect &size,
-                              CControlListener *listener, 
-                              long tag,              // identifier tag (ID)
-                              long heightOfOneImage, // height of one image in pixel
-                              CBitmap *background,
-                              CPoint  &offset, const long style)
+/*! @class CRockerSwitch
+Define a rocker switch with 3 states using 3 subpixmaps.
+One click on its leftside, then the first subpixmap is displayed.
+One click on its rightside, then the third subpixmap is displayed.
+When the mouse button is relaxed, the second subpixmap is framed.
+*/
+CRockerSwitch::CRockerSwitch (const CRect &size, CControlListener *listener, long tag,              // identifier tag (ID)
+                              CBitmap *background, CPoint &offset, const long style)
+:	CControl (size, listener, tag, background), offset (offset), style (style)
+{
+	heightOfOneImage = size.width ();
+}
+
+//------------------------------------------------------------------------
+CRockerSwitch::CRockerSwitch (const CRect &size, CControlListener *listener, long tag,              // identifier tag (ID)
+                              CCoord heightOfOneImage, // height of one image in pixel
+                              CBitmap *background, CPoint &offset, const long style)
 :	CControl (size, listener, tag, background), offset (offset), 
 	heightOfOneImage (heightOfOneImage), style (style)
 {}
@@ -3139,23 +4129,32 @@ void CRockerSwitch::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void CRockerSwitch::mouse (CDrawContext *pContext, CPoint &where)
+void CRockerSwitch::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
+
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
+
 	if (!(button & kLButton))
 		return;
 
 	float fEntryState = value;
 
-	long  width_2 = size.width () / 2;
-	long  height_2 = size.height () / 2;
+	CCoord  width_2  = size.width () / 2;
+	CCoord  height_2 = size.height () / 2;
+	
+	// begin of edit parameter
+	beginEdit ();
+	
 	if (button)
 	{
-		// begin of edit parameter
-		getParent ()->beginEdit (tag);
 		do
 		{
 			if (style & kHorizontal) 
@@ -3184,14 +4183,11 @@ void CRockerSwitch::mouse (CDrawContext *pContext, CPoint &where)
 			if (isDirty () && listener)
 				listener->valueChanged (pContext, this);
 
-			pContext->getMouseLocation (where);
+			getMouseLocation (pContext, where);
 
 			doIdleStuff ();
 		}
 		while (pContext->getMouseButtons ());
-
-		// end of edit parameter
-		getParent ()->endEdit (tag);
 	}
 	else
 	{
@@ -3209,6 +4205,9 @@ void CRockerSwitch::mouse (CDrawContext *pContext, CPoint &where)
 	value = 0.f;  // set button to UNSELECTED state
 	if (listener)
 		listener->valueChanged (pContext, this);
+
+	// end of edit parameter
+	endEdit ();
 }
 
 //------------------------------------------------------------------------
@@ -3222,12 +4221,19 @@ bool CRockerSwitch::onWheel (CDrawContext *pContext, const CPoint &where, float 
 	else
 		value = 1.0f;
 
+	// begin of edit parameter
+	beginEdit ();
+
 	if (isDirty () && listener)
 		listener->valueChanged (pContext, this);
 
 	value = 0.0f;  // set button to UNSELECTED state
 	if (listener)
 		listener->valueChanged (pContext, this);
+	
+	// end of edit parameter
+	endEdit ();
+
 	return true;
 }
 
@@ -3235,9 +4241,22 @@ bool CRockerSwitch::onWheel (CDrawContext *pContext, const CPoint &where, float 
 //------------------------------------------------------------------------
 // CMovieBitmap
 //------------------------------------------------------------------------
+/*! @class CMovieBitmap
+A movie pixmap allows to display different subpixmaps according to its current value.
+*/
+CMovieBitmap::CMovieBitmap (const CRect &size, CControlListener *listener, long tag,
+                            CBitmap *background, CPoint &offset)
+  :	CControl (size, listener, tag, background), offset (offset),
+		subPixmaps (subPixmaps), heightOfOneImage (heightOfOneImage)
+{
+	heightOfOneImage = size.height ();
+	subPixmaps = (long)(background->getHeight () / heightOfOneImage);
+}
+
+//------------------------------------------------------------------------
 CMovieBitmap::CMovieBitmap (const CRect &size, CControlListener *listener, long tag,
                             long subPixmaps,        // number of subPixmaps
-                            long heightOfOneImage,  // height of one image in pixel
+                            CCoord heightOfOneImage,  // height of one image in pixel
                             CBitmap *background, CPoint &offset)
   :	CControl (size, listener, tag, background), offset (offset),
 		subPixmaps (subPixmaps), heightOfOneImage (heightOfOneImage)
@@ -3272,13 +4291,20 @@ void CMovieBitmap::draw (CDrawContext *pContext)
 //------------------------------------------------------------------------
 // CMovieButton
 //------------------------------------------------------------------------
-// simulating a real windows-button
-CMovieButton::CMovieButton (const CRect &size,
-                            CControlListener *listener, 
-                            long tag,              // identifier tag (ID)
-                            long heightOfOneImage, // height of one image in pixel
-                            CBitmap *background,
-                            CPoint  &offset)
+/*! @class CMovieButton
+A movie button is a bi-states button with 2 subpixmaps. These subpixmaps are stacked in the pixmap.
+*/
+CMovieButton::CMovieButton (const CRect &size, CControlListener *listener, long tag,              // identifier tag (ID)
+                            CBitmap *background, CPoint &offset)
+: CControl (size, listener, tag, background), offset (offset), buttonState (value)
+{
+	heightOfOneImage = size.height ();
+}
+
+//------------------------------------------------------------------------
+CMovieButton::CMovieButton (const CRect &size, CControlListener *listener, long tag,
+                            CCoord heightOfOneImage, // height of one image in pixel
+                            CBitmap *background, CPoint &offset)
 	:	CControl (size, listener, tag, background), offset (offset),
 		heightOfOneImage (heightOfOneImage), buttonState (value)
 {}
@@ -3314,22 +4340,30 @@ void CMovieButton::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void CMovieButton::mouse (CDrawContext *pContext, CPoint &where)
+void CMovieButton::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
+
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
+
 	if (!(button & kLButton))
 		return;
 
 	// this simulates a real windows button
 	float fEntryState = value;
 
+	// begin of edit parameter
+	beginEdit ();
+		
 	if (pContext->getMouseButtons ())
 	{
-		// begin of edit parameter
-		getParent ()->beginEdit (tag);
 		do
 		{
 			if (where.h >= size.left &&
@@ -3343,14 +4377,11 @@ void CMovieButton::mouse (CDrawContext *pContext, CPoint &where)
 			if (isDirty () && listener)
 				listener->valueChanged (pContext, this);
 	    
-			pContext->getMouseLocation (where); 
+			getMouseLocation (pContext, where);
 
 			doIdleStuff ();
 		}
 		while (pContext->getMouseButtons () == button);
-	
-		// end of edit parameter
-		getParent ()->endEdit (tag);
 	}
 	else
 	{
@@ -3359,6 +4390,9 @@ void CMovieButton::mouse (CDrawContext *pContext, CPoint &where)
 			listener->valueChanged (pContext, this);
 	}
 
+	// end of edit parameter
+	endEdit ();
+
 	buttonState = value;
 }
 
@@ -3366,14 +4400,26 @@ void CMovieButton::mouse (CDrawContext *pContext, CPoint &where)
 //------------------------------------------------------------------------
 // CAutoAnimation
 //------------------------------------------------------------------------
+/*! @class CAutoAnimation
+An auto-animation control contains a given number of subpixmap which can be displayed in loop.
+Two functions allows to get the previous or the next subpixmap (these functions increase or decrease the current value of this control).
+*/
 // displays bitmaps within a (child-) window
-CAutoAnimation::CAutoAnimation (const CRect &size,
-                                CControlListener *listener, 
-                                long tag,         // identifier tag (ID)
+CAutoAnimation::CAutoAnimation (const CRect &size, CControlListener *listener, long tag,
+                                CBitmap *background, CPoint &offset)
+: CControl (size, listener, tag, background), offset (offset), bWindowOpened (false)
+{
+	heightOfOneImage = size.height ();
+	subPixmaps = (long)(background->getHeight () / heightOfOneImage);
+
+	totalHeightOfBitmap = heightOfOneImage * subPixmaps;
+}
+
+//------------------------------------------------------------------------
+CAutoAnimation::CAutoAnimation (const CRect &size, CControlListener *listener, long tag,
                                 long subPixmaps,	 // number of subPixmaps...
-                                long heightOfOneImage, // height of one image in pixel
-                                CBitmap *background,
-                                CPoint  &offset)
+                                CCoord heightOfOneImage, // height of one image in pixel
+                                CBitmap *background, CPoint &offset)
 	:	CControl (size, listener, tag, background), offset (offset),
 		subPixmaps (subPixmaps), heightOfOneImage (heightOfOneImage),
 		bWindowOpened (false)
@@ -3401,17 +4447,24 @@ void CAutoAnimation::draw (CDrawContext *pContext)
 			else
 				pBackground->draw (pContext, size, where);
 		}
-		setDirty (false);
 	}
+	setDirty (false);
 }
 
 //------------------------------------------------------------------------
-void CAutoAnimation::mouse (CDrawContext *pContext, CPoint &where)
+void CAutoAnimation::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 	
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
+
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
+
 	if (!(button & kLButton))
 		return;
 
@@ -3427,7 +4480,7 @@ void CAutoAnimation::mouse (CDrawContext *pContext, CPoint &where)
 	{                                                                       
 		// stop info animation
 		value = 0; // draw first pic of bitmap
-		draw (pContext);
+		setDirty ();
 		closeWindow ();
 	}
 }
@@ -3464,6 +4517,12 @@ void CAutoAnimation::previousPixmap ()
 //------------------------------------------------------------------------
 // CSlider
 //------------------------------------------------------------------------
+/*! @class CSlider
+Define a slider with a given background and handle.
+The range of variation of the handle should be defined.
+By default the handler is drawn with transparency (white color).
+By clicking Alt+Left Mouse the default value is used.
+*/
 CSlider::CSlider (const CRect &rect, CControlListener *listener, long tag,
                   long      iMinPos, // min position in pixel
                   long      iMaxPos, // max position in pixel
@@ -3507,6 +4566,8 @@ CSlider::CSlider (const CRect &rect, CControlListener *listener, long tag,
 	}
 
 	zoomFactor = 10.f;
+
+	setWantsFocus (true);
 }
 
 //------------------------------------------------------------------------
@@ -3544,6 +4605,8 @@ CSlider::CSlider (const CRect &rect, CControlListener *listener, long tag,
 	setOffsetHandle (offsetHandle);
 	
 	zoomFactor = 10.f;
+
+	setWantsFocus (true);
 }
 
 //------------------------------------------------------------------------
@@ -3575,9 +4638,9 @@ bool CSlider::attached (CView *parent)
 {
 	if (pOScreen)
 		delete pOScreen;
-
-	pOScreen = new COffscreenContext (getParent (), widthControl, heightControl, kBlackCColor);
-		
+	#if !MACX
+	pOScreen = new COffscreenContext (getFrame (), widthControl, heightControl, kBlackCColor);
+	#endif		
 	return CControl::attached (parent);
 }
 
@@ -3595,6 +4658,12 @@ bool CSlider::removed (CView *parent)
 //------------------------------------------------------------------------
 void CSlider::draw (CDrawContext *pContext)
 {
+	CDrawContext* drawContext = pOScreen ? pOScreen : pContext;
+
+	#if 1
+	if (pOScreen && bTransparencyEnabled)
+		pOScreen->copyTo (pContext, size);
+	#endif
 	float fValue;
 	if (style & kLeft || style & kTop)
 		fValue = value;
@@ -3603,12 +4672,14 @@ void CSlider::draw (CDrawContext *pContext)
 	
 	// (re)draw background
 	CRect rect (0, 0, widthControl, heightControl);
+	if (!pOScreen)
+		rect.offset (size.left, size.top);
 	if (pBackground)
 	{
 		if (bTransparencyEnabled)
-			pBackground->drawTransparent (pOScreen, rect, offset);
+			pBackground->drawTransparent (drawContext, rect, offset);
 		else
-			pBackground->draw (pOScreen, rect, offset);
+			pBackground->draw (drawContext, rect, offset);
 	}
 	
 	// calc new coords of slider
@@ -3635,43 +4706,47 @@ void CSlider::draw (CDrawContext *pContext)
 		rectNew.bottom = rectNew.top + heightOfSlider;
 		rectNew.bottom = (rectNew.bottom > maxTmp) ? maxTmp : rectNew.bottom;
 	}
+	if (!pOScreen)
+		rectNew.offset (size.left, size.top);
 
 	// draw slider at new position
 	if (pHandle)
 	{
 		if (bDrawTransparentEnabled)
-			pHandle->drawTransparent (pOScreen, rectNew);
+			pHandle->drawTransparent (drawContext, rectNew);
 		else 
-			pHandle->draw (pOScreen, rectNew);
+			pHandle->draw (drawContext, rectNew);
 	}
 
-	pOScreen->copyFrom (pContext, size);
+	if (pOScreen)
+		pOScreen->copyFrom (pContext, size);
 	
 	setDirty (false);
 }
 
 //------------------------------------------------------------------------
-void CSlider::mouse (CDrawContext *pContext, CPoint &where)
+void CSlider::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
 
-	// set the default value
-	if (button == (kControl|kLButton))
+	if (listener && button & (kAlt | kShift | kControl | kApple))
 	{
-		value = getDefaultValue ();
-		if (isDirty () && listener)
-			listener->valueChanged (pContext, this);
-		return;
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
 	}
+
+	// check if default value wanted
+	if (checkDefaultValue (pContext, button))
+		return;
 	
 	// allow left mousebutton only
 	if (!(button & kLButton))
 		return;
 
-	long delta;
+	CCoord delta;
 	if (style & kHorizontal)
 		delta = size.left + offsetHandle.h;
 	else
@@ -3683,7 +4758,7 @@ void CSlider::mouse (CDrawContext *pContext, CPoint &where)
 			fValue = value;
 		else 
 			fValue = 1.f - value;
-		long actualPos;
+		CCoord actualPos;
 		CRect rect;
 
 		if (style & kHorizontal)
@@ -3727,8 +4802,7 @@ void CSlider::mouse (CDrawContext *pContext, CPoint &where)
 	long  oldButton = button;
 
 	// begin of edit parameter
-	getParent ()->beginEdit (tag);
-	getParent ()->setEditView (this);
+	beginEdit ();
 
 	while (1)
 	{
@@ -3759,13 +4833,13 @@ void CSlider::mouse (CDrawContext *pContext, CPoint &where)
 		if (isDirty () && listener)
 			listener->valueChanged (pContext, this);
 
-		pContext->getMouseLocation (where);
+		getMouseLocation (pContext, where);
 
 		doIdleStuff ();
 	}
 
 	// end of edit parameter
-	getParent ()->endEdit (tag);
+	endEdit ();
 }
 
 //------------------------------------------------------------------------
@@ -3782,14 +4856,22 @@ bool CSlider::onWheel (CDrawContext *pContext, const CPoint &where, float distan
 	bounceValue ();
 
 	if (isDirty () && listener)
+	{
+		// begin of edit parameter
+		beginEdit ();
+	
 		listener->valueChanged (pContext, this);
+	
+		// end of edit parameter
+		endEdit ();
+	}
+
 	return true;
 }
 
 //------------------------------------------------------------------------
 long CSlider::onKeyDown (VstKeyCode& keyCode)
 {
-#if !PLUGGUI
 	switch (keyCode.virt)
 	{
 	case VKEY_UP :
@@ -3808,11 +4890,17 @@ long CSlider::onKeyDown (VstKeyCode& keyCode)
 			bounceValue ();
 
 			if (isDirty () && listener)
+			{
+				// begin of edit parameter
+				beginEdit ();
+			
 				listener->valueChanged (0, this);
+			
+				// end of edit parameter
+				endEdit ();
+			}
 		} return 1;
 	}
-#endif
-
 	return -1;
 }
 
@@ -3834,6 +4922,9 @@ void CSlider::setHandle (CBitmap *_pHandle)
 //------------------------------------------------------------------------
 // CVerticalSlider
 //------------------------------------------------------------------------
+/*! @class CVerticalSlider
+This is the vertical slider. See CSlider.
+*/
 CVerticalSlider::CVerticalSlider (const CRect &rect, CControlListener *listener, long tag,
                                   long      iMinPos, // min position in pixel
                                   long      iMaxPos, // max position in pixel
@@ -3859,6 +4950,9 @@ CVerticalSlider::CVerticalSlider (const CRect &rect, CControlListener *listener,
 //------------------------------------------------------------------------
 // CHorizontalSlider
 //------------------------------------------------------------------------
+/*! @class CHorizontalSlider
+This is the horizontal slider. See CSlider.
+*/
 CHorizontalSlider::CHorizontalSlider (const CRect &rect, CControlListener *listener, long tag,
                                   long      iMinPos, // min Y position in pixel
                                   long      iMaxPos, // max Y position in pixel
@@ -3884,7 +4978,10 @@ CHorizontalSlider::CHorizontalSlider (const CRect &rect, CControlListener *liste
 //------------------------------------------------------------------------
 // CSpecialDigit
 //------------------------------------------------------------------------
-// special display with custom digits (0...9)
+/*! @class CSpecialDigit
+Can be used to display a counter with maximum 7 digits.
+All digit have the same size and are stacked in height in the pixmap.
+*/
 CSpecialDigit::CSpecialDigit (const CRect &size,
                               CControlListener *listener,
                               long      tag,        // tag identifier
@@ -3903,14 +5000,29 @@ CSpecialDigit::CSpecialDigit (const CRect &size,
 	if (iNumbers > 7)
 		iNumbers = 7;
 
-	// store coordinates of x/y pos of each digit
-	for (long i = 0; i < iNumbers; i++)
+	if (xpos == NULL)
 	{
-		this->xpos[i] = xpos[i];
-		this->ypos[i] = ypos[i];
+		// automatically init xpos/ypos if not provided by caller
+		const int numw = (const int)background->getWidth();
+		int x = (int)size.left;
+		for (long i = 0; i < iNumbers; i++)
+		{
+			this->xpos[i] = x; 
+			this->ypos[i] = (long)size.top;
+			x += numw;
+		}
+	} 
+	else 
+	{
+		// store coordinates of x/y pos of each digit
+		for (long i = 0; i < iNumbers; i++)
+		{
+			this->xpos[i] = xpos[i];
+			this->ypos[i] = ypos[i];
+		}
 	}
 
-	setMax ((float)pow (10, iNumbers) - 1.0f);
+	setMax ((float)pow (10., (double)iNumbers) - 1.0f);
 	setMin (0.0f);
 }
 
@@ -3968,7 +5080,7 @@ void CSpecialDigit::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-float CSpecialDigit::getNormValue ()
+float CSpecialDigit::getNormValue () const
 { 
 	float fTemp;
 	fTemp = value / getMax ();
@@ -3984,13 +5096,22 @@ float CSpecialDigit::getNormValue ()
 //------------------------------------------------------------------------
 // CKickButton
 //------------------------------------------------------------------------
-// Button, which releases itself after being clicked
-CKickButton::CKickButton (const CRect &size,
-                              CControlListener *listener, 
-                              long tag,              // identifier tag (ID)
-                              long heightOfOneImage, // height of one image in pixel
-                              CBitmap *background,
-                              CPoint  &offset)
+/*! @class CKickButton
+Define a button with 2 states using 2 subpixmaps.
+One click on it, then the second subpixmap is displayed.
+When the mouse button is relaxed, the first subpixmap is framed.
+*/
+CKickButton::CKickButton (const CRect &size, CControlListener *listener, long tag,
+                          CBitmap *background, CPoint &offset)
+:	CControl (size, listener, tag, background), offset (offset)
+{
+	heightOfOneImage = size.height ();
+}
+
+//------------------------------------------------------------------------
+CKickButton::CKickButton (const CRect &size, CControlListener *listener, long tag,
+                          CCoord heightOfOneImage, // height of one image in pixel
+                          CBitmap *background, CPoint &offset)
 :	CControl (size, listener, tag, background), offset (offset), 
 	heightOfOneImage (heightOfOneImage)
 {}
@@ -4020,22 +5141,30 @@ void CKickButton::draw (CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void CKickButton::mouse (CDrawContext *pContext, CPoint &where)
+void CKickButton::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 	
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
+
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
+
 	if (!(button & kLButton))
 		return;
 
 	// this simulates a real windows button
 	float fEntryState = value;
 
+	// begin of edit parameter
+	beginEdit ();
+
 	if (pContext->getMouseButtons () == kLButton)
 	{
-		// begin of edit parameter
-		getParent ()->beginEdit (tag);
 		do
 		{
 			if (where.h >= size.left && where.v >= size.top  &&
@@ -4047,14 +5176,11 @@ void CKickButton::mouse (CDrawContext *pContext, CPoint &where)
 			if (isDirty () && listener)
 				listener->valueChanged (pContext, this);
 			
-			pContext->getMouseLocation (where);
+			getMouseLocation (pContext, where);
 			
 			doIdleStuff ();
 		}
 		while (pContext->getMouseButtons () == kLButton);
-		
-		// end of edit parameter
-		getParent ()->endEdit (tag);
 	}
 	else
 	{
@@ -4066,21 +5192,27 @@ void CKickButton::mouse (CDrawContext *pContext, CPoint &where)
 	value = 0.0f;  // set button to UNSELECTED state
 	if (listener)
 		listener->valueChanged (pContext, this);
+
+	// end of edit parameter
+	endEdit ();
 }
 
 
 //------------------------------------------------------------------------
 // CSplashScreen
 //------------------------------------------------------------------------
+/*! @class CSplashScreen
+One click on its activated region and its pixmap is displayed, in this state the other control can not be used,
+an another click on the displayed area reinstalls the normal frame.
+This can be used to display a help view over the other views.
+*/
 // one click draw its pixmap, an another click redraw its parent
-CSplashScreen::CSplashScreen (const CRect &size,
-                              CControlListener *listener, 
-                              long     tag,
+CSplashScreen::CSplashScreen (const CRect &size, CControlListener *listener, long tag,
                               CBitmap *background,
                               CRect   &toDisplay,
                               CPoint  &offset)
 :	CControl (size, listener, tag, background), 
-	toDisplay (toDisplay), offset (offset)
+	toDisplay (toDisplay), offset (offset), bitmapTransparency (255)
 {}
 
 //------------------------------------------------------------------------
@@ -4088,12 +5220,24 @@ CSplashScreen::~CSplashScreen ()
 {}
 
 //------------------------------------------------------------------------
+void CSplashScreen::setBitmapTransparency (unsigned char transparency)
+{
+	bitmapTransparency = transparency;
+	setTransparency (bitmapTransparency != 255);
+}
+
+//------------------------------------------------------------------------
 void CSplashScreen::draw (CDrawContext *pContext)
 {
 	if (value && pBackground)
 	{
 		if (bTransparencyEnabled)
+		{
+			if (bitmapTransparency)
+				pBackground->drawAlphaBlend (pContext, toDisplay, offset, bitmapTransparency);
+			else
 			pBackground->drawTransparent (pContext, toDisplay, offset);
+		}
 		else
 			pBackground->draw (pContext, toDisplay, offset);
 	}
@@ -4110,39 +5254,48 @@ bool CSplashScreen::hitTest (const CPoint& where, const long buttons)
 }
 
 //------------------------------------------------------------------------
-void CSplashScreen::mouse (CDrawContext *pContext, CPoint &where)
+void CSplashScreen::mouse (CDrawContext *pContext, CPoint &where, long button)
 {
 	if (!bMouseEnabled)
 		return;
 
-	long button = pContext->getMouseButtons ();
+	if (button == -1) button = pContext->getMouseButtons ();
+
+	if (listener && button & (kAlt | kShift | kControl | kApple))
+	{
+		if (listener->controlModifierClicked (pContext, this, button) != 0)
+			return;
+	}
+
 	if (!(button & kLButton))
 		return;
 
 	value = !value;
 	if (value)
 	{
-		if (getParent () && getParent ()->setModalView (this))
+		if (getFrame () && getFrame ()->setModalView (this))
 		{
 			keepSize = size;
 			size = toDisplay;
-			draw (pContext);
+			mouseableArea = size;
+//			draw (pContext);
 			if (listener)
 				listener->valueChanged (pContext, this);
 		}
+		setDirty ();
 	}
 	else
 	{
 		size = keepSize;
-		if (getParent ())
-		{
-			getParent ()->setModalView (NULL);
-			getParent ()->draw (pContext);
-		}
+		mouseableArea = size;
 		if (listener)
 			listener->valueChanged (pContext, this);
+		if (getFrame ())
+		{
+			getFrame ()->setDirty (true);
+			getFrame ()->setModalView (NULL);
+		}
 	}
-	setDirty ();
 }
 
 //------------------------------------------------------------------------
@@ -4152,12 +5305,12 @@ void CSplashScreen::unSplash ()
 	value = 0.f;
 
 	size = keepSize;
-	if (getParent ())
+	if (getFrame ())
 	{
-		if (getParent ()->getModalView () == this)
+		if (getFrame ()->getModalView () == this)
 		{
-			getParent ()->setModalView (NULL);
-			getParent ()->redraw ();
+			getFrame ()->setModalView (NULL);
+			getFrame ()->redraw ();
 		}
 	}
 }
@@ -4168,9 +5321,14 @@ void CSplashScreen::unSplash ()
 CVuMeter::CVuMeter (const CRect &size, CBitmap *onBitmap, CBitmap *offBitmap,
                     long nbLed, const long style)
 	: CControl (size, 0, 0),
-	  onBitmap (onBitmap), offBitmap (offBitmap), nbLed (nbLed), style (style)
+	  onBitmap (onBitmap), offBitmap (offBitmap), pOScreen (0),
+	  nbLed (nbLed), style (style)
 {
 	setDecreaseStepValue (0.1f);
+
+#if WINDOWS && !USE_LIBPNG
+	setUseOffscreen (true);
+#endif
 	
 	if (onBitmap)
 		onBitmap->remember ();
@@ -4196,14 +5354,53 @@ void CVuMeter::setDirty (const bool val)
 	CView::setDirty (val);
 }
 
+//-----------------------------------------------------------------------------
+bool CVuMeter::attached (CView *parent)
+{
+	if (pOScreen)
+		delete pOScreen;
+
+	if (bUseOffscreen)
+	{
+		pOScreen = new COffscreenContext (getFrame (), (long)size.width (), (long)size.height (), kBlackCColor);
+		rectOn  (0, 0, size.width (), size.height ());
+		rectOff (0, 0, size.width (), size.height ());
+	}
+	else
+	{
+		rectOn  (size.left, size.top, size.right, size.bottom);
+		rectOff (size.left, size.top, size.right, size.bottom);
+	}
+
+	return CControl::attached (parent);
+}
+
 //------------------------------------------------------------------------
-void CVuMeter::draw (CDrawContext *pContext)
+void CVuMeter::setUseOffscreen (bool val)
+{
+	bUseOffscreen = val;
+}
+
+//-----------------------------------------------------------------------------
+bool CVuMeter::removed (CView *parent)
+{
+	if (pOScreen)
+	{
+		delete pOScreen;
+		pOScreen = 0;
+	}
+	return CControl::removed (parent);
+}
+
+//------------------------------------------------------------------------
+void CVuMeter::draw (CDrawContext *_pContext)
 {
 	if (!onBitmap) 
 		return;
 
 	CPoint pointOn;
 	CPoint pointOff;
+	CDrawContext *pContext = _pContext;
 
 	bounceValue ();
 	
@@ -4212,10 +5409,22 @@ void CVuMeter::draw (CDrawContext *pContext)
 		newValue = value;
 	oldValue = newValue;
 
+	if (bUseOffscreen)
+	{
+		if (!pOScreen)
+		{
+			pOScreen = new COffscreenContext (getFrame (), (long)size.width (), (long)size.height (), kBlackCColor);
+			rectOn  (0, 0, size.width (), size.height ());
+			rectOff (0, 0, size.width (), size.height ());
+		}
+		pContext = pOScreen;
+	}
+
 	if (style & kHorizontal) 
 	{
-		long tmp = (long)(((long)(nbLed * newValue + 0.5f) / (float)nbLed) * onBitmap->getWidth ());
+		CCoord tmp = (long)(((long)(nbLed * newValue + 0.5f) / (float)nbLed) * onBitmap->getWidth ());
 		pointOff (tmp, 0);
+		if (!bUseOffscreen)
 		tmp += size.left;
 
 		rectOff.left = tmp;
@@ -4223,13 +5432,15 @@ void CVuMeter::draw (CDrawContext *pContext)
 	}
 	else 
 	{
-		long tmp = (long)(((long)(nbLed * (getMax () - newValue) + 0.5f) / (float)nbLed) * onBitmap->getHeight ());
+		CCoord tmp = (long)(((long)(nbLed * (getMax () - newValue) + 0.5f) / (float)nbLed) * onBitmap->getHeight ());
 		pointOn (0, tmp);
+		if (!bUseOffscreen)
 		tmp += size.top;
 
 		rectOff.bottom = tmp;
 		rectOn.top     = tmp;
 	}
+
 	if (offBitmap)
 	{
 		if (bTransparencyEnabled)
@@ -4242,6 +5453,10 @@ void CVuMeter::draw (CDrawContext *pContext)
 		onBitmap->drawTransparent (pContext, rectOn, pointOn);
 	else
 		onBitmap->draw (pContext, rectOn, pointOn);
+
+	if (pOScreen)
+		pOScreen->copyFrom (_pContext, size);
+	setDirty (false);
 }
 
 END_NAMESPACE_VSTGUI

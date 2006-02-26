@@ -2,14 +2,13 @@
 // VST Plug-Ins SDK
 // VSTGUI: Graphical User Interface Framework for VST plugins
 //
-// Version 2.2         Date : 20/11/01
+// Version 3.0       Date : 30/06/04
 //
-// © 2003, Steinberg Media Technologies, All Rights Reserved
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 // VSTGUI LICENSE
-// © 2003, Steinberg Media Technologies, All Rights Reserved
+// © 2004, Steinberg Media Technologies, All Rights Reserved
 //-----------------------------------------------------------------------------
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -39,35 +38,36 @@
 #include "aeffguieditor.h"
 #endif
 
-#ifndef __audioeffectx__
-#include "audioeffectx.h"
-#endif
-
+//-----------------------------------------------------------------------------
 #define kIdleRate    100 // host idle rate in ms
 #define kIdleRate2    50
 #define kIdleRateMin   4 // minimum time between 2 idles in ms
 
-#if WINDOWS
-struct tagMSG windowsMessage;
+#if MOTIF
+static unsigned int _getTicks ();
 #endif
 
-#if MOTIF
-unsigned long _getTicks ();
-#endif
+//-----------------------------------------------------------------------------
+VstInt32 AEffGUIEditor::knobMode = kCircularMode;
 
 //-----------------------------------------------------------------------------
 // AEffGUIEditor Implementation
 //-----------------------------------------------------------------------------
-AEffGUIEditor::AEffGUIEditor (AudioEffect *pEffect) 
-	: AEffEditor (pEffect), frame (0), inIdleStuff (false)
+AEffGUIEditor::AEffGUIEditor (AudioEffect* effect) 
+: AEffEditor (effect), 
+  lLastTicks (0),
+  inIdleStuff (false),
+  frame (0)
 {
-	pEffect->setEditor (this);
-	systemWindow = 0;
-	lLastTicks   = getTicks ();
+	rect.left = rect.top = rect.right = rect.bottom = 0;
+	lLastTicks = getTicks ();
+
+	effect->setEditor (this);
 
 	#if WINDOWS
 	OleInitialize (0);
 	#endif
+
 	#if MACX
 	void InitMachOLibrary ();
 	InitMachOLibrary ();
@@ -80,6 +80,7 @@ AEffGUIEditor::~AEffGUIEditor ()
 	#if WINDOWS
 	OleUninitialize ();
 	#endif
+
 	#if MACX
 	void ExitMachOLibrary ();
 	ExitMachOLibrary ();
@@ -87,34 +88,76 @@ AEffGUIEditor::~AEffGUIEditor ()
 }
 
 //-----------------------------------------------------------------------------
-#if VST_2_1_EXTENSIONS
-long AEffGUIEditor::onKeyDown (VstKeyCode &keyCode)
-{
-	
-	return frame ? frame->onKeyDown (keyCode) : -1;
+void AEffGUIEditor::setParameter (VstInt32 index, float value) 
+{}
+
+//-----------------------------------------------------------------------------
+void AEffGUIEditor::beginEdit (VstInt32 index)
+{ 
+	((AudioEffectX*)effect)->beginEdit (index); 
 }
 
 //-----------------------------------------------------------------------------
-long AEffGUIEditor::onKeyUp (VstKeyCode &keyCode)
+void AEffGUIEditor::endEdit (VstInt32 index)
+{ 
+	((AudioEffectX*)effect)->endEdit (index); 
+}
+
+//-----------------------------------------------------------------------------
+#if VST_2_1_EXTENSIONS
+bool AEffGUIEditor::onKeyDown (VstKeyCode& keyCode)
 {
-	return frame ? frame->onKeyUp (keyCode) : -1;
+	return frame && frame->onKeyDown (keyCode) == 1 ? true : false;
+}
+
+//-----------------------------------------------------------------------------
+bool AEffGUIEditor::onKeyUp (VstKeyCode& keyCode)
+{
+	return frame && frame->onKeyUp (keyCode) == 1 ? true : false;
+}
+
+//-----------------------------------------------------------------------------
+bool AEffGUIEditor::setKnobMode (VstInt32 val) 
+{
+	knobMode = val;
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+bool AEffGUIEditor::onWheel (float distance)
+{
+	if (frame)
+	{
+		CDrawContext context (frame, NULL, systemWindow);
+		CPoint where;
+		context.getMouseLocation (where);
+		return frame->onWheel (&context, where, distance);
+	}
+	return false;
 }
 #endif
 
 //-----------------------------------------------------------------------------
-void AEffGUIEditor::draw (ERect *ppErect)
+#if MAC
+void AEffGUIEditor::DECLARE_VST_DEPRECATED (draw) (ERect* rect)
 {
-	ppErect = ppErect;	// not yet supported, is 0!
-
 	if (frame)
-		frame->draw ();
+	{
+		if (rect)
+		{
+			CRect r (rect->left, rect->top, rect->right, rect->bottom);
+			CDrawContext context (frame, NULL, systemWindow);
+			frame->drawRect (&context, r);
+		}
+		else
+			frame->draw ();
+	}
 }
 
-#if MAC
 //-----------------------------------------------------------------------------
-long AEffGUIEditor::mouse (long x, long y)
+VstInt32 AEffGUIEditor::DECLARE_VST_DEPRECATED (mouse) (VstInt32 x, VstInt32 y)
 {
-	CDrawContext context (frame, systemWindow, systemWindow);
+	CDrawContext context (frame, NULL, systemWindow);
 	CPoint where (x, y);
 
 	if (frame)
@@ -125,18 +168,16 @@ long AEffGUIEditor::mouse (long x, long y)
 #endif
 
 //-----------------------------------------------------------------------------
-long AEffGUIEditor::open (void *ptr)
+bool AEffGUIEditor::getRect (ERect **ppErect)
 {
-	// add this to update the value the first time
-	postUpdate ();
-
-	return AEffEditor::open (ptr);
+	*ppErect = &rect;
+	return true;
 }
 
 //-----------------------------------------------------------------------------
 void AEffGUIEditor::idle ()
 {
-#if MAC
+#if MAC && !QUARTZ
 	GrafPtr	savePort;
 	GetPort (&savePort);
 	SetPort ((GrafPtr)GetWindowPort ((WindowRef)systemWindow));
@@ -173,26 +214,7 @@ void AEffGUIEditor::idle ()
 }
 
 //-----------------------------------------------------------------------------
-long AEffGUIEditor::knobMode = kCircularMode;
-
-//-----------------------------------------------------------------------------
-long AEffGUIEditor::setKnobMode (int val) 
-{
-	AEffGUIEditor::knobMode = val;
-	return 1;
-}
-
-//-----------------------------------------------------------------------------
-bool AEffGUIEditor::onWheel (float distance)
-{
-	if (frame)
-		return frame->onWheel (0, CPoint (), distance);
-	
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-void AEffGUIEditor::wait (unsigned long ms)
+void AEffGUIEditor::wait (unsigned int ms)
 {
 	#if MAC
 	unsigned long ticks;
@@ -211,13 +233,13 @@ void AEffGUIEditor::wait (unsigned long ms)
 }
 
 //-----------------------------------------------------------------------------
-unsigned long AEffGUIEditor::getTicks ()
+unsigned int AEffGUIEditor::getTicks ()
 {
 	#if MAC
 	return (TickCount () * 1000) / 60;
 	
 	#elif WINDOWS
-	return (unsigned long)GetTickCount ();
+	return (unsigned int)GetTickCount ();
 	
 	#elif MOTIF
 	return _getTicks ();
@@ -232,14 +254,14 @@ unsigned long AEffGUIEditor::getTicks ()
 //-----------------------------------------------------------------------------
 void AEffGUIEditor::doIdleStuff ()
 {
-	#if !(MAC && !CARBON)
+	#if !(MAC && !TARGET_API_MAC_CARBON)
 	// get the current time
-	unsigned long currentTicks = getTicks ();
+	unsigned int currentTicks = getTicks ();
 
 	// YG TEST idle ();
 	if (currentTicks < lLastTicks)
 	{
-		#if (MAC && CARBON)
+		#if (MAC && TARGET_API_MAC_CARBON)
 		RunCurrentEventLoop (kEventDurationMillisecond * kIdleRateMin);
 		#else
 		wait (kIdleRateMin);
@@ -248,9 +270,11 @@ void AEffGUIEditor::doIdleStuff ()
 		if (currentTicks < lLastTicks - kIdleRate2)
 			return;
 	}
-	idle (); // TEST
+
+	idle ();
 
 	#if WINDOWS
+	MSG windowsMessage;
 	if (PeekMessage (&windowsMessage, NULL, WM_PAINT, WM_PAINT, PM_REMOVE))
 		DispatchMessage (&windowsMessage);
 
@@ -278,16 +302,10 @@ void AEffGUIEditor::doIdleStuff ()
 	inIdleStuff = false;
 }
 
-//-----------------------------------------------------------------------------
-long AEffGUIEditor::getRect (ERect **ppErect)
-{
-	*ppErect = &rect;
-	return true;
-}
 
 #if MOTIF
 //-----------------------------------------------------------------------------
-unsigned long _getTicks ()
+unsigned int _getTicks ()
 {
 	#if SGI
 	long long time;
@@ -316,10 +334,17 @@ extern "C" {
 }
 #include <CoreFoundation/CFBundle.h>
 
-short localizedResRefNum;
-short fixResRefNum;
+BEGIN_NAMESPACE_VSTGUI
 
 void* gBundleRef = 0;
+
+END_NAMESPACE_VSTGUI
+
+#if USE_NAMESPACE
+#define VSTGUI_BUNDLEREF VSTGUI::gBundleRef
+#else
+#define VSTGUI_BUNDLEREF gBundleRef
+#endif
 
 // -----------------------------------------------------------------------------
 static CFBundleRef _CFXBundleCreateFromImageName (CFAllocatorRef allocator, const char* image_name);
@@ -370,15 +395,15 @@ void InitMachOLibrary ()
 	if (imagename == 0)
 	return;
 	/* get the bundle of a header, TODO: ther have to be a better way */
-	gBundleRef = (void*)_CFXBundleCreateFromImageName (NULL, imagename);
+	VSTGUI_BUNDLEREF = (void*)_CFXBundleCreateFromImageName (NULL, imagename);
 }
 
 // -----------------------------------------------------------------------------
 void ExitMachOLibrary ();
 void ExitMachOLibrary ()
 {
-	if (gBundleRef)
-		CFRelease (gBundleRef);
+	if (VSTGUI_BUNDLEREF)
+		CFRelease (VSTGUI_BUNDLEREF);
 }
 
 #endif
