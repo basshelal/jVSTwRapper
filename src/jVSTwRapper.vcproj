@@ -237,6 +237,18 @@
 			<File
 				RelativePath=".\src\VSTV23ToPlug.h">
 			</File>
+			<File
+				RelativePath=".\src\VSTV24ToHost.cpp">
+			</File>
+			<File
+				RelativePath=".\src\VSTV24ToHost.h">
+			</File>
+			<File
+				RelativePath=".\src\VSTV24ToPlug.cpp">
+			</File>
+			<File
+				RelativePath=".\src\VSTV24ToPlug.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Config Files"

@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4		$Date: 2006/02/26 00:15:49 $
+// Version 2.4		$Date: 2006/02/27 13:58:46 $
 //
 // Category     : VST 2.x Interfaces
 // Filename     : aeffect.h
@@ -65,7 +65,8 @@
 
 /** Disable for Hosts to serve Plug-ins below VST 2.4 */
 #ifndef VST_FORCE_DEPRECATED
-#define VST_FORCE_DEPRECATED VST_2_4_EXTENSIONS 
+//#define VST_FORCE_DEPRECATED VST_2_4_EXTENSIONS 
+#define VST_FORCE_DEPRECATED 0 //dm: force deprecated stuff to be there. we want to be backward compatible!
 #endif
 
 /** Declares identifier as deprecated. */

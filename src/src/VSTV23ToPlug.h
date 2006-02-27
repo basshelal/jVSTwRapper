@@ -35,7 +35,7 @@ class VSTV23ToPlug : public VSTV22ToPlug {
 		// Called in offline (non RealTime) Process before process is called, indicates how many sample will be processed
 
 		virtual VstInt32 getNextShellPlugin (char* name);
-		// Tthis opcode is only called, if Plugin is of type kPlugCategShell.
+		// This opcode is only called, if Plugin is of type kPlugCategShell.
 		// should return the next plugin's uniqueID.
 		// name points to a char buffer of size 64, which is to be filled
        	// with the name of the plugin including the terminating zero.

@@ -302,14 +302,12 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_needIdle
 		(JNIEnv* env, jobject obj) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->needIdle();
 	else return false;
 }
-*/
 
 
 /*
@@ -469,14 +467,12 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getOutputLat
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getNumAutomatableParameters
 		(JNIEnv* env, jobject obj) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getNumAutomatableParameters();
 	else return 0L;
 }
-*/
 
 /*
  * Class:     jvst_wrapper_communication_VSTV20ToHost
@@ -485,14 +481,12 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getNumAutoma
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getParameterQuantization
 		(JNIEnv* env, jobject obj) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getParameterQuantization();
 	else return 0L;
 }
-*/
 
 /*
  * Class:     jvst_wrapper_communication_VSTV20ToHost
@@ -609,13 +603,11 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getSpeak
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_hasExternalBuffer
 		(JNIEnv* env, jobject obj, jboolean state) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->hasExternalBuffer(state != 0 ? true : false);
 }
-*/
 
 
 /*
@@ -647,13 +639,11 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_noTail
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_setOutputSamplerate
 		(JNIEnv* env, jobject obj, jfloat sr) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->setOutputSamplerate(sr);
 }
-*/
 
 
 /*
@@ -663,14 +653,12 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_setOutputSam
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_tempoAt
 		(JNIEnv* env, jobject obj, jint pos) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->tempoAt(pos);
 	else return 0L;
 }
-*/
 
 
 /*
@@ -692,13 +680,11 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_updateDi
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_wantAsyncOperation
 		(JNIEnv* env, jobject obj, jboolean state) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->wantAsyncOperation(state != 0 ? true : false);
 }
-*/
 
 
 /*
@@ -708,13 +694,11 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_wantAsyncOpe
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_wantEvents
 		(JNIEnv* env, jobject obj, jint fil) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->wantEvents(fil);
 }
-*/
 
 
 /*
@@ -724,14 +708,12 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_wantEvents
  */
 
 //dm: deprecated as of vst2.4
-/*
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_willProcessReplacing
 		(JNIEnv* env, jobject obj) {
     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->willProcessReplacing();
 	else return 0L;
 }
-*/
 
 
 
