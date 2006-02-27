@@ -12,9 +12,25 @@ package jvst.wrapper.valueobjects;
 public class VSTEvent {
   //VstEvent Types
   public static final int VST_EVENT_MIDI_TYPE = 1;	  // midi event, can be cast as VstMidiEvent (see below)
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public static final int VST_EVENT_AUDIO_TYPE = 2;	  // audio
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public static final int VST_EVENT_VIDEO_TYPE = 3;	  // video
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public static final int VST_EVENT_PARAMETER_TYPE = 4; // parameter
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public static final int VST_EVENT_TRIGGER_TYPE = 5;	  // trigger
   public static final int VST_EVENT_SYSEX_TYPE = 6;	  // midi system exclusive
   // ...etc
@@ -23,7 +39,7 @@ public class VSTEvent {
   protected int type;		// see enum above
   protected int byteSize;		// of this event, excl. type and byteSize
   protected int deltaFrames;	// sample frames related to the current block start sample position
-  protected int flags;		// generic flags, none defined yet (0)
+  protected int flags;		// generic flags, used for midieventflags since 2.4
   protected byte[] data = new byte[16];		// size may vary but is usually 16
 
   public VSTEvent() {

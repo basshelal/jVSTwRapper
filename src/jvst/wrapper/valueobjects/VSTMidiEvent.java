@@ -21,6 +21,10 @@ public class VSTMidiEvent extends VSTEvent {
   protected byte reserved2;	// zero
 
 
+  public static final int FLAG_MidiEventIsRealtime = 1 << 0;	///< means that this event is played life (not in playback)
+
+  
+  
 
   public VSTMidiEvent() {
     //private byte midiData[4];	// 1 thru 3 midi bytes; midiData[3] is reserved (zero)
