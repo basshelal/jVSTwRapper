@@ -26,17 +26,32 @@ public abstract class VSTV10ToHost  {
   public native void setUniqueID(int id);
   public native void setNumInputs(int num);
   public native void setNumOutputs(int num);
-//deprecated as of vst2.4
-  //public native void hasVu(boolean state);
-//deprecated as of vst2.4
-  //public native void hasClip(boolean state);
-//deprecated as of vst2.4
-  //public native void canMono(boolean state);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
+  public native void hasVu(boolean state);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
+  public native void hasClip(boolean state);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
+  public native void canMono(boolean state);
   public native void canProcessReplacing(boolean state);
-//deprecated as of vst2.4
-  //public native void setRealtimeQualities(int qualities);
-//deprecated as of vst2.4
-  //public native void setOfflineQualities(int qualities);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
+  public native void setRealtimeQualities(int qualities);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
+  public native void setOfflineQualities(int qualities);
   public native void setInitialDelay(int delay);
   public native void programsAreChunks(boolean state);
   public native float getSampleRate();

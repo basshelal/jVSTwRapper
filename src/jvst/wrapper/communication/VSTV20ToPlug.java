@@ -59,6 +59,7 @@ public interface VSTV20ToPlug extends VSTV10ToPlug {
 
   //public void getIcon();
   //not supported because of our own ui handling!
+  //nah! doesnt matter, its deprecated since 2.4
 
 
 
@@ -79,21 +80,50 @@ public interface VSTV20ToPlug extends VSTV10ToPlug {
   public int getVendorVersion();
 
   public boolean canParameterBeAutomated(int index);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public boolean copyProgram(int destination);
+  
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public int fxIdle();
   public float getChannelParameter(int channel, int index);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public int getNumCategories();
 
   public VSTPinProperties getInputProperties(int index);
   public VSTPinProperties getOutputProperties(int index);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public String getErrorText();
   public int getGetTailSize();
   public VSTParameterProperties getParameterProperties(int index);
 
 
   public int getVstVersion ();
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public void inputConnected (int index, boolean state);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public void outputConnected (int index, boolean state);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public boolean keysRequired ();
 
 
@@ -109,8 +139,20 @@ public interface VSTV20ToPlug extends VSTV10ToPlug {
 
   public int processEvents (VSTEvents e);
   public boolean processVariableIo (VSTVariableIO vario);
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public int reportCurrentPosition ();
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public float[] reportDestinationBuffer ();
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public void setBlockSizeAndSampleRate(int blockSize, float sampleRate);
   public boolean setSpeakerArrangement (VSTSpeakerArrangement pluginInput, VSTSpeakerArrangement pluginOutput);
 }

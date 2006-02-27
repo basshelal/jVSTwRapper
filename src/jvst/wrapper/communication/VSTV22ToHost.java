@@ -18,6 +18,6 @@ public abstract class VSTV22ToHost extends VSTV21ToHost {
 
   //bool getChunkFile (void* nativePath);
   // Returns in platform format the path of the current chunk (could be called in setChunk ()) (FSSpec on MAC else char*)
-  //NOT SUPPORTED!
+  //NOT SUPPORTED! //deprecated since 2.4 anyways!
 
 }

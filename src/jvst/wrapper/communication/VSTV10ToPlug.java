@@ -17,7 +17,15 @@ public interface VSTV10ToPlug {
   //*****************
   public void setParameter(int index, float value);
   public float getParameter(int index);
+ 
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4 
+   * please see the original vst documenation for details
+   * 
+   * USE processReplacing() and/or processDoubleReplacing() INSTEAD!
+   */
   public void process(float[][] inputs, float[][] outputs, int sampleFrames);
+ 
   public void processReplacing(float[][] inputs, float[][] outputs, int sampleFrames);
   public int getProgram();
   public void setProgram(int index);
@@ -34,6 +42,10 @@ public interface VSTV10ToPlug {
   public void close();
   public void suspend();
   public void resume();
+  /**@deprecated
+   * deprecated as of vst sdk version 2.4
+   * please see the original vst documenation for details
+   */
   public float getVu();
   public int getChunk(byte data[][], boolean isPreset);
   public int setChunk(byte data[], int byteSize, boolean isPreset);
