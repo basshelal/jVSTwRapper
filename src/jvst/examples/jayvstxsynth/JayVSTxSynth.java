@@ -390,9 +390,9 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 
 
 
-
+  //DEPRECATED SINCE 2.4!
   //process is ACCUMULATING the calculated floats to the output
-  public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
+ /* public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
     // process () is required, and accumulating (out += h)
     // processReplacing () is optional, and in place (out = h). even though
     // processReplacing () is optional, it is very highly recommended to support it
@@ -432,7 +432,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
     }
 
   }
-
+*/
   //processReplacing is REPLACING the calculated floats to the output
   public void processReplacing(float[][] inputs, float[][] outputs, int sampleFrames) {
     if (this.noteIsOn) {

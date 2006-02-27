@@ -392,8 +392,8 @@ public class DreiNullDrei extends VSTPluginAdapter {
 
 
 
-
-  public void process(float[][] input, float[][] output, int samples) {
+//DEPRECATED since 2.4
+/*  public void process(float[][] input, float[][] output, int samples) {
     float w, k, result;
     float[] out1 = output[0];
 
@@ -453,7 +453,7 @@ public class DreiNullDrei extends VSTPluginAdapter {
       }
     }
 
-  }
+  }*/
 
 
   public void processReplacing(float[][] input, float[][] output, int samples) {

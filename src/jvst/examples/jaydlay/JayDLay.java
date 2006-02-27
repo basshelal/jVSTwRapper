@@ -36,7 +36,7 @@ public class JayDLay extends VSTPluginAdapter {
     this.setNumInputs(1);// mono input
     this.setNumOutputs(2);// stereo output
     //this.hasVu(false); //deprecated as of vst2.4
-    this.canProcessReplacing(true);
+    this.canProcessReplacing(true);//mandatory for vst 2.4!
     this.setUniqueID(9876543);//random unique number registered at steinberg (4 byte)
 
 
@@ -54,6 +54,7 @@ public class JayDLay extends VSTPluginAdapter {
 
 
   public int canDo(String feature) {
+	  //the host asks us here what we are able to do
     int ret = JayDLay.CANDO_DONT_KNOW;
 
     if (feature.equals(JayDLay.CANDO_PLUG_1_IN_2_OUT)) ret = JayDLay.CANDO_YES;
@@ -259,8 +260,9 @@ public class JayDLay extends VSTPluginAdapter {
     }
   }
 
+  //DEPRECATED SINCE 2.4!
   //process is ACCUMULATING the calculated floats to the output
-  public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
+/*  public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
     float[] in = inputs[0];
     float[] out1 = outputs[0];
     float[] out2 = outputs[1];
@@ -275,7 +277,7 @@ public class JayDLay extends VSTPluginAdapter {
       out1[i] += y; //IMPORTANT!!! Here is the difference between process() [accumulation]
       out2[i] += y; //and processReplacing() [replacement]
     }
-  }
+  }*/
 
 
 
