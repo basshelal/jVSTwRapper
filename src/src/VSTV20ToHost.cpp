@@ -16,12 +16,12 @@
 #include "JNIUtils.h"
 #endif
 
-#ifndef __VSTV23ToPlug__
-#include "VSTV23ToPlug.h"
+#ifndef __VSTV24ToPlug__
+#include "VSTV24ToPlug.h"
 #endif
 
 
-extern VSTV23ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
+extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 
 
 
@@ -133,7 +133,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 	const char* text = env->GetStringUTFChars(str, NULL);
 	strcpy(t, text);
 	env->ReleaseStringUTFChars(str, text);
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) ret = WrapperInstance->canHostDo(t);
 
 	return ret;
@@ -146,7 +146,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
  */
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sizeWindow
 (JNIEnv * env, jobject obj, jint width, jint height){
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->sizeWindow(width,height);
 	else return false;
 }
@@ -158,7 +158,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sizeWind
  */
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_ioChanged
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->ioChanged();
 	else return false;
 }
@@ -171,7 +171,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_ioChange
 JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeInfo
 		(JNIEnv* env, jobject obj, jint filt) {
 	
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) {
 		if (IsTimeInfoCacheInitialised==false) InitTimeInfoCache(env);
 
@@ -211,7 +211,7 @@ JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeIn
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstEventsToHost
 	(JNIEnv* env, jobject obj, jobject events) {
 	 
-     VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+     VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 		if (WrapperInstance!=NULL) {
 			
             BigVstEvents vstEventsToHost;
@@ -304,7 +304,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 //dm: deprecated as of vst2.4
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_needIdle
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->needIdle();
 	else return false;
 }
@@ -317,7 +317,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_needIdle
  */
 JNIEXPORT jdouble JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_updateSampleRate
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->updateSampleRate();
 	else return 0.00;
 }
@@ -329,7 +329,7 @@ JNIEXPORT jdouble JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_updateSam
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_updateBlockSize
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->updateBlockSize();
 	else return 0L;
 }
@@ -341,7 +341,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_updateBlockS
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getAutomationState
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getAutomationState();
 	else return 0L;
 }
@@ -353,7 +353,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getAutomatio
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getCurrentProcessLevel
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getCurrentProcessLevel();
 	else return 0L;
 }
@@ -370,7 +370,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getDirect
 
 	//TODO:
 	//Mac hosts return a FSSpec* here!!! (instead of char*)
-	VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) ret = env->NewStringUTF((char *)WrapperInstance->getDirectory());
 
 	return ret;
@@ -386,7 +386,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostPr
 	
 	jstring ret = NULL;
 	char text[255];
-	VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->getHostProductString(text);
 	if (WrapperInstance!=NULL) ret = env->NewStringUTF(text);
 
@@ -400,7 +400,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostPr
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostVendorVersion
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getHostVendorVersion();
 	else return -1L;
 }
@@ -415,7 +415,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostVe
 
 	jstring ret = NULL;
 	char text[255];
-	VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->getHostVendorString(text);
 	if (WrapperInstance!=NULL) ret = env->NewStringUTF(text);
 
@@ -429,7 +429,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostVe
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostLanguage
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getHostLanguage();
 	else return 0L;
 }
@@ -442,7 +442,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostLangu
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getInputLatency
 		(JNIEnv* env, jobject obj) {
-   VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+   VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getInputLatency();
 	else return 0L;
 }
@@ -454,7 +454,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getInputLate
  */
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getOutputLatency
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getOutputLatency();
 	else return 0L;
 }
@@ -469,7 +469,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getOutputLat
 //dm: deprecated as of vst2.4
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getNumAutomatableParameters
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getNumAutomatableParameters();
 	else return 0L;
 }
@@ -483,7 +483,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getNumAutoma
 //dm: deprecated as of vst2.4
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getParameterQuantization
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getParameterQuantization();
 	else return 0L;
 }
@@ -496,7 +496,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getParameter
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getSpeakerArrangement
 		(JNIEnv* env, jobject obj, jobject jinput, jobject joutput) {
 
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) {
 		if (isSpeakerCacheInitialised==false) initSpeakerCache(env);
 
@@ -605,7 +605,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getSpeak
 //dm: deprecated as of vst2.4
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_hasExternalBuffer
 		(JNIEnv* env, jobject obj, jboolean state) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->hasExternalBuffer(state != 0 ? true : false);
 }
 
@@ -617,7 +617,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_hasExternalB
  */
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_isSynth
 		(JNIEnv* env, jobject obj, jboolean state) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->isSynth(state != 0 ? true : false);
 }
 
@@ -628,7 +628,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_isSynth
  */
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_noTail
 		(JNIEnv* env, jobject obj, jboolean state) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->noTail(state != 0 ? true : false);
 }
 
@@ -641,7 +641,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_noTail
 //dm: deprecated as of vst2.4
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_setOutputSamplerate
 		(JNIEnv* env, jobject obj, jfloat sr) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->setOutputSamplerate(sr);
 }
 
@@ -655,7 +655,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_setOutputSam
 //dm: deprecated as of vst2.4
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_tempoAt
 		(JNIEnv* env, jobject obj, jint pos) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->tempoAt(pos);
 	else return 0L;
 }
@@ -668,7 +668,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_tempoAt
  */
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_updateDisplay
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->updateDisplay();
 	else return false;
 }
@@ -682,7 +682,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_updateDi
 //dm: deprecated as of vst2.4
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_wantAsyncOperation
 		(JNIEnv* env, jobject obj, jboolean state) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->wantAsyncOperation(state != 0 ? true : false);
 }
 
@@ -696,7 +696,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_wantAsyncOpe
 //dm: deprecated as of vst2.4
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_wantEvents
 		(JNIEnv* env, jobject obj, jint fil) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->wantEvents(fil);
 }
 
@@ -710,7 +710,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_wantEvents
 //dm: deprecated as of vst2.4
 JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_willProcessReplacing
 		(JNIEnv* env, jobject obj) {
-    VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->willProcessReplacing();
 	else return 0L;
 }

@@ -15,12 +15,12 @@
 #endif
 
 
-#ifndef __VSTV23ToPlug__
-#include "VSTV23ToPlug.h"
+#ifndef __VSTV24ToPlug__
+#include "VSTV24ToPlug.h"
 #endif
 
 
-extern VSTV23ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
+extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 
 
 

@@ -18,7 +18,7 @@
 #endif
 
 
-extern VSTV23ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
+extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 
 
 
@@ -37,6 +37,6 @@ extern VSTV23ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV24ToHost_canDoubleReplacing
 	(JNIEnv *env, jobject obj, jboolean value) {
 
-      VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+      VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	  if (WrapperInstance!=NULL) WrapperInstance->canDoubleReplacing(value != 0 ? true : false);
 }

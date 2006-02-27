@@ -13,11 +13,11 @@
 #include "JNIUtils.h"
 #endif
 
-#ifndef __VSTV23ToPlug__
-#include "VSTV23ToPlug.h"
+#ifndef __VSTV24ToPlug__
+#include "VSTV24ToPlug.h"
 #endif
 
-extern VSTV23ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
+extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 
 
 
@@ -35,7 +35,7 @@ extern VSTV23ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
  */
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV21ToHost_beginEdit
 	(JNIEnv *env, jobject obj, jint index) {
-        VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj); 
+        VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj); 
 		if (WrapperInstance!=NULL) return WrapperInstance->beginEdit(index);
 		else return 0;
 }
@@ -47,7 +47,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV21ToHost_beginEdi
  */
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV21ToHost_endEdit
   (JNIEnv *env, jobject obj, jint index) {
-        VSTV23ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+        VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 		if (WrapperInstance!=NULL) return WrapperInstance->endEdit(index);
 		else return 0;
 }

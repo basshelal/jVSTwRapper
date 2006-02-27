@@ -16,8 +16,8 @@
 #include "JNIUtils.h"
 #endif
 
-#ifndef __VSTV23ToPlug__
-#include "VSTV23ToPlug.h"
+#ifndef __VSTV24ToPlug__
+#include "VSTV24ToPlug.h"
 #endif
 
 #ifndef __ConfigFileReader__
@@ -49,11 +49,11 @@
 extern int IsLogEnabled;
 
 //------------------------------------------------------------------------
-//VSTV23ToPlug* WrapperInstance;
+//VSTV24ToPlug* WrapperInstance;
 
 //------------------------------------------------------------------------
 void calculatePaths();
-VSTV23ToPlug* startJava();
+VSTV24ToPlug* startJava();
 
 
 #ifdef MACX
@@ -114,7 +114,7 @@ AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {
 		log("** ERROR: cant init jvm interface pointers!");
 		return 0;
 	}
-    VSTV23ToPlug* WrapperInstance = startJava();
+    VSTV24ToPlug* WrapperInstance = startJava();
 	//start the jvm
 	if (WrapperInstance == NULL) {
 		log("**ERROR in startJava()");
@@ -137,7 +137,7 @@ AEffect *main_macho (audioMasterCallback pAudioMaster) {return VSTPluginMain (pA
 #endif
 
 
-VSTV23ToPlug* startJava() {
+VSTV24ToPlug* startJava() {
 
 	//Create JVM
 	//**********************************************
@@ -149,7 +149,7 @@ VSTV23ToPlug* startJava() {
 	char java_path[1024]; //we need to add jVSTsYstem_bin.jar to the ClassPath of the Bootstrap ClassLoader!
 	char class_path[1024];
 
-	VSTV23ToPlug* WrapperInstance;
+	VSTV24ToPlug* WrapperInstance;
 
 	ConfigFileReader *cfg = new ConfigFileReader();
 	IsLogEnabled = cfg->IsLoggingEnabled;
@@ -314,7 +314,7 @@ VSTV23ToPlug* startJava() {
 
 	// Create the AudioEffect
 	log("before Wrapper Constructor");
-	WrapperInstance = new VSTV23ToPlug(audioMaster, 1, 1, jvm);
+	WrapperInstance = new VSTV24ToPlug(audioMaster, 1, 1, jvm);
 	if (!WrapperInstance) {
 		log("** ERROR: Error Creating VST Wrapper instance");
 		delete WrapperInstance;
