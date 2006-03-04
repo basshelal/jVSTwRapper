@@ -80,7 +80,7 @@ VstInt32 VSTV24ToPlug::getNumMidiOutputChannels() {
 
 //-----------------------------------------------------------------------------------------
 void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, VstInt32 sampleFrames) {
-
+    
 #ifndef MACX
 	DWORD threadID;
 	threadID = GetCurrentThreadId();
@@ -105,7 +105,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 	
 	if(this->JavaDoubleClass == NULL) {
 		this->JavaDoubleClass = this->ProcessDoubleReplacingJEnv->FindClass("[D");
-		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [D");
+		if (this->JavaDoubleClass == NULL) log("** ERROR: cannot find class [D");
 	}
 
 	jobjectArray  jinputs;
