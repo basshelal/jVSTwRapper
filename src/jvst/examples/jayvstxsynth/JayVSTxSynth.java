@@ -96,7 +96,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 
 
   public void resume() {
-    // this.wantEvents(1); //deprecated as of vst2.4
+     this.wantEvents(1); //deprecated as of vst2.4
   }
 
   public void setSampleRate(float sampleRate) {
