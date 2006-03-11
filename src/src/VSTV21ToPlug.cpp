@@ -31,7 +31,7 @@ VSTV21ToPlug::~VSTV21ToPlug () {
 }
 
 //-----------------------------------------------------------------------------------------
-long VSTV21ToPlug::getMidiProgramName (long channel, MidiProgramName* midiProgramName) { 
+VstInt32 VSTV21ToPlug::getMidiProgramName (VstInt32 channel, MidiProgramName* midiProgramName) { 
 	this->ensureJavaThreadAttachment();
 
 	jclass jMidiProgramClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/MidiProgramName");
@@ -123,7 +123,7 @@ long VSTV21ToPlug::getMidiProgramName (long channel, MidiProgramName* midiProgra
 }
 
 //-----------------------------------------------------------------------------------------
-long VSTV21ToPlug::getCurrentMidiProgram (long channel, MidiProgramName* midiProgramName) { 
+VstInt32 VSTV21ToPlug::getCurrentMidiProgram (VstInt32 channel, MidiProgramName* midiProgramName) { 
 	this->ensureJavaThreadAttachment();
 
 	jclass jMidiProgramClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/MidiProgramName");
@@ -213,7 +213,7 @@ long VSTV21ToPlug::getCurrentMidiProgram (long channel, MidiProgramName* midiPro
 }
 
 //-----------------------------------------------------------------------------------------
-long VSTV21ToPlug::getMidiProgramCategory (long channel, MidiProgramCategory* category) { 
+VstInt32 VSTV21ToPlug::getMidiProgramCategory (VstInt32 channel, MidiProgramCategory* category) { 
 	this->ensureJavaThreadAttachment();
 
 	jclass jMidiProgramCategoryClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/MidiProgramCategory");
@@ -282,7 +282,7 @@ long VSTV21ToPlug::getMidiProgramCategory (long channel, MidiProgramCategory* ca
 }
 
 //-----------------------------------------------------------------------------------------
-bool VSTV21ToPlug::hasMidiProgramsChanged (long channel) { 
+bool VSTV21ToPlug::hasMidiProgramsChanged (VstInt32 channel) { 
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "hasMidiProgramsChanged", "(I)Z");
@@ -296,7 +296,7 @@ bool VSTV21ToPlug::hasMidiProgramsChanged (long channel) {
 }
 
 //-----------------------------------------------------------------------------------------
-bool VSTV21ToPlug::getMidiKeyName (long channel, MidiKeyName* keyName) { 
+bool VSTV21ToPlug::getMidiKeyName (VstInt32 channel, MidiKeyName* keyName) { 
 	this->ensureJavaThreadAttachment();
 
 	jclass jMidiKeyNameClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/MidiKeyName");

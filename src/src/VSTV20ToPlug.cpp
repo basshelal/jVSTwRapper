@@ -117,7 +117,7 @@ VSTV20ToPlug::~VSTV20ToPlug () {
 
 
 //-----------------------------------------------------------------------------------------
-bool VSTV20ToPlug::getProgramNameIndexed (long category, long index, char* text) {
+bool VSTV20ToPlug::getProgramNameIndexed (VstInt32 category, VstInt32 index, char* text) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getProgramNameIndexed", "(II)Ljava/lang/String;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getProgramNameIndexed(II)Ljava/lang/String;"); return false;}
@@ -234,7 +234,7 @@ VstInt32 VSTV20ToPlug::canDo (char* text) {
 	return ret;
 }
 
-bool VSTV20ToPlug::string2parameter (long index, char *text) {
+bool VSTV20ToPlug::string2parameter (VstInt32 index, char *text) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "string2Parameter", "(ILjava/lang/String;)Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method string2Parameter(ILjava/lang/String;)Z"); return false;}
@@ -295,7 +295,7 @@ bool VSTV20ToPlug::getEffectName (char* name)   {
 	return true;
 }
 
-bool VSTV20ToPlug::canParameterBeAutomated(long index) {
+bool VSTV20ToPlug::canParameterBeAutomated(VstInt32 index) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "canParameterBeAutomated", "(I)Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method canParameterBeAutomated(I)Z"); return false;}
@@ -307,7 +307,7 @@ bool VSTV20ToPlug::canParameterBeAutomated(long index) {
 	return ret!=0;
 }
 
-bool VSTV20ToPlug::copyProgram(long destination) {
+bool VSTV20ToPlug::copyProgram(VstInt32 destination) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "copyProgram", "(I)Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method copyProgram(I)Z");  return false;}
@@ -331,7 +331,7 @@ VstInt32 VSTV20ToPlug::fxIdle() {
 	return ret;
 }
 
-float VSTV20ToPlug::getChannelParameter(long channel, long index) {
+float VSTV20ToPlug::getChannelParameter(VstInt32 channel, VstInt32 index) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getChannelParameter", "(II)F");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getChannelParameter(II)F");
@@ -355,7 +355,7 @@ VstInt32 VSTV20ToPlug::getNumCategories() {
 	return ret;
 }
 
-bool VSTV20ToPlug::getInputProperties (long index, VstPinProperties *props) {
+bool VSTV20ToPlug::getInputProperties (VstInt32 index, VstPinProperties *props) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getInputProperties", "(I)Ljvst/wrapper/valueobjects/VSTPinProperties;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getInputProperties(I)Ljvst/wrapper/valueobjects/VSTPinProperties;"); return false;}
@@ -401,7 +401,7 @@ bool VSTV20ToPlug::getInputProperties (long index, VstPinProperties *props) {
 	return true;
 }
 
-bool VSTV20ToPlug::getOutputProperties (long index, VstPinProperties * props) {	
+bool VSTV20ToPlug::getOutputProperties (VstInt32 index, VstPinProperties * props) {	
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getOutputProperties", "(I)Ljvst/wrapper/valueobjects/VSTPinProperties;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getOutputProperties(I)Ljvst/wrapper/valueobjects/VSTPinProperties;"); return false;}
@@ -472,7 +472,7 @@ VstInt32 VSTV20ToPlug::getGetTailSize () {
 	return ret;
 }
 
-bool VSTV20ToPlug::getParameterProperties (long index, VstParameterProperties *p) {
+bool VSTV20ToPlug::getParameterProperties (VstInt32 index, VstParameterProperties *p) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getParameterProperties", "(I)Ljvst/wrapper/valueobjects/VSTParameterProperties;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getParameterProperties(I)Ljvst/wrapper/valueobjects/VSTParameterProperties;"); return false;}
@@ -577,7 +577,7 @@ VstInt32 VSTV20ToPlug::getVstVersion () {
 	return ret;
 }
 
-void VSTV20ToPlug::inputConnected (long index, bool state) {
+void VSTV20ToPlug::inputConnected (VstInt32 index, bool state) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "inputConnected", "(IZ)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method inputConnected(IZ)V");
@@ -587,7 +587,7 @@ void VSTV20ToPlug::inputConnected (long index, bool state) {
 	this->checkException();
 }
 
-void VSTV20ToPlug::outputConnected (long index, bool state) {
+void VSTV20ToPlug::outputConnected (VstInt32 index, bool state) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "outputConnected", "(IZ)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method outputConnected(IZ)V");
@@ -857,7 +857,7 @@ float* VSTV20ToPlug::reportDestinationBuffer () {
 	return jval;
 }
 
-void VSTV20ToPlug::setBlockSizeAndSampleRate (long bs, float sr) {
+void VSTV20ToPlug::setBlockSizeAndSampleRate (VstInt32 bs, float sr) {
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setBlockSizeAndSampleRate", "(IF)V");

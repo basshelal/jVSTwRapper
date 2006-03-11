@@ -36,20 +36,20 @@ class VSTV10ToPlug : public AudioEffectX {
 
 		//vst 1.0 REQUIRED
 		//*****************
-		virtual void setParameter (long index, float value);
-		virtual float getParameter (long index);
+		virtual void setParameter (VstInt32 index, float value);
+		virtual float getParameter (VstInt32 index);
 		
 		virtual void process (float **inputs, float **outputs, VstInt32 sampleframes);
 		virtual void processReplacing (float **inputs, float **outputs, VstInt32 sampleFrames);
 		
 		virtual VstInt32 getProgram();
-		virtual void setProgram (long program);
-		virtual void setProgramName (char *name);
-		virtual void getProgramName (char *name);
+		virtual void setProgram (VstInt32 program);
+		virtual void setProgramName (char* name);
+		virtual void getProgramName (char* name);
 
-		virtual void getParameterLabel (long index, char *label);
-		virtual void getParameterDisplay (long index, char *text);
-		virtual void getParameterName (long index, char *text);
+		virtual void getParameterLabel (VstInt32 index, char* label);
+		virtual void getParameterDisplay (VstInt32 index, char* text);
+		virtual void getParameterName (VstInt32 index, char* text);
 
 
 		//vst 1.0 OPTIONAL
@@ -60,9 +60,9 @@ class VSTV10ToPlug : public AudioEffectX {
 		virtual void close ();
 
 		virtual float getVu();
-		virtual VstInt32 getChunk(void** data, bool isPreset = false);
-		virtual VstInt32 setChunk(void* data, long byteSize, bool isPreset = false);
-		virtual void setBlockSize(long blockSize);
+		virtual VstInt32 getChunk (void** data, bool isPreset = false);
+		virtual VstInt32 setChunk (void* data, VstInt32 byteSize, bool isPreset = false);
+		virtual void setBlockSize (VstInt32 blockSize);
 		virtual void setSampleRate(float sampleRate);
 
 		

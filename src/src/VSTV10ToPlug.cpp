@@ -94,7 +94,7 @@ VSTV10ToPlug::~VSTV10ToPlug () {
 }
 
 //------------------------------------------------------------------------
-void VSTV10ToPlug::setProgram (long program) {
+void VSTV10ToPlug::setProgram (VstInt32 program) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setProgram", "(I)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setProgram(I)V");
@@ -144,7 +144,7 @@ void VSTV10ToPlug::getProgramName (char *name) {
 }
 
 //------------------------------------------------------------------------
-void VSTV10ToPlug::setParameter (long index, float value) {
+void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
 	this->ensureJavaThreadAttachment();
 	
 	if (this->SetParameterMethod==NULL) {
@@ -158,7 +158,7 @@ void VSTV10ToPlug::setParameter (long index, float value) {
 }
 
 //------------------------------------------------------------------------
-float VSTV10ToPlug::getParameter (long index)   {
+float VSTV10ToPlug::getParameter (VstInt32 index)   {
 	this->ensureJavaThreadAttachment();
 
 	if (this->GetParameterMethod==NULL) {
@@ -174,7 +174,7 @@ float VSTV10ToPlug::getParameter (long index)   {
 }
 
 //------------------------------------------------------------------------
-void VSTV10ToPlug::getParameterName(long index, char *label) {
+void VSTV10ToPlug::getParameterName(VstInt32 index, char *label) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getParameterName", "(I)Ljava/lang/String;");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterName(I)Ljava/lang/String;");
@@ -189,7 +189,7 @@ void VSTV10ToPlug::getParameterName(long index, char *label) {
 }
 
 //------------------------------------------------------------------------
-void VSTV10ToPlug::getParameterDisplay (long index, char *text) {
+void VSTV10ToPlug::getParameterDisplay (VstInt32 index, char *text) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getParameterDisplay", "(I)Ljava/lang/String;");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterDisplay(I)Ljava/lang/String;");
@@ -204,7 +204,7 @@ void VSTV10ToPlug::getParameterDisplay (long index, char *text) {
 }
 
 //------------------------------------------------------------------------
-void VSTV10ToPlug::getParameterLabel (long index, char *label) {
+void VSTV10ToPlug::getParameterLabel (VstInt32 index, char *label) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getParameterLabel", "(I)Ljava/lang/String;");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterLabel(I)Ljava/lang/String;");
@@ -329,7 +329,7 @@ VstInt32 VSTV10ToPlug::getChunk(void** data, bool isPreset) {
 }
 
 //------------------------------------------------------------------------
-VstInt32 VSTV10ToPlug::setChunk(void* data, long byteSize, bool isPreset) {
+VstInt32 VSTV10ToPlug::setChunk(void* data, VstInt32 byteSize, bool isPreset) {
 	this->ensureJavaThreadAttachment();
 	jint ret = -1;
 
@@ -348,7 +348,7 @@ VstInt32 VSTV10ToPlug::setChunk(void* data, long byteSize, bool isPreset) {
 }
 
 //------------------------------------------------------------------------
-void VSTV10ToPlug::setBlockSize(long blockSz) {
+void VSTV10ToPlug::setBlockSize(VstInt32 blockSz) {
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setBlockSize", "(I)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setBlockSize(I)V");

@@ -31,7 +31,7 @@ VSTV23ToPlug::~VSTV23ToPlug () {
 }
 
 //-----------------------------------------------------------------------------------------
-VstInt32 VSTV23ToPlug::setTotalSampleToProcess (long value) {	
+VstInt32 VSTV23ToPlug::setTotalSampleToProcess (VstInt32 value) {	
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setTotalSampleToProcess", "(I)I");

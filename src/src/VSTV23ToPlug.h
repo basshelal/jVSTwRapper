@@ -31,7 +31,7 @@ class VSTV23ToPlug : public VSTV22ToPlug {
 		//VST2.3 Optional
 		//******************************
 
-		virtual VstInt32 setTotalSampleToProcess (long value);
+		virtual VstInt32 setTotalSampleToProcess (VstInt32 value);
 		// Called in offline (non RealTime) Process before process is called, indicates how many sample will be processed
 
 		virtual VstInt32 getNextShellPlugin (char* name);

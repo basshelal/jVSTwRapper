@@ -31,25 +31,25 @@ class VSTV21ToPlug : public VSTV20ToPlug {
 		//VST2.1 Optional
 		//**********************
 
-		virtual long getMidiProgramName (long channel, MidiProgramName* midiProgramName);
+		virtual VstInt32 getMidiProgramName (VstInt32 channel, MidiProgramName* midiProgramName);
 		// Struct will be filled with information for 'thisProgramIndex'.
 		// returns number of used programIndexes.
 		// If 0 is returned, no MidiProgramNames supported.
 		
-		virtual long getCurrentMidiProgram (long channel, MidiProgramName* currentProgram);
+		virtual VstInt32 getCurrentMidiProgram (VstInt32 channel, MidiProgramName* currentProgram);
 		// Struct will be filled with information for the current program.
 		// Returns the programIndex of the current program. -1 means not supported.
 		
-		virtual long getMidiProgramCategory (long channel, MidiProgramCategory* category);
+		virtual VstInt32 getMidiProgramCategory (VstInt32 channel, MidiProgramCategory* category);
 		// Struct will be filled with information for 'thisCategoryIndex'.
 		// returns number of used categoryIndexes. 
 		// if 0 is returned, no MidiProgramCategories supported/used.
 		
-		virtual bool hasMidiProgramsChanged (long channel);
+		virtual bool hasMidiProgramsChanged (VstInt32 channel);
 		// Returns true if the MidiProgramNames, MidiKeyNames or 
 		// MidiControllerNames had changed on this channel.
 		
-		virtual bool getMidiKeyName (long channel, MidiKeyName* keyName);
+		virtual bool getMidiKeyName (VstInt32 channel, MidiKeyName* keyName);
 		// Struct will be filled with information for 'thisProgramIndex' and 'thisKeyNumber'
 		// if keyName is "" the standard name of the key will be displayed.
 		// if false is returned, no MidiKeyNames defined for 'thisProgramIndex'.

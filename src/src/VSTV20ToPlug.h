@@ -29,12 +29,12 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 
 		//vst 2.0 REQUIRED
 		//*****************
-		virtual bool getProgramNameIndexed (long category, long index, char* text);
+		virtual bool getProgramNameIndexed (VstInt32 category, VstInt32 index, char* text);
 		virtual bool getProductString (char* text);
 		virtual bool getVendorString (char* text);
 		virtual VstPlugCategory getPlugCategory ();
 		virtual VstInt32 canDo (char* text);
-		virtual bool string2parameter (long index, char *text);
+		virtual bool string2parameter (VstInt32 index, char* text);
 		virtual bool setBypass (bool onOff);
 		
 
@@ -44,28 +44,28 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 		virtual bool getEffectName (char* name);
 		virtual VstInt32 getVendorVersion ();
 
-		virtual bool canParameterBeAutomated(long index);
-		virtual bool copyProgram(long destination);
+		virtual bool canParameterBeAutomated (VstInt32 index);
+		virtual bool copyProgram(VstInt32 destination);
 		virtual VstInt32 fxIdle();
-		virtual float getChannelParameter(long channel, long index);
+		virtual float getChannelParameter(VstInt32 channel, VstInt32 index);
 		virtual VstInt32 getNumCategories();
 
-		virtual bool getInputProperties (long index, VstPinProperties *properties);
-		virtual bool getOutputProperties (long index, VstPinProperties * properties);
+		virtual bool getInputProperties (VstInt32 index, VstPinProperties *properties);
+		virtual bool getOutputProperties (VstInt32 index, VstPinProperties * properties);
 		virtual bool getErrorText (char* text);
 		virtual VstInt32 getGetTailSize ();
-		virtual bool getParameterProperties (long index, VstParameterProperties *p);
+		virtual bool getParameterProperties (VstInt32 index, VstParameterProperties* p);
 
 		virtual VstInt32 getVstVersion ();
-		virtual void inputConnected (long index, bool state);
-		virtual void outputConnected (long index, bool state);
+		virtual void inputConnected (VstInt32 index, bool state);
+		virtual void outputConnected (VstInt32 index, bool state);
 		virtual bool keysRequired ();
 
 		virtual VstInt32 processEvents (VstEvents* events);
 		virtual bool processVariableIo ( VstVariableIo* varIo);
 		virtual VstInt32 reportCurrentPosition ();
 		virtual float* reportDestinationBuffer ();
-		virtual void setBlockSizeAndSampleRate (long blockSize, float sampleRate);
+		virtual void setBlockSizeAndSampleRate (VstInt32 blockSize, float sampleRate);
 
 		virtual bool setSpeakerArrangement (VstSpeakerArrangement* pluginInput, VstSpeakerArrangement *pluginOutput);
 		//we have our own UI handling
