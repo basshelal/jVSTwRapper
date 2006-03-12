@@ -285,7 +285,7 @@ public class JayDLay extends VSTPluginAdapter {
   private void setDelay(float fdelay) {
     this.fDelay = fdelay;
     this.programs[this.currentProgram].setDelay(fdelay);
-    this.cursor = 0;
+    //this.cursor = 0;
     this.delay = (int)(fdelay * (float)(size - 1));
   }
 }
