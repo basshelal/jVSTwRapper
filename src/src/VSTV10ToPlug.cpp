@@ -299,7 +299,7 @@ VstInt32 VSTV10ToPlug::getChunk(void** data, bool isPreset) {
     this->JEnv->SetObjectArrayElement(jdata, 0, barr);
     this->JEnv->DeleteLocalRef(barr);
 
-	long data_len = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, jdata, (jboolean)isPreset);
+	jint data_len = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, jdata, (jboolean)isPreset);
 	
 	//jetzt elemente von jdata[][] nach **data umkopieren...
 	//for (int i=0; i<data_len; i++) {
@@ -384,7 +384,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 			this->ThreadID = threadID;
 #endif	
 		
-		long stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessJEnv, NULL);
+		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessJEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to .process() THREAD");
 
 		char temp[100];
@@ -478,7 +478,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 			
 #endif	
 	
-		long stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessReplacingJEnv, NULL);
+		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessReplacingJEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to .processReplacing() THREAD");
 
 		char temp[100];
@@ -650,7 +650,7 @@ void VSTV10ToPlug::ensureJavaThreadAttachment() {
 	if (!pthread_equal(threadID,this->ThreadID)){
 		this->ThreadID = threadID;
 #endif
-		long stat = this->Jvm->AttachCurrentThread((void**)&this->JEnv, NULL);
+		jint stat = this->Jvm->AttachCurrentThread((void**)&this->JEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to native THREAD in VSTV10ToPlug Wrapper!");
 
 		char temp[100];

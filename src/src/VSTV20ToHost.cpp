@@ -126,7 +126,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 	log("canHostDo");
 
 	char t[255];
-	long ret = -1L;
+	jint ret = -1L;
 	
 	if (str==NULL) return ret;
 
@@ -235,7 +235,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 				VstEvent* event;
 				jobject jevent = env->GetObjectArrayElement(jevents, i);
 
-				long typ = env->GetIntField(jevent, EventFieldType);
+				jint typ = env->GetIntField(jevent, EventFieldType);
 
 				if (typ==kVstMidiType) {					
 					VstMidiEvent* mevent = &(vstMidiEventsToHost[i]);

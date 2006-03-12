@@ -95,7 +95,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 			
 #endif	
 	
-		long stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessDoubleReplacingJEnv, NULL);
+		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessDoubleReplacingJEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to .processDoubleReplacing() THREAD");
 
 		char temp[100];
