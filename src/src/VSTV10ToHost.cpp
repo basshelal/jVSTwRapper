@@ -253,7 +253,11 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_getBlockSize
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setParameterAutomated(JNIEnv *env, jobject obj, jint index, jfloat value) {
 	log("setParameterAutomated");
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+	//Workaround for energyXT: Save Thread for setParameterAutomated
+	WrapperInstance->ToHostThread=GetCurrentThreadId();
 	if (WrapperInstance!=NULL) WrapperInstance->setParameterAutomated(index, value);
+
+    WrapperInstance->ToHostThread=0;
 }
 
 //------------------------------------------------------------------------

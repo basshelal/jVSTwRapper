@@ -369,7 +369,6 @@ int VSTGUIWrapper::initJavaSide(jclass guiClass) {
 
 //-----------------------------------------------------------------------------
 void  VSTGUIWrapper::ensureJavaThreadAttachment() {
-	this->checkException(); //if theres a pending exception, print stack trace & clear it!
 	
 #ifndef MACX	
 	if (this->ThreadID != GetCurrentThreadId()) {
@@ -387,6 +386,7 @@ void  VSTGUIWrapper::ensureJavaThreadAttachment() {
 		sprintf(temp, "New GUI wrapper ThreadID=%i", this->ThreadID);
 		log(temp);
 	}
+  	this->checkException(); //if theres a pending exception, print stack trace & clear it!
 }
 
 

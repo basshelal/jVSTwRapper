@@ -171,6 +171,13 @@ void VSTV10ToPlug::getProgramName (char *name) {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
+    //Workaround for energyXT: Don't call setParameter from setParameterAutomated
+#ifndef MACX
+	if(this->ToHostThread!=GetCurrentThreadId()) {		
+#else
+	if(this->ToHostThread!=pthread_self()) {
+#endif
+
 	this->ensureJavaThreadAttachment();
 	
 	if (this->SetParameterMethod==NULL) {
@@ -181,6 +188,7 @@ void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
 	this->JEnv->CallVoidMethod(this->JavaPlugObj, this->SetParameterMethod, (jint)index, (jfloat)value);
 
 	this->checkException();
+	}
 }
 
 //------------------------------------------------------------------------
@@ -686,6 +694,11 @@ void VSTV10ToPlug::ensureJavaThreadAttachment() {
 	
 	//ultra important, if a pending exception isnt cleared, all following calls will fail...
 	this->checkException();
+}
+
+void VSTV10ToPlug::setNumParams(VstInt32 num){
+	this->getAeffect()->numParams=num;
+	this->numParams=num;
 }
 
 

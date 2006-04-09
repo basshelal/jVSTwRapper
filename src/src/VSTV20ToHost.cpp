@@ -185,6 +185,20 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sizeWind
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_ioChanged
 		(JNIEnv* env, jobject obj) {
     VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+
+	//Refresh the number of parameters
+	jmethodID mid = env->GetMethodID(env->GetObjectClass(obj), "getNumParams", "()I");
+	if (mid == NULL) {
+		log("** ERROR: cannot find effects .getNumParams(I)");
+		checkException(env); //print stack trace!
+		return -1;
+	}
+	int num = env->CallIntMethod(obj, mid);
+	WrapperInstance->setNumParams(num);
+
+	//inputs, outputs and initial delay can be set from the Java side
+
+
 	if (WrapperInstance!=NULL) return WrapperInstance->ioChanged();
 	else return false;
 }
