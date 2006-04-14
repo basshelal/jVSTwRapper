@@ -757,7 +757,6 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 
 	if (this->isVarIoCacheInitialised==false) this->initVarIoCache();
 
-
 	if(this->JavaFloatClass == NULL) {
 		this->JavaFloatClass = this->JEnv->FindClass("[F");
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F in VarIo");
@@ -765,48 +764,49 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
+	jboolean ret;
 
-	jinputs = this->JEnv->NewObjectArray(this->getAeffect()->numInputs, this->JavaFloatClass, NULL);
-	joutputs = this->JEnv->NewObjectArray(this->getAeffect()->numOutputs, this->JavaFloatClass, NULL);
-	if (jinputs == NULL) log("** ERROR: out of memory! vario jinputs");
-	if (joutputs == NULL) log("** ERROR: out of memory! vario joutputs");
+  	if(varIo!=NULL) {  // Real data to process
 
-	for (int i=0; i<this->getAeffect()->numInputs; i++) {
+	  jinputs = this->JEnv->NewObjectArray(this->getAeffect()->numInputs, this->JavaFloatClass, NULL);
+	  joutputs = this->JEnv->NewObjectArray(this->getAeffect()->numOutputs, this->JavaFloatClass, NULL);
+	  if (jinputs == NULL) log("** ERROR: out of memory! vario jinputs");
+	  if (joutputs == NULL) log("** ERROR: out of memory! vario joutputs");
+
+	  for (int i=0; i<this->getAeffect()->numInputs; i++) {
 		float* in = varIo->inputs[i];
 		jfloatArray farr = this->JEnv->NewFloatArray(varIo->numSamplesInput);
 		
 		this->JEnv->SetFloatArrayRegion(farr, 0, varIo->numSamplesInput, in);
         this->JEnv->SetObjectArrayElement(jinputs, i, farr);
         this->JEnv->DeleteLocalRef(farr);
-	}
+	  }
 
-	for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	  for (i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = varIo->outputs[i];
 		jfloatArray farr = this->JEnv->NewFloatArray(varIo->numSamplesOutput);
 	
 		this->JEnv->SetFloatArrayRegion(farr, 0, varIo->numSamplesOutput, out);
 		this->JEnv->SetObjectArrayElement(joutputs, i, farr);
 		this->JEnv->DeleteLocalRef(farr);
-	}
+	  }
+      //set vario object props
+	  this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldInputs, jinputs);
+	  this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldOutputs, joutputs);
+	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput, varIo->numSamplesInput);
+	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed, *varIo->numSamplesInputProcessed);
+	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput, varIo->numSamplesOutput);
+	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed, *varIo->numSamplesOutputProcessed);    
+	  ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, this->VarIoObject);
 
-	//set vario object props
-	this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldInputs, jinputs);
-	this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldOutputs, joutputs);
-	this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput, varIo->numSamplesInput);
-	this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed, *varIo->numSamplesInputProcessed);
-	this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput, varIo->numSamplesOutput);
-	this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed, *varIo->numSamplesOutputProcessed);
+	  this->checkException();
+	  this->JEnv->DeleteLocalRef(jinputs);
+	  this->JEnv->DeleteLocalRef(joutputs);
 
-	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, this->VarIoObject);
-
-	this->JEnv->DeleteLocalRef(jinputs);
-	this->JEnv->DeleteLocalRef(joutputs);
-
-
-	//copy values back to varIo struct
-	jinputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldInputs);
-	joutputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldOutputs);
-	for (i=0; i<this->getAeffect()->numInputs; i++) {
+	  //copy values back to varIo struct
+	  jinputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldInputs);
+	  joutputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldOutputs);
+	  for (i=0; i<this->getAeffect()->numInputs; i++) {
 		float* in = varIo->inputs[i];
 		jfloatArray jin;
 		jfloat *jval;
@@ -818,8 +818,8 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 		
 		this->JEnv->ReleaseFloatArrayElements(jin, jval, 0);
 		this->JEnv->DeleteLocalRef(jin);
-	}
-	for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	  }
+	  for (i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = varIo->outputs[i];
 		jfloatArray jout;
 		jfloat *jval;
@@ -831,22 +831,24 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 		
 		this->JEnv->ReleaseFloatArrayElements(jout, jval, 0);
 		this->JEnv->DeleteLocalRef(jout);
-	}
-	VstInt32 x = 0;
-	varIo->numSamplesInput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput);
-	x = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed);
-	varIo->numSamplesInputProcessed = &x;
-	varIo->numSamplesOutput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput);
-	x = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed);
-	varIo->numSamplesOutputProcessed = &x;
+	  }
+	  VstInt32 x = 0;
+	  varIo->numSamplesInput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput);
+	  x = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed);
+	  varIo->numSamplesInputProcessed = &x;
+	  varIo->numSamplesOutput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput);
+	  x = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed);
+	  varIo->numSamplesOutputProcessed = &x;
 	
-	this->JEnv->DeleteLocalRef(jinputs);
-	this->JEnv->DeleteLocalRef(joutputs);
-
+	  this->JEnv->DeleteLocalRef(jinputs);
+	  this->JEnv->DeleteLocalRef(joutputs);
+	} else {  // varIo==NULL
+      ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, NULL);
+	}
 
 	this->checkException();
 
-	return ret!=0;
+	return ret==JNI_TRUE;
 }
 
 VstInt32 VSTV20ToPlug::reportCurrentPosition () {
@@ -1153,10 +1155,9 @@ void VSTV20ToPlug::initProcessEventsCache () {
 
 //************************************************************************************
 void VSTV20ToPlug::initVarIoCache () {
-
-	this->VarIoClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/VSTEvent");		
+	this->VarIoClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/VSTVariableIO");		
 	if (this->VarIoClass == NULL) {
-		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTEvent");
+		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTVariableIO");
 		return;
 	}
 
@@ -1172,17 +1173,21 @@ void VSTV20ToPlug::initVarIoCache () {
 		log("** ERROR: cannot create VST VarIo Object!");
 		return;
 	}
+
+	this->checkException();
+
 	//Create global reference --> use this object accross different threads
 	this->VarIoObject = this->JEnv->NewGlobalRef(this->VarIoObject);
 
+	this->checkException();
 
-	this->ProcessVarIoMethodID = this->JEnv->GetMethodID(this->JavaPlugClass, "processVariableIo", "(Ljvst.wrapper.valueobjects.VSTVariableIO;)Z");
+	this->ProcessVarIoMethodID = this->JEnv->GetMethodID(this->JavaPlugClass, "processVariableIo", "(Ljvst/wrapper/valueobjects/VSTVariableIO;)Z");
 	if (mid == NULL) {
 		log("** ERROR: cannot find ProcessVarIo MethodID!");
 		return;
 	}
 
-
+	this->checkException();
 	this->VarIoFieldInputs = this->JEnv->GetFieldID(this->VarIoClass, "inputs", "[[F");
 	if (this->VarIoFieldInputs == NULL) {
 		log("** ERROR: cannot find field-id inputs ([[F");

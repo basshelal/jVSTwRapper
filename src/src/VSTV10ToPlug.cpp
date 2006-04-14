@@ -409,13 +409,13 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 #ifndef MACX
 		DWORD threadID;
 		threadID = GetCurrentThreadId();
-		if (this->ThreadID != threadID) {
-			this->ThreadID = threadID;			
+		if (this->ProcessThreadID != threadID) {
+			this->ProcessThreadID = threadID;			
 #else
 		pthread_t threadID;
 		threadID = pthread_self();		
-		if (!pthread_equal(threadID,this->ThreadID)){
-			this->ThreadID = threadID;
+		if (!pthread_equal(threadID,this->ProcessThreadID)){
+			this->ProcessThreadID = threadID;
 #endif	
 		
 		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessJEnv, NULL);

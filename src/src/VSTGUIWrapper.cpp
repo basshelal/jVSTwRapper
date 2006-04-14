@@ -271,8 +271,57 @@ bool VSTGUIWrapper::open (void *ptr) {
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
 	
 	this->checkException();
-
+    // Call open
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
+
+#ifndef MACX
+	//Check exceptions in open
+	if(this->JEnv->ExceptionCheck()==JNI_TRUE) {
+		//If a Exception occured close the gui again
+		log("Exception in Open!");
+		//Clear Exception
+		this->JEnv->ExceptionClear();
+
+        //Close Gui
+		jmethodID midClose = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
+	    if (midClose == NULL) log("** ERROR: cannot find GUI instance-method close()V");
+	
+	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midClose);
+
+        //Clear Exception
+		this->JEnv->ExceptionClear();
+
+		this->AttachWindow=false;
+  	    //Inform the class
+	    jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
+   	    jboolean val=JNI_FALSE;
+	    this->checkException();
+        if (attachField != NULL) 
+	    this->JEnv->SetBooleanField(this->JavaPlugGUIObj,attachField,val);
+	    this->checkException();                
+        // Detach the Window
+	    if(this->JavaWindowHandle!=NULL)
+		{
+			SetParent(this->JavaWindowHandle,NULL);
+			this->JavaWindowHandle=NULL;
+		}
+		if(frame!=NULL) {
+			delete frame;
+		    frame=NULL;
+		}	
+		// Call Undecorate to redecorate the window
+        jmethodID midUndeco = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "undecorate", "()V");
+	    if (midUndeco == NULL) log("** ERROR: cannot find GUI instance-method undecorate()V");
+	
+   	    this->checkException();
+
+  	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midUndeco);
+
+	    this->checkException();
+		//Call open again
+ 	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
+	}
+#endif
 
 	this->checkException();
 	return true;
