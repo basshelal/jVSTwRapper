@@ -89,7 +89,29 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
             java.awt.Rectangle bounds=this.getBounds();
             bounds.x=0;
             bounds.y=0;
-            this.setBounds(bounds);            
+            this.setBounds(bounds);                        
+        } else if((!this.WindowAttached)&&(this.isUndecorated())) {
+            //Redecorate the window
+            javax.swing.JFrame f = new javax.swing.JFrame();
+            f.pack();            
+            this.dispose();
+            this.setUndecorated(false);
+            this.pack();
+            f.dispose();
+            java.awt.Rectangle bounds=this.getBounds();
+            //center window
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            Dimension frameSize = this.getSize();
+
+            if (frameSize.height > frameSize.height) {
+               frameSize.height = screenSize.height;
+            }
+            if (frameSize.width > screenSize.width) {
+               frameSize.width = screenSize.width;
+            }
+            bounds.x=(screenSize.width - frameSize.width) / 2;
+            bounds.y=(screenSize.height - frameSize.height) / 2;
+            this.setBounds(bounds);
         } 
   }
 
