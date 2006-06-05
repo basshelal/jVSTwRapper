@@ -157,7 +157,8 @@ AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {
 
 //------------------------------------------------------------------------
 #ifndef MACX
-AEffect *main (audioMasterCallback pAudioMaster) {return VSTPluginMain (pAudioMaster);}
+//disabled because vc++ 2005 does strict ansi c++ checks now (no other return type than int allowed for main!)
+//AEffect *main (audioMasterCallback pAudioMaster) {return VSTPluginMain (pAudioMaster);}
 #else	
 AEffect *main_macho (audioMasterCallback pAudioMaster) {return VSTPluginMain (pAudioMaster);}
 #endif
