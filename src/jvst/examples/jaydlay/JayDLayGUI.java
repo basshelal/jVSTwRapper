@@ -1,3 +1,29 @@
+/* 
+ * jVSTwRapper - The Java way into VST world!
+ * 
+ * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface. 
+ * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments 
+ * plus user interfaces with the Java Programming Language. 3 Demo Plugins(+src) are included!
+ * 
+ * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net] 
+ * 					   and many others, see CREDITS.txt
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package jvst.examples.jaydlay;
 
 
@@ -9,12 +35,15 @@ import jvst.wrapper.*;
 
 
 public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
-  private JSlider DelaySlider;
-  private JSlider FeedbackSlider;
-  private JSlider VolumeSlider;
-  private JTextField DelayText;
-  private JTextField FeedbackText;
-  private JTextField VolumeText;
+
+  private static final long serialVersionUID = -8641024370578430211L;
+
+  JSlider DelaySlider;
+  JSlider FeedbackSlider;
+  JSlider VolumeSlider;
+  JTextField DelayText;
+  JTextField FeedbackText;
+  JTextField VolumeText;
 
   private VSTPluginAdapter pPlugin;
 
@@ -30,7 +59,8 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
 
   public void init(VSTPluginAdapter e) {
     this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
-
+    ((JayDLay)e).gui=this; //tell the plug that it has a gui!
+    
     this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
     this.FeedbackSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
     this.DelaySlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
@@ -38,8 +68,8 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     this.FeedbackSlider.addChangeListener(this);
     this.DelaySlider.addChangeListener(this);
 
-    this.VolumeText = new JTextField((int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_OUT) * 100F) + "%");
-    this.FeedbackText = new JTextField((int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F) + "%");
+    this.VolumeText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
+    this.FeedbackText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
     this.DelayText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
 
     JLabel DelayLabel = new JLabel("Delay");
@@ -79,11 +109,11 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
 
     if (sl == this.VolumeSlider) {
       this.pPlugin.setParameter(DelayProgram.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
-      this.VolumeText.setText((int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_OUT) * 100F) + "%");
+      this.VolumeText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
     }
     else if (sl == this.FeedbackSlider) {
       this.pPlugin.setParameter(DelayProgram.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
-      this.FeedbackText.setText((int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F) + "%");
+      this.FeedbackText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
     }
     else if (sl == this.DelaySlider) {
       this.pPlugin.setParameter(DelayProgram.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));

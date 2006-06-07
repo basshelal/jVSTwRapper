@@ -35,6 +35,9 @@ import jvst.wrapper.*;
 
 
 public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListener {
+
+  private static final long serialVersionUID = -8544678169427736962L;
+	
   private JSlider VolumeSlider;
   private JSlider Freg1Slider;
   private JSlider Freg2Slider;

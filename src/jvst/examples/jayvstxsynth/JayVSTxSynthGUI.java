@@ -35,6 +35,8 @@ import jvst.wrapper.*;
 
 
 public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListener {
+  private static final long serialVersionUID = 7004230677068347485L;
+
   private JSlider VolumeSlider;
   private JSlider Freg1Slider;
   private JSlider Freg2Slider;
