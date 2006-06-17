@@ -67,8 +67,8 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
     this.setResizable(false);
     
     //use the napkin look-and-feel
-	UIManager.setLookAndFeel("napkin.NapkinLookAndFeel");
-    SwingUtilities.updateComponentTreeUI(this);
+//	UIManager.setLookAndFeel("napkin.NapkinLookAndFeel");
+//    SwingUtilities.updateComponentTreeUI(this);
   }
 
 

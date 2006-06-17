@@ -224,10 +224,10 @@ public class JayDLay extends VSTPluginAdapter {
 
     switch (index) {
         case DelayProgram.PARAM_ID_DELAY:
-          label = "samples";
+          label = "";
           break;
         case DelayProgram.PARAM_ID_FEEDBACK:
-          label = "amount";
+          label = "";
           break;
         case DelayProgram.PARAM_ID_OUT:
           label = "dB";
@@ -246,13 +246,13 @@ public class JayDLay extends VSTPluginAdapter {
 
     switch (index) {
         case DelayProgram.PARAM_ID_DELAY:
-          text = Integer.toString(this.delay);
+          text = Integer.toString(this.delay) + this.getParameterLabel(DelayProgram.PARAM_ID_DELAY);
           break;
         case DelayProgram.PARAM_ID_FEEDBACK:
-          text = this.formatFloatParam(this.fFeedBack);
+          text = this.formatFloatParam(this.fFeedBack) + this.getParameterLabel(DelayProgram.PARAM_ID_FEEDBACK);
           break;
         case DelayProgram.PARAM_ID_OUT:
-          text = this.dbToString(this.fOut);
+          text = this.dbToString(this.fOut) + this.getParameterLabel(DelayProgram.PARAM_ID_OUT);
           break;
     }
 

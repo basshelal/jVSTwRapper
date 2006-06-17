@@ -26,23 +26,41 @@
 
 package jvst.examples.jayvstxsynth;
 
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import net.sourceforge.napkinlaf.NapkinLookAndFeel;
 
 
 
 public class JayVSTxSynthNapkinGUI extends JayVSTxSynthGUI {
- 
+  private static final long serialVersionUID = 4234216957645164799L;
+
+
   public JayVSTxSynthNapkinGUI() throws Exception {
-  	//throws exception that the user gets a message box with the 
-  	//stack trace if something fails in the constructor here...
-  	
+	//throw exception that the user gets a message box with the 
+	//stack trace if something fails in the constructor here...
+	  	
   	this.setSize(380, 290);
   	
-  	//use the napkin look-and-feel
-	UIManager.setLookAndFeel("napkin.NapkinLookAndFeel");
-    SwingUtilities.updateComponentTreeUI(this);
+  	//TELL the UI Manager that it should use the Plugins ClassLoader to load UI classes. 
+	UIManager.put("ClassLoader", this.getClass().getClassLoader());
+
+	//use the napkin look-and-feel for this plugin!
+	LookAndFeel newSkin = new NapkinLookAndFeel();
+	if (newSkin!=null) UIManager.setLookAndFeel(newSkin);
+	SwingUtilities.updateComponentTreeUI(this);
   }
 
+
+  
+  
+  //for testing purpose only!
+  public static void main(String[] args) throws Exception {
+	JayVSTxSynthGUI gui = new JayVSTxSynthNapkinGUI();
+    gui.init(null);
+    gui.open();
+  }
+  
 }

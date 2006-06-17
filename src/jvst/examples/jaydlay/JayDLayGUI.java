@@ -48,9 +48,20 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
   private VSTPluginAdapter pPlugin;
 
 
-  public JayDLayGUI() {
+  public JayDLayGUI() throws Exception {
     log("JayDLayGUI <init>");
-
+    
+    //make sure we use the defaul ui!
+    //if there is another plugin loaded using a different Look and feel, we would 
+    //use that one because the LaF is a static property and we are running in the 
+    //same VM. 
+    
+    //So, I highly recommend setting a LaF in each of your plugins GUI constructors!!!
+    
+    UIManager.put("ClassLoader", null); //use the default classloader to load the system LaF
+    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    SwingUtilities.updateComponentTreeUI(this);
+    
     this.setTitle("JayDLay v0.8");
     this.setSize(200, 200);
     this.setResizable(false);
@@ -61,6 +72,7 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
     ((JayDLay)e).gui=this; //tell the plug that it has a gui!
     
+  
     this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
     this.FeedbackSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
     this.DelaySlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
@@ -98,8 +110,9 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     this.getContentPane().add(DelayBox);
     this.getContentPane().add(FeedbackBox);
     this.getContentPane().add(VolumeBox);
+      
   }
-
+ 
 
   /**
    *  Slider value has changed...
@@ -121,4 +134,5 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     }
   }
 
+  
 }
