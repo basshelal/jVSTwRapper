@@ -57,7 +57,7 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
 
   private VSTPluginAdapter pPlugin;
 
-  protected static final boolean DEBUG = true;
+  protected static final boolean DEBUG = false;
   
   
   public JayVSTxSynthGUI() {
