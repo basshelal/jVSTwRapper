@@ -174,9 +174,9 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
     Osc2box.add(this.Level2Text);
     Osc2box.setBorder(BorderFactory.createTitledBorder("Osc2"));
 
+    this.getContentPane().add(VolumeBox);
     this.getContentPane().add(Osc1box);
     this.getContentPane().add(Osc2box);
-    this.getContentPane().add(VolumeBox);
   }
 
 
@@ -231,6 +231,7 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
   //for testing purpose only!
   public static void main(String[] args) throws Exception {
     JayVSTxSynthGUI gui = new JayVSTxSynthGUI();
+    gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     gui.init(null);
     gui.open();
   }
