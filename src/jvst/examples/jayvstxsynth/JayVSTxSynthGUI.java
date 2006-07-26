@@ -57,7 +57,7 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
 
   private VSTPluginAdapter pPlugin;
 
-  protected static final boolean DEBUG = false;
+  protected static boolean DEBUG = false;
   
   
   public JayVSTxSynthGUI() {
@@ -230,6 +230,8 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
 
   //for testing purpose only!
   public static void main(String[] args) throws Exception {
+	DEBUG=true;
+	  
     JayVSTxSynthGUI gui = new JayVSTxSynthGUI();
     gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     gui.init(null);

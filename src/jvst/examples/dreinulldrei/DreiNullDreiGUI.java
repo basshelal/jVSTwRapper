@@ -26,214 +26,405 @@
 
 package jvst.examples.dreinulldrei;
 
+import java.awt.GridLayout;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import jvst.wrapper.*;
-
+import jvst.wrapper.VSTPluginAdapter;
+import jvst.wrapper.VSTPluginGUIAdapter;
+import jvst.wrapper.gui.RotaryKnob;
+import jvst.wrapper.gui.RotaryKnobPlusText;
+import jvst.wrapper.gui.JSliderPlusText;
 
 public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListener {
 
-  private static final long serialVersionUID = -8544678169427736962L;
+	private static final long serialVersionUID = -2702280782127069661L;
+	private JPanel jContentPane = null;
+	private JPanel VolumePanel = null;
+	private JPanel OscPanel = null;
+	private JPanel EnvPanel = null;
+	private JPanel FilterPane = null;
+	private JPanel FilterPane2 = null;
+	private JRadioButton saw = null;
+	private JRadioButton wave = null;
+	private RotaryKnobPlusText accent = null;
+	private RotaryKnobPlusText glide = null;
+	private RotaryKnobPlusText envmod = null;
+	private RotaryKnobPlusText envdecay = null;
+	private RotaryKnobPlusText cutoff = null;
+	private RotaryKnobPlusText reso = null;
+	private JSliderPlusText volume = null;
 	
-  private JSlider VolumeSlider;
-  private JSlider Freg1Slider;
-  private JSlider Freg2Slider;
-  private JSlider Level1Slider;
-  private JSlider Level2Slider;
+	
+	private VSTPluginAdapter pPlugin;
+	protected static boolean DEBUG = false;
+	  
+	
+	
+	public void init(VSTPluginAdapter e) {
+	    this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
 
-  private JRadioButton SawRadio1;
-  private JRadioButton SawRadio2;
-  private JRadioButton PulseRadio1;
-  private JRadioButton PulseRadio2;
+		if (!DEBUG) {
+			//init gui with plugs parameters
+			this.volume.getSlider().setValue((int)this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_VOLUME));
+		    this.accent.getKnob().setValue(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_ACC_AMOUNT));
+		    this.glide.getKnob().setValue(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_GLIDE_SPEED));
+		    this.envmod.getKnob().setValue(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_ENV_MOD));
+		    this.envdecay.getKnob().setValue(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_ENV_DECAY));
+		    this.cutoff.getKnob().setValue(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_CUT_OFF));
+		    this.reso.getKnob().setValue(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_RESONANCE));
+		
+		    //add new listener to gui components (and remove default one!)
+		    this.volume.addChangeListener(this);
+		    this.accent.addChangeListener(this);
+		    this.glide.addChangeListener(this);
+		    this.envmod.addChangeListener(this);
+		    this.envdecay.addChangeListener(this);
+		    this.cutoff.addChangeListener(this);
+		    this.reso.addChangeListener(this);
+		}
+	}
+	
+	public void stateChanged(ChangeEvent e) {
+		Object o = e.getSource();
+	    if (!DEBUG) {
+		    if (o.equals(this.volume.getSlider())) {
+		      JSlider s = (JSlider)o;
+		      this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_VOLUME, (float)s.getValue() / 100F);
+		      this.volume.getTextField().setText(this.pPlugin.getParameterDisplay(DreiNullDreiProgram.PARAM_ID_VOLUME));
+		    }
+		    else if (o.equals(this.accent.getKnob())) {
+		      RotaryKnob rk = (RotaryKnob)o;
+		      this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_ACC_AMOUNT, rk.getValue());
+		      this.accent.getTextField().setText(this.pPlugin.getParameterDisplay(DreiNullDreiProgram.PARAM_ID_ACC_AMOUNT));
+		    }
+		    else if (o.equals(this.glide.getKnob())) {
+		      RotaryKnob rk = (RotaryKnob)o;
+		      this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_GLIDE_SPEED, rk.getValue());
+		      this.glide.getTextField().setText(this.pPlugin.getParameterDisplay(DreiNullDreiProgram.PARAM_ID_GLIDE_SPEED));
+		 	}
+		    else if (o.equals(this.envmod.getKnob())) {
+		      RotaryKnob rk = (RotaryKnob)o;
+		      this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_ENV_MOD, rk.getValue());
+		      this.envmod.getTextField().setText(this.pPlugin.getParameterDisplay(DreiNullDreiProgram.PARAM_ID_ENV_MOD));
+		    }
+		    else if (o.equals(this.envdecay.getKnob())) {
+		      RotaryKnob rk = (RotaryKnob)o;
+		      this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_ENV_DECAY, rk.getValue());
+		      this.envdecay.getTextField().setText(this.pPlugin.getParameterDisplay(DreiNullDreiProgram.PARAM_ID_ENV_DECAY));
+		    }
+		    else if (o.equals(this.cutoff.getKnob())) {
+		      RotaryKnob rk = (RotaryKnob)o;
+		      this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_CUT_OFF, rk.getValue());
+		      this.cutoff.getTextField().setText(this.pPlugin.getParameterDisplay(DreiNullDreiProgram.PARAM_ID_CUT_OFF));
+		    }
+		    else if (o.equals(this.reso.getKnob())) {
+		      RotaryKnob rk = (RotaryKnob)o;
+		      this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_RESONANCE, rk.getValue());
+		      this.reso.getTextField().setText(this.pPlugin.getParameterDisplay(DreiNullDreiProgram.PARAM_ID_RESONANCE));
+		    }
+		    else if (o.equals(this.wave)) {
+		      JRadioButton r = (JRadioButton)o;
+		      if (r.isEnabled()) this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_WAVEFORM, 0.9F);
+		    }
+		    else if (o.equals(this.saw)) {
+		      JRadioButton r = (JRadioButton)o;
+		      if (r.isEnabled()) this.pPlugin.setParameter(DreiNullDreiProgram.PARAM_ID_WAVEFORM, 0.1F);
+		    }
+	    }
+	}
+	
+	
+	
+	
+	
+	/**
+	 * This method initializes VolumePanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getVolumePanel() {
+		if (VolumePanel == null) {
+			VolumePanel = new JPanel();
+			VolumePanel.setLayout(new BoxLayout(getVolumePanel(), BoxLayout.Y_AXIS));
+			VolumePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Amp", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12), new java.awt.Color(51,51,51)));
+			VolumePanel.add(getSliderPlusText(), null);
+		}
+		return VolumePanel;
+	}
 
-  private JTextField VolumeText;
-  private JTextField Freg1Text;
-  private JTextField Freg2Text;
-  private JTextField Level1Text;
-  private JTextField Level2Text;
+	/**
+	 * This method initializes OscPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getOscPanel() {
+		if (OscPanel == null) {
+			OscPanel = new JPanel();
+			OscPanel.setLayout(new BoxLayout(getOscPanel(), BoxLayout.Y_AXIS));
+			OscPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Osc", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, null));
+			OscPanel.add(getSaw(), null);
+			OscPanel.add(getWave(), null);
+			ButtonGroup bg = new ButtonGroup();
+			bg.add(getSaw());
+			bg.add(getWave());
+		}
+		return OscPanel;
+	}
+
+	/**
+	 * This method initializes EnvPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getEnvPanel() {
+		if (EnvPanel == null) {
+			EnvPanel = new JPanel();
+			EnvPanel.setLayout(new BoxLayout(getEnvPanel(), BoxLayout.Y_AXIS));
+			EnvPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Envelope", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12), new java.awt.Color(51,51,51)));
+			EnvPanel.add(getRotaryKnobPlusText2(), null);
+			EnvPanel.add(getRotaryKnobPlusText3(), null);
+		}
+		return EnvPanel;
+	}
+
+	/**
+	 * This method initializes FilterPane	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getFilterPane() {
+		if (FilterPane == null) {
+			FilterPane = new JPanel();
+			FilterPane.setLayout(new BoxLayout(getFilterPane(), BoxLayout.Y_AXIS));
+			FilterPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Filter", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, null));
+			FilterPane.add(getRotaryKnobPlusText4(), null);
+			FilterPane.add(getRotaryKnobPlusText5(), null);
+		}
+		return FilterPane;
+	}
+
+	/**
+	 * This method initializes FilterPane2	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getFilterPane2() {
+		if (FilterPane2 == null) {
+			FilterPane2 = new JPanel();
+			FilterPane2.setLayout(new BoxLayout(getFilterPane2(), BoxLayout.Y_AXIS));
+			FilterPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Accent", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, null));
+			FilterPane2.add(getRotaryKnobPlusText(), null);
+			FilterPane2.add(getRotaryKnobPlusText1(), null);
+		}
+		return FilterPane2;
+	}
+
+	/**
+	 * This method initializes saw	
+	 * 	
+	 * @return javax.swing.JRadioButton	
+	 */
+	private JRadioButton getSaw() {
+		if (saw == null) {
+			saw = new JRadioButton();
+			saw.setName(null);
+			saw.setText("saw");
+			saw.setSelected(true);
+		}
+		return saw;
+	}
+
+	/**
+	 * This method initializes wave	
+	 * 	
+	 * @return javax.swing.JRadioButton	
+	 */
+	private JRadioButton getWave() {
+		if (wave == null) {
+			wave = new JRadioButton();
+			wave.setText("pulse");
+			wave.setName("wave");
+		}
+		return wave;
+	}
+
+	/**
+	 * This method initializes rotaryKnobPlusText	
+	 * 	
+	 * @return jvst.wrapper.gui.RotaryKnobPlusText	
+	 */
+	private RotaryKnobPlusText getRotaryKnobPlusText() {
+		if (accent == null) {
+			accent = new RotaryKnobPlusText();
+			accent.setName("Accent");
+			accent.setAlignmentX(0.5F);
+		}
+		return accent;
+	}
+
+	/**
+	 * This method initializes rotaryKnobPlusText1	
+	 * 	
+	 * @return jvst.wrapper.gui.RotaryKnobPlusText	
+	 */
+	private RotaryKnobPlusText getRotaryKnobPlusText1() {
+		if (glide == null) {
+			glide = new RotaryKnobPlusText();
+			glide.setName("Glide");
+		}
+		return glide;
+	}
+
+	/**
+	 * This method initializes rotaryKnobPlusText2	
+	 * 	
+	 * @return jvst.wrapper.gui.RotaryKnobPlusText	
+	 */
+	private RotaryKnobPlusText getRotaryKnobPlusText2() {
+		if (envmod == null) {
+			envmod = new RotaryKnobPlusText();
+			envmod.setName("Mod");
+		}
+		return envmod;
+	}
+
+	/**
+	 * This method initializes rotaryKnobPlusText3	
+	 * 	
+	 * @return jvst.wrapper.gui.RotaryKnobPlusText	
+	 */
+	private RotaryKnobPlusText getRotaryKnobPlusText3() {
+		if (envdecay == null) {
+			envdecay = new RotaryKnobPlusText();
+			envdecay.setName("Decay");
+		}
+		return envdecay;
+	}
+
+	/**
+	 * This method initializes rotaryKnobPlusText4	
+	 * 	
+	 * @return jvst.wrapper.gui.RotaryKnobPlusText	
+	 */
+	private RotaryKnobPlusText getRotaryKnobPlusText4() {
+		if (cutoff == null) {
+			cutoff = new RotaryKnobPlusText();
+			cutoff.setName("Cutoff");
+			cutoff.setVisible(true);
+		}
+		return cutoff;
+	}
+
+	/**
+	 * This method initializes rotaryKnobPlusText5	
+	 * 	
+	 * @return jvst.wrapper.gui.RotaryKnobPlusText	
+	 */
+	private RotaryKnobPlusText getRotaryKnobPlusText5() {
+		if (reso == null) {
+			reso = new RotaryKnobPlusText();
+			reso.setName("Reso");
+		}
+		return reso;
+	}
+
+	/**
+	 * This method initializes sliderPlusText	
+	 * 	
+	 * @return jvst.wrapper.gui.SliderPlusText	
+	 */
+	private JSliderPlusText getSliderPlusText() {
+		if (volume == null) {
+			volume = new JSliderPlusText();
+			volume.setName("Volume");
+		}
+		return volume;
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) throws Throwable {
+		DEBUG=true;
+		
+	    DreiNullDreiGUI gui = new DreiNullDreiGUI();
+	    gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    gui.init(null);
+	    gui.open();
+	}
+
+	/**
+	 * This is the default constructor
+	 * @throws UnsupportedLookAndFeelException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws Exception 
+	 */
+	public DreiNullDreiGUI() throws Exception {
+		super();
+		initialize();
+		
+//		System.out.println("BASE!");
+//		 //make sure we use the defaul ui!
+//	    //if there is another plugin loaded using a different Look and feel, we would 
+//	    //use that one because the LaF is a static property and we are running in the 
+//	    //same VM. 
+//	    
+//	    //So, I highly recommend setting a LaF in each of your plugins GUI constructors!!!
+//	    
+//	    UIManager.put("ClassLoader", null); //use the default classloader to load the system LaF
+//	    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+//	    SwingUtilities.updateComponentTreeUI(this);
+	}
+
+	/**
+	 * This method initializes this
+	 * 
+	 * @return void
+	 */
+	private void initialize() {
+		this.setSize(415, 258);
+		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+		this.setContentPane(getJContentPane());
+		this.setTitle("DreiNullDrei");
+		this.setVisible(true);
+		
+		this.setResizable(false);
+	}
+
+	/**
+	 * This method initializes jContentPane
+	 * 
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getJContentPane() {
+		if (jContentPane == null) {
+			GridLayout gridLayout = new GridLayout();
+			gridLayout.setRows(1);
+			gridLayout.setColumns(5);
+			jContentPane = new JPanel();
+			jContentPane.setLayout(gridLayout);
+			jContentPane.add(getVolumePanel(), null);
+			jContentPane.add(getOscPanel(), null);
+			jContentPane.add(getEnvPanel(), null);
+			jContentPane.add(getFilterPane(), null);
+			jContentPane.add(getFilterPane2(), null);
+		}
+		return jContentPane;
+	}
 
 
-  private VSTPluginAdapter pPlugin;
 
 
-  public DreiNullDreiGUI() throws Exception {
-    log("DreiNullDreiGUI <init>");
-
-    this.setTitle("DreiNullDrei v0.6");
-    this.setSize(380, 290);
-    this.setResizable(false);
-    
-    //use the napkin look-and-feel
-//	UIManager.setLookAndFeel("napkin.NapkinLookAndFeel");
-//    SwingUtilities.updateComponentTreeUI(this);
-  }
-
-
-  public void init(VSTPluginAdapter e) {
-    this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
-
-
-//    this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_VOLUME) * 100F));
-//    this.Freg1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_FREQ1) * 100F));
-//    this.Freg2Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_FREQ2) * 100F));
-//    this.Level1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_VOLUME1) * 100F));
-//    this.Level2Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_VOLUME2) * 100F));
-
-    
-
-    this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, 1);
-    this.Freg1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, 1);
-    this.Freg2Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, 1);
-    this.Level1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, 1);
-    this.Level2Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, 1);
-
-    this.VolumeSlider.addChangeListener(this);
-    this.Freg1Slider.addChangeListener(this);
-    this.Freg2Slider.addChangeListener(this);
-    this.Level1Slider.addChangeListener(this);
-    this.Level2Slider.addChangeListener(this);
-
-    this.SawRadio1 = new JRadioButton("Saw", true);
-    this.SawRadio2 = new JRadioButton("Saw");
-    this.PulseRadio1 = new JRadioButton("Pulse");
-    this.PulseRadio2 = new JRadioButton("Pulse", true);
-    this.SawRadio1.addChangeListener(this);
-    this.SawRadio2.addChangeListener(this);
-    this.PulseRadio1.addChangeListener(this);
-    this.PulseRadio2.addChangeListener(this);
-    ButtonGroup Wave1Group = new ButtonGroup();
-    ButtonGroup Wave2Group = new ButtonGroup();
-    Wave1Group.add(this.SawRadio1);
-    Wave1Group.add(this.PulseRadio1);
-    Wave2Group.add(this.SawRadio2);
-    Wave2Group.add(this.PulseRadio2);
-
-
-//    this.VolumeText = new JTextField((int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME) * 100F) + "%");
-//    this.Freg1Text = new JTextField(this.pPlugin.getParameterDisplay(JayVSTxSynthProgram.PARAM_ID_FREQ1) + " " + this.pPlugin.getParameterLabel(JayVSTxSynthProgram.PARAM_ID_FREQ1));
-//    this.Freg2Text = new JTextField(this.pPlugin.getParameterDisplay(JayVSTxSynthProgram.PARAM_ID_FREQ2) + " " + this.pPlugin.getParameterLabel(JayVSTxSynthProgram.PARAM_ID_FREQ2));
-//    this.Level1Text = new JTextField(this.pPlugin.getParameterDisplay(JayVSTxSynthProgram.PARAM_ID_VOLUME1) + " " + this.pPlugin.getParameterLabel(JayVSTxSynthProgram.PARAM_ID_VOLUME1));
-//    this.Level2Text = new JTextField(this.pPlugin.getParameterDisplay(JayVSTxSynthProgram.PARAM_ID_VOLUME2) + " " + this.pPlugin.getParameterLabel(JayVSTxSynthProgram.PARAM_ID_VOLUME2));
-
-    this.VolumeText = new JTextField((1 * 100F) + "%");
-    this.Freg1Text = new JTextField("234 Hz");
-    this.Freg2Text = new JTextField("2345 Hz");
-    this.Level1Text = new JTextField("324 db");
-    this.Level2Text = new JTextField("345 db");
-    
-    
-    this.VolumeText.setEditable(false);
-    this.Freg1Text.setEditable(false);
-    this.Freg2Text.setEditable(false);
-    this.Level1Text.setEditable(false);
-    this.Level2Text.setEditable(false);
-
-
-    JLabel VolumeLabel = new JLabel("Volume");
-    JLabel Freg1Label = new JLabel("Freqency");
-    JLabel Freg2Label = new JLabel("Freqency");
-    JLabel Level1Label = new JLabel("Volume");
-    JLabel Level2Label = new JLabel("Volume");
-
-    GridLayout grids = new GridLayout(1, 3);
-    this.getContentPane().setLayout(grids);
-
-    Box VolumeBox = new Box(BoxLayout.Y_AXIS);
-    Box Osc1box = new Box(BoxLayout.Y_AXIS);
-    Box Osc2box = new Box(BoxLayout.Y_AXIS);
-
-
-    VolumeBox.add(VolumeLabel);
-    VolumeBox.add(this.VolumeSlider);
-    VolumeBox.add(this.VolumeText);
-    VolumeBox.setBorder(BorderFactory.createTitledBorder("Amp"));
-
-    Osc1box.add(this.SawRadio1);
-    Osc1box.add(this.PulseRadio1);
-    Osc1box.add(Box.createVerticalStrut(15));
-    Osc1box.add(Freg1Label);
-    Osc1box.add(this.Freg1Slider);
-    Osc1box.add(this.Freg1Text);
-    Osc1box.add(Box.createVerticalStrut(15));
-    Osc1box.add(Level1Label);
-    Osc1box.add(this.Level1Slider);
-    Osc1box.add(this.Level1Text);
-    Osc1box.setBorder(BorderFactory.createTitledBorder("Osc1"));
-
-    Osc2box.add(this.SawRadio2);
-    Osc2box.add(this.PulseRadio2);
-    Osc2box.add(Box.createVerticalStrut(15));
-    Osc2box.add(Freg2Label);
-    Osc2box.add(this.Freg2Slider);
-    Osc2box.add(this.Freg2Text);
-    Osc2box.add(Box.createVerticalStrut(15));
-    Osc2box.add(Level2Label);
-    Osc2box.add(this.Level2Slider);
-    Osc2box.add(this.Level2Text);
-    Osc2box.setBorder(BorderFactory.createTitledBorder("Envelope"));
-
-    this.getContentPane().add(Osc1box);
-    this.getContentPane().add(Osc2box);
-    this.getContentPane().add(VolumeBox);
-  }
-
-
-  public void stateChanged(ChangeEvent e) {
-    Object o = e.getSource();
-
-//    if (o.equals(this.VolumeSlider)) {
-//      JSlider s = (JSlider)o;
-//      this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME, (float)((float)s.getValue() / 100F));
-//      this.VolumeText.setText((int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME) * 100F) + "%");
-//    }
-//    else if (o.equals(this.Freg1Slider)) {
-//      JSlider s = (JSlider)o;
-//      this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_FREQ1, (float)((float)s.getValue() / 100F));
-//      this.Freg1Text.setText(this.pPlugin.getParameterDisplay(JayVSTxSynthProgram.PARAM_ID_FREQ1) + " " + this.pPlugin.getParameterLabel(JayVSTxSynthProgram.PARAM_ID_FREQ1));
-//    }
-//    else if (o.equals(this.Freg2Slider)) {
-//      JSlider s = (JSlider)o;
-//      this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_FREQ2, (float)((float)s.getValue() / 100F));
-//      this.Freg2Text.setText(this.pPlugin.getParameterDisplay(JayVSTxSynthProgram.PARAM_ID_FREQ2) + " " + this.pPlugin.getParameterLabel(JayVSTxSynthProgram.PARAM_ID_FREQ2));
-//    }
-//    else if (o.equals(this.Level1Slider)) {
-//      JSlider s = (JSlider)o;
-//      this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME1, (float)((float)s.getValue() / 100F));
-//      this.Level1Text.setText(this.pPlugin.getParameterDisplay(JayVSTxSynthProgram.PARAM_ID_VOLUME1) + " " + this.pPlugin.getParameterLabel(JayVSTxSynthProgram.PARAM_ID_VOLUME1));
-//    }
-//    else if (o.equals(this.Level2Slider)) {
-//      JSlider s = (JSlider)o;
-//      this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME2, (float)((float)s.getValue() / 100F));
-//      this.Level2Text.setText(this.pPlugin.getParameterDisplay(JayVSTxSynthProgram.PARAM_ID_VOLUME2) + " " + this.pPlugin.getParameterLabel(JayVSTxSynthProgram.PARAM_ID_VOLUME2));
-//    }
-//    else if (o.equals(this.PulseRadio1)) {
-//      JRadioButton r = (JRadioButton)o;
-//      if (r.isEnabled()) this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_WAVEFORM1, 0.9F);
-//    }
-//    else if (o.equals(this.PulseRadio2)) {
-//      JRadioButton r = (JRadioButton)o;
-//      if (r.isEnabled()) this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_WAVEFORM2, 0.9F);
-//    }
-//    else if (o.equals(this.SawRadio1)) {
-//      JRadioButton r = (JRadioButton)o;
-//      if (r.isEnabled()) this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_WAVEFORM1, 0.1F);
-//    }
-//    else if (o.equals(this.SawRadio2)) {
-//      JRadioButton r = (JRadioButton)o;
-//      if (r.isEnabled()) this.pPlugin.setParameter(JayVSTxSynthProgram.PARAM_ID_WAVEFORM2, 0.1F);
-//    }
-
-  }
-
-
-  //for testing purpose only!
-  public static void main(String[] args) throws Exception {
-  	DreiNullDreiGUI gui = new DreiNullDreiGUI();
-    gui.init(null);
-    gui.open();
-  }
-
-}
+}  //  @jve:decl-index=0:visual-constraint="46,13"

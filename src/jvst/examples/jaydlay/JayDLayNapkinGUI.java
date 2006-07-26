@@ -24,43 +24,43 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package jvst.examples.jayvstxsynth;
+package jvst.examples.jaydlay;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import net.sourceforge.napkinlaf.NapkinLookAndFeel;
 
+public class JayDLayNapkinGUI extends JayDLayGUI {
+
+	private static final long serialVersionUID = -1315625186980889087L;
 
 
-public class JayVSTxSynthNapkinGUI extends JayVSTxSynthGUI {
-  private static final long serialVersionUID = 4234216957645164799L;
 
 
-  public JayVSTxSynthNapkinGUI() throws Exception {
-	//throw exception that the user gets a message box with the 
-	//stack trace if something fails in the constructor here...
-	  	
-  	this.setSize(380, 290);
-  	
-  	//TELL the UI Manager that it should use the Plugins ClassLoader to load UI classes. 
-	UIManager.put("ClassLoader", this.getClass().getClassLoader());
+	public JayDLayNapkinGUI() throws Exception {
+		//throw exception that the user gets a message box with the 
+		//stack trace if something fails in the constructor here...
+		
+		this.setSize(230, 200);
+		
+		//TELL the UI Manager that it should use the Plugins ClassLoader to load UI classes. 
+		UIManager.put("ClassLoader", this.getClass().getClassLoader());
 
-	//use the napkin look-and-feel for this plugin!
-	UIManager.setLookAndFeel(new NapkinLookAndFeel());
-	SwingUtilities.updateComponentTreeUI(this);
-  }
+		//use the napkin look-and-feel for this plugin!
+		UIManager.setLookAndFeel(new NapkinLookAndFeel());
+		SwingUtilities.updateComponentTreeUI(this);
+	}
 
 
-  
-  
-  //for testing purpose only!
-  public static void main(String[] args) throws Exception {
-	DEBUG=true; 
-	  
-	JayVSTxSynthGUI gui = new JayVSTxSynthNapkinGUI();
-    gui.init(null);
-    gui.open();
-  }
-  
+	
+	
+	public static void main(String[] args) throws Throwable {
+		DEBUG=true;
+		
+		JayDLayNapkinGUI gui = new JayDLayNapkinGUI();
+	    gui.init(null);
+	    gui.open();
+	}
+
 }

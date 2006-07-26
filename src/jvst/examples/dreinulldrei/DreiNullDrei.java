@@ -170,7 +170,7 @@ public class DreiNullDrei extends VSTPluginAdapter {
       case DreiNullDreiProgram.PARAM_ID_ENV_MOD:
       case DreiNullDreiProgram.PARAM_ID_GLIDE_SPEED:
       case DreiNullDreiProgram.PARAM_ID_RESONANCE:
-        label = "???";
+        label = "";
         break;
       case DreiNullDreiProgram.PARAM_ID_VOLUME:
         label = "dB";
@@ -363,7 +363,7 @@ public class DreiNullDrei extends VSTPluginAdapter {
 
 
 // midi program names:
-// as an example, GM names are used here. in fact, VstXSynth doesn't even support
+// as an example, GM names are used here. in fact, this Synth doesn't even support
 // multi-timbral operation so it's really just for demonstration.
 // a 'real' instrument would have a number of voices which use the
 // programs[channelProgram[channel]] parameters when it receives
@@ -415,71 +415,7 @@ public class DreiNullDrei extends VSTPluginAdapter {
     return false;
   }
 
-
-
-
-//DEPRECATED since 2.4
-/*  public void process(float[][] input, float[][] output, int samples) {
-    float w, k, result;
-    float[] out1 = output[0];
-
-    if (this.IsNoteOn) {
-      for (int j = 0; j < samples; j++) {
-
-        if (this.vcf_envpos >= ENV_INC) {
-          w = this.vcf_e0 + this.vcf_c0;
-          k = (float) Math.exp( -w / this.vcf_rescoeff);
-          this.vcf_c0 = this.vcf_c0 * this.vcf_envdecay;
-          this.vcf_a = 2f * (float) Math.cos(2f * w) * k;
-          this.vcf_b = -k * k;
-          this.vcf_c = 1f - this.vcf_a - this.vcf_b;
-          this.vcf_envpos = 0;
-        }
-
-        if (this.vco_wav > 0.5f) {
-          result = this.vcf_a * this.vcf_d1 + this.vcf_b * this.vcf_d2 +
-              this.vcf_c * this.rct(this.vco_k) * this.vca_a;
-        }
-        else {
-          result = this.vcf_a * this.vcf_d1 + this.vcf_b * this.vcf_d2 +
-              this.vcf_c * this.vco_k * this.vca_a;
-        }
-
-        this.vcf_d2 = this.vcf_d1;
-        this.vcf_envpos = this.vcf_envpos + 1;
-        this.vcf_d1 = result;
-
-        this.cnt++;
-        w = (float)this.cnt / (float)this.cntmax;
-
-        if (w < 1f) {
-          k = this.vco_inc_src * (1f - w) + w * this.vco_inc_dest;
-        }
-        else {
-          this.vco_inc = this.vco_inc_dest;
-          k = this.vco_inc;
-        }
-
-        this.vco_k = this.vco_k + k;
-        if (this.vco_k > 0.5f) this.vco_k -= 1;
-
-        if (this.vca_mode == 0) {
-          this.vca_a = this.vca_a + ((this.vca_a0 - this.vca_a) * this.vca_attack);
-        }
-        else if (this.vca_mode == 1) {
-          this.vca_a = this.vca_a * this.vca_decay;
-
-          if (this.vca_a < (1f / 65536f)) {
-            this.vca_a = 0;
-            this.vca_mode = 2;
-          }
-        }
-
-        out1[j] += result * this.volume;
-      }
-    }
-
-  }*/
+  
 
 
   public void processReplacing(float[][] input, float[][] output, int samples) {

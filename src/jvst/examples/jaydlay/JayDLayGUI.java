@@ -31,6 +31,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
 
+import jvst.examples.dreinulldrei.DreiNullDreiGUI;
 import jvst.wrapper.*;
 
 
@@ -46,7 +47,7 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
   JTextField VolumeText;
 
   private VSTPluginAdapter pPlugin;
-
+  protected static boolean DEBUG = false;
 
   public JayDLayGUI() throws Exception {
     log("JayDLayGUI <init>");
@@ -56,11 +57,11 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     //use that one because the LaF is a static property and we are running in the 
     //same VM. 
     
-    //So, I highly recommend setting a LaF in each of your plugins GUI constructors!!!
-    
-    UIManager.put("ClassLoader", null); //use the default classloader to load the system LaF
-    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-    SwingUtilities.updateComponentTreeUI(this);
+//    //So, I highly recommend setting a LaF in each of your plugins GUI constructors!!!
+//    
+//    UIManager.put("ClassLoader", null); //use the default classloader to load the system LaF
+//    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+//    SwingUtilities.updateComponentTreeUI(this);
     
     this.setTitle("JayDLay v0.8");
     this.setSize(200, 200);
@@ -70,20 +71,35 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
 
   public void init(VSTPluginAdapter e) {
     this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
-    ((JayDLay)e).gui=this; //tell the plug that it has a gui!
     
-  
-    this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
-    this.FeedbackSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
-    this.DelaySlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
+    
+    if (!DEBUG) {
+    	((JayDLay)e).gui=this; //tell the plug that it has a gui!
+    	
+    	this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
+    	this.FeedbackSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
+    	this.DelaySlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
+    }
+    else {
+       	this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, 1);
+    	this.FeedbackSlider = new JSlider(JSlider.VERTICAL, 1, 100, 1);
+    	this.DelaySlider = new JSlider(JSlider.VERTICAL, 1, 100, 1);
+    }
     this.VolumeSlider.addChangeListener(this);
     this.FeedbackSlider.addChangeListener(this);
     this.DelaySlider.addChangeListener(this);
 
-    this.VolumeText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
-    this.FeedbackText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
-    this.DelayText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
-
+    if (!DEBUG) {
+	    this.VolumeText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
+	    this.FeedbackText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
+	    this.DelayText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
+	}
+    else {
+	    this.VolumeText = new JTextField("0");
+	    this.FeedbackText = new JTextField("0");
+	    this.DelayText = new JTextField("0");    	
+    }
+    
     JLabel DelayLabel = new JLabel("Delay");
     JLabel FeedbackLabel = new JLabel("Feedback");
     JLabel VolumeLabel = new JLabel("Volume");
@@ -119,20 +135,31 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
    */
   public void stateChanged(ChangeEvent e) {
     JSlider sl = (JSlider)e.getSource();
-
-    if (sl == this.VolumeSlider) {
-      this.pPlugin.setParameter(DelayProgram.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
-      this.VolumeText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
-    }
-    else if (sl == this.FeedbackSlider) {
-      this.pPlugin.setParameter(DelayProgram.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
-      this.FeedbackText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
-    }
-    else if (sl == this.DelaySlider) {
-      this.pPlugin.setParameter(DelayProgram.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));
-      this.DelayText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
+    
+    if (!DEBUG) {
+	    if (sl == this.VolumeSlider) {
+	      this.pPlugin.setParameter(DelayProgram.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
+	      this.VolumeText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
+	    }
+	    else if (sl == this.FeedbackSlider) {
+	      this.pPlugin.setParameter(DelayProgram.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
+	      this.FeedbackText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
+	    }
+	    else if (sl == this.DelaySlider) {
+	      this.pPlugin.setParameter(DelayProgram.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));
+	      this.DelayText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
+	    }
     }
   }
 
+  
+  public static void main(String[] args) throws Throwable {
+	DEBUG=true;
+	
+    JayDLayGUI gui = new JayDLayGUI();
+    gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    gui.init(null);
+    gui.open();
+  }
   
 }
