@@ -57,7 +57,7 @@ class ConfigFileReader {
 		int IsLoggingEnabled;
 		int CloseNativePluginWindow;
 		int AttachToNativePluginWindow;
-
+		char* CustomJVMLocation;
 
 	protected:
 		virtual void ReadConfigFile ();

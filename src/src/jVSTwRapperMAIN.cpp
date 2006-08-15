@@ -108,7 +108,9 @@ AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {
 #endif
 
 	calculatePaths();
+
 	audioMaster=pAudioMaster;
+
 	char log_location[700];
 	strcpy(log_location, DllPath);
 	strcat(log_location, LogFileName);
@@ -127,26 +129,56 @@ AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {
 	if (!pAudioMaster(0, audioMasterVersion, 0, 0, 0, 0)) return 0;  // old version
 	log("Get VST Version OK!");
 
+
+
+
 #ifndef MACX
-	//get jvm location from registry and load jvm interface pointers
-	char* jvmLibLocation = readJVMLibLocation();
+	//see if there is a custom JVM we want to load (from the .ini file)!
+	//MAYBE WE ALSO WANT THIS FEATURE ON THE MAC ???
+	char* jvmLibLocation;
+	
+	ConfigFileReader *cfg = new ConfigFileReader();
+	jvmLibLocation = cfg->CustomJVMLocation;
+	delete cfg;
+
 	if (jvmLibLocation==NULL) {
-		log("* WARNING: Could not find jvm.dll location in registry!");
-		//try loading jvm.dll from PATH
-		jvmLibLocation = "jvm.dll";
+		log("querying registry for location of default jvm.dll");
+		//no custom JVM configured in the .ini. Look in the windows registry
+		//get jvm location from registry and load jvm interface pointers
+		jvmLibLocation = readJVMLibLocation();
+
+		if (jvmLibLocation==NULL) {
+			log("* WARNING: Could not find jvm.dll location in registry! \n using the one from the PATH environment variable!");
+			//try loading jvm.dll from PATH
+			jvmLibLocation = "jvm.dll";
+		}
+		else {
+			log("found jvm.lib in registry at");
+			log(jvmLibLocation);
+		}
 	}
+	else {
+		log("Loading custom JVM !!! at");
+		jvmLibLocation = replace(jvmLibLocation, "{WrapperPath}", DllPath);
+		log(jvmLibLocation);
+	}
+
 
 	if (initJVMFunctionPointers(jvmLibLocation) != 0) {
 		log("** ERROR: cant init jvm interface pointers!");
 		return 0;
 	}
-    VSTV24ToPlug* WrapperInstance = startJava();
+
 	//start the jvm
+    VSTV24ToPlug* WrapperInstance = startJava();
 	if (WrapperInstance == NULL) {
 		log("**ERROR in startJava()");
 		return 0;
 	}
+
 #else
+	//mac doesnt need all this custom jvm loading mess
+	//it comes with a preinstalled jvm ;-)
 	startJavaThread();
 #endif
 

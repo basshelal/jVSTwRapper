@@ -78,7 +78,7 @@ ConfigFileReader::ConfigFileReader() {
 	this->IsLoggingEnabled = 0;
 	this->AttachToNativePluginWindow = 1;
 	this->CloseNativePluginWindow = 1;
-
+	this->CustomJVMLocation = NULL;
 
 	this->ReadConfigFile();
 
@@ -99,7 +99,7 @@ void ConfigFileReader::ReadConfigFile() {
 		fgets(line, 1024, this->INIFile);
 		
 		if(ferror(this->INIFile)) {
-			log("INI File Read error");
+			log("** INI File Read error");
 			break;
 		}
 
@@ -143,6 +143,10 @@ void ConfigFileReader::ReadConfigFile() {
 		if(strcmp(token, "JVMOption5")==0) {
 			token = strtok(NULL, "\n");
 			if (token != NULL) this->JVMOption5 = strdup(token);
+		}
+		if(strcmp(token, "CustomJVMLocation")==0) {
+			token = strtok(NULL, "\n");
+			if (token != NULL) this->CustomJVMLocation = strdup(token);
 		}
 		if(strcmp(token, "SystemClassPath")==0) {
 			token = strtok(NULL, sep);

@@ -154,11 +154,9 @@ int log(char* data) {
 
 
 char *replace(char *string, char *oldpiece, char *newpiece) { 
-   int str_index, newstr_index, oldpiece_index, end, 
-      new_len, old_len, cpy_len; 
+   int str_index, newstr_index, oldpiece_index, end, new_len, old_len, cpy_len; 
    char *c; 
    char newstring[4096]; 
-
 
 
    if ((c = (char *) strstr(string, oldpiece)) == NULL) 
@@ -274,6 +272,8 @@ bool checkAndThrowException(JNIEnv *env) {
 
 #ifndef MACX
 
+#define JVM_REG_18 "Software\\JavaSoft\\Java Runtime Environment\\1.8"
+#define JVM_REG_17 "Software\\JavaSoft\\Java Runtime Environment\\1.7"
 #define JVM_REG_16 "Software\\JavaSoft\\Java Runtime Environment\\1.6"
 #define JVM_REG_15 "Software\\JavaSoft\\Java Runtime Environment\\1.5"
 #define JVM_REG_14 "Software\\JavaSoft\\Java Runtime Environment\\1.4"
@@ -288,33 +288,41 @@ char* readJVMLibLocation() {
 	DWORD	dwType; 
 	char	javaLibLocation[512]; //value stored here
 	
-
-	//check for jvm 1.6 (future) in registry
-	rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_16, 0, KEY_ALL_ACCESS, &regKey); 
+	//check for jvm 1.8 (future) in registry
+	rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_18, 0, KEY_ALL_ACCESS, &regKey); 
 	if (rc != ERROR_SUCCESS) {
 		
-		//no 1.6, try 1.5
-		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_15, 0, KEY_ALL_ACCESS, &regKey); 
+		//check for jvm 1.7 (future) in registry
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_17, 0, KEY_ALL_ACCESS, &regKey); 
 		if (rc != ERROR_SUCCESS) {
-			
-			//no 1.5 try 1.4!
-			rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_14, 0, KEY_ALL_ACCESS, &regKey); 
-			if (rc != ERROR_SUCCESS) {
-			
-				//no 1.4 try 1.3!
-				rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_13, 0, KEY_ALL_ACCESS, &regKey); 
-				if (rc != ERROR_SUCCESS) {
-				
-					//no 1.3 try 1.2!
-					rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_12, 0, KEY_ALL_ACCESS, &regKey); 
-					if (rc != ERROR_SUCCESS) {
-						return NULL;
-					}
-				}
-			}
-		} 
-	}
 
+			//check for jvm 1.6 (future) in registry
+			rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_16, 0, KEY_ALL_ACCESS, &regKey); 
+			if (rc != ERROR_SUCCESS) {
+				
+				//no 1.6, try 1.5
+				rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_15, 0, KEY_ALL_ACCESS, &regKey); 
+				if (rc != ERROR_SUCCESS) {
+					
+					//no 1.5 try 1.4!
+					rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_14, 0, KEY_ALL_ACCESS, &regKey); 
+					if (rc != ERROR_SUCCESS) {
+					
+						//no 1.4 try 1.3!
+						rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_13, 0, KEY_ALL_ACCESS, &regKey); 
+						if (rc != ERROR_SUCCESS) {
+						
+							//no 1.3 try 1.2!
+							rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_12, 0, KEY_ALL_ACCESS, &regKey); 
+							if (rc != ERROR_SUCCESS) {
+								return NULL;
+							}
+						}
+					}
+				} 
+			}
+		}
+	}
 
 	len = sizeof(javaLibLocation);
 
