@@ -344,7 +344,7 @@ public class DreiNullDrei extends VSTPluginAdapter {
     int ret = DreiNullDrei.CANDO_NO;
 
     if (DreiNullDrei.CANDO_PLUG_RECEIVE_VST_EVENTS.equals(feature)) ret = DreiNullDrei.CANDO_YES;
-    if (DreiNullDrei.CANDO_PLUG_REVEIVE_VST_MIDI_EVENT.equals(feature)) ret = DreiNullDrei.CANDO_YES;
+    if (DreiNullDrei.CANDO_PLUG_RECEIVE_VST_MIDI_EVENT.equals(feature)) ret = DreiNullDrei.CANDO_YES;
     if (DreiNullDrei.CANDO_PLUG_MIDI_PROGRAM_NAMES.equals(feature)) ret = DreiNullDrei.CANDO_YES;
 
     return ret;

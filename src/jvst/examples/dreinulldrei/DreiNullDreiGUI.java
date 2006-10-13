@@ -46,6 +46,7 @@ import jvst.wrapper.gui.RotaryKnob;
 import jvst.wrapper.gui.RotaryKnobPlusText;
 import jvst.wrapper.gui.JSliderPlusText;
 
+//Created using Eclipse GUI Editor!
 public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListener {
 
 	private static final long serialVersionUID = -2702280782127069661L;
@@ -427,4 +428,4 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
 
 
 
-}  //  @jve:decl-index=0:visual-constraint="46,13"
+}  //  @jve:decl-index=0:visual-constraint="118,91"

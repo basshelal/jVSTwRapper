@@ -342,7 +342,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
     int ret = JayVSTxSynth.CANDO_NO;
 
     if (JayVSTxSynth.CANDO_PLUG_RECEIVE_VST_EVENTS.equals(feature)) ret = JayVSTxSynth.CANDO_YES;
-    if (JayVSTxSynth.CANDO_PLUG_REVEIVE_VST_MIDI_EVENT.equals(feature)) ret = JayVSTxSynth.CANDO_YES;
+    if (JayVSTxSynth.CANDO_PLUG_RECEIVE_VST_MIDI_EVENT.equals(feature)) ret = JayVSTxSynth.CANDO_YES;
     if (JayVSTxSynth.CANDO_PLUG_MIDI_PROGRAM_NAMES.equals(feature)) ret = JayVSTxSynth.CANDO_YES;
 
     return ret;
