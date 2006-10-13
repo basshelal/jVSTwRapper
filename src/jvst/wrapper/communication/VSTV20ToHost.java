@@ -51,6 +51,7 @@ public abstract class VSTV20ToHost extends VSTV10ToHost {
   public static final String CANDO_PLUG_SEND_VST_TIME_INFO = "sendVstTimeInfo";
   public static final String CANDO_PLUG_RECEIVE_VST_EVENTS = "receiveVstEvents";
   public static final String CANDO_PLUG_RECEIVE_VST_MIDI_EVENT = "receiveVstMidiEvent";
+  public static final String CANDO_PLUG_REVEIVE_VST_MIDI_EVENT = "receiveVstMidiEvent"; //keep TYPO for backward compatibility!
   public static final String CANDO_PLUG_RECEIVE_VST_TIME_INFO = "receiveVstTimeInfo";
   public static final String CANDO_PLUG_OFFLINE = "offline";
   public static final String CANDO_PLUG_PLUG_AS_CHANNEL_INSERT = "plugAsChannelInsert";
