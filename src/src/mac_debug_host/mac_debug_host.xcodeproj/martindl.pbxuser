@@ -1,5 +1,91 @@
 // !$*UTF8*$!
 {
+	C308C0130B49C2A6002B031C /* minihost.cpp:153 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3C70ECF0B457A2500DA1076 /* minihost.cpp */;
+		functionName = "main()";
+		hitCount = 1;
+		lineNumber = 153;
+		location = minihost;
+		modificationTime = 189383409.939029;
+		state = 1;
+	};
+	C308C01A0B49C316002B031C /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {938, 9086}}";
+			sepNavSelRange = "{3257, 0}";
+			sepNavVisRect = "{{0, 8359}, {485, 348}}";
+		};
+	};
+	C308C01C0B49C316002B031C /* jVSTwRapperMAIN.cpp:552 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C308C01A0B49C316002B031C /* jVSTwRapperMAIN.cpp */;
+		functionName = "calculatePaths()";
+		hitCount = 1;
+		lineNumber = 552;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189383450.106992;
+		state = 1;
+	};
+	C308C01D0B49C33A002B031C /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C308C01F0B49C33A002B031C /* jVSTwRapperMAIN.cpp:232 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C308C01D0B49C33A002B031C /* jVSTwRapperMAIN.cpp */;
+		functionName = "jvst_main()";
+		hitCount = 1;
+		lineNumber = 232;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189383487.473685;
+		state = 1;
+	};
+	C308C0200B49C3AD002B031C /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C308C0220B49C3AD002B031C /* jVSTwRapperMAIN.cpp:610 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C308C0200B49C3AD002B031C /* jVSTwRapperMAIN.cpp */;
+		functionName = "startJavaThread()";
+		hitCount = 1;
+		lineNumber = 610;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189383600.711729;
+		state = 1;
+	};
 	C3C70EBF0B4579A800DA1076 /* Project object */ = {
 		activeBuildConfigurationName = Debug;
 		activeExecutable = C3C70EE30B457B2000DA1076 /* minihost */;
@@ -8,11 +94,10 @@
 			C3C70EE00B457B2000DA1076 /* minihost */,
 		);
 		breakpoints = (
-			C3C70FB10B457DC200DA1076 /* minihost.cpp:153 */,
-			C3C70FB40B457DF500DA1076 /* jVSTwRapperMAIN.cpp:551 */,
-			C3C70FB70B457E0A00DA1076 /* jVSTwRapperMAIN.cpp:610 */,
-			C3C70FBA0B457E1100DA1076 /* jVSTwRapperMAIN.cpp:642 */,
-			C3C70FC00B457E5000DA1076 /* jVSTwRapperMAIN.cpp:472 */,
+			C308C0130B49C2A6002B031C /* minihost.cpp:153 */,
+			C308C01C0B49C316002B031C /* jVSTwRapperMAIN.cpp:552 */,
+			C308C01F0B49C33A002B031C /* jVSTwRapperMAIN.cpp:232 */,
+			C308C0220B49C3AD002B031C /* jVSTwRapperMAIN.cpp:610 */,
 		);
 		breakpointsGroup = C3C70FBB0B457E3000DA1076 /* XCBreakpointsBucket */;
 		codeSenseManager = C3C70EC40B4579A800DA1076 /* Code sense */;
@@ -22,6 +107,28 @@
 		ignoreBreakpointsInProjectsDict = {
 		};
 		perUserDictionary = {
+			"PBXConfiguration.PBXBreakpointsDataSource.v1:1CA1AED706398EBD00589147" = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXBreakpointsDataSource_BreakpointID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					20,
+					210,
+					20,
+					110,
+					109,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXBreakpointsDataSource_ActionID,
+					PBXBreakpointsDataSource_TypeID,
+					PBXBreakpointsDataSource_BreakpointID,
+					PBXBreakpointsDataSource_UseID,
+					PBXBreakpointsDataSource_LocationID,
+					PBXBreakpointsDataSource_ConditionID,
+					PBXBreakpointsDataSource_ContinueID,
+				);
+			};
 			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
 				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
 				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
@@ -96,8 +203,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 189102505;
-			PBXWorkspaceStateSaveDate = 189102505;
+			PBXPerProjectTemplateStateSaveDate = 189380071;
+			PBXWorkspaceStateSaveDate = 189380071;
 		};
 		sourceControlManager = C3C70EC30B4579A800DA1076 /* Source Control */;
 		userBuildSettings = {
@@ -127,7 +234,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {908, 4676}}";
 			sepNavSelRange = "{5022, 0}";
-			sepNavVisRect = "{{0, 1961}, {477, 348}}";
+			sepNavVisRect = "{{0, 1961}, {485, 348}}";
 			sepNavWindowFrame = "{{15, -1}, {606, 742}}";
 		};
 	};
@@ -160,7 +267,7 @@
 			YES,
 		);
 		argumentStrings = (
-			/Users/martindl/jvst/src/build/Debug/jvstwrapper.vst/,
+			/Users/martindl/workspace/jvst_native/src/build/Debug/jvstwrapper.vst/,
 		);
 		autoAttachOnCrash = 1;
 		configStateDict = {
@@ -179,130 +286,31 @@
 		savedGlobals = {
 		};
 		sourceDirectories = (
-			/Users/martindl/jvst/src/src,
-			/Users/martindl/jvst/src/src/mac_debug_host,
-			/Users/martindl/jvst/src/src/pluginterfaces,
-			/Users/martindl/jvst/src/src/public.sdk,
-			/Users/martindl/jvst/src/src/vstgui,
-			/Users/martindl/jvst/src/src/public.sdk/vst2.x,
-			/Users/martindl/jvst/src/src/pluginterfaces/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/mac_debug_host,
+			/Users/martindl/workspace/jvst_native/src/src,
+			/Users/martindl/workspace/jvst_native/src/src/pluginterfaces/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/public.sdk/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/vstgui,
 		);
 		variableFormatDictionary = {
 		};
 	};
-	C3C70FB10B457DC200DA1076 /* minihost.cpp:153 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3C70ECF0B457A2500DA1076 /* minihost.cpp */;
-		functionName = "main()";
-		hitCount = 1;
-		lineNumber = 153;
-		location = minihost.ob;
-		modificationTime = 189103801.672212;
-		state = 1;
-	};
-	C3C70FB20B457DF500DA1076 /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/jvst/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<absolute>";
+	C3C70EE40B457B2000DA1076 /* minihost-Info.plist */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {938, 9450}}";
-			sepNavSelRange = "{13768, 0}";
-			sepNavVisRect = "{{0, 6427}, {477, 348}}";
+			sepNavIntBoundsRect = "{{0, 0}, {686, 613}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {561, 613}}";
+			sepNavWindowFrame = "{{15, -1}, {606, 742}}";
 		};
-	};
-	C3C70FB40B457DF500DA1076 /* jVSTwRapperMAIN.cpp:551 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3C70FB20B457DF500DA1076 /* jVSTwRapperMAIN.cpp */;
-		functionName = "calculatePaths()";
-		hitCount = 1;
-		lineNumber = 551;
-		modificationTime = 189103843.725697;
-		state = 1;
-	};
-	C3C70FB50B457E0A00DA1076 /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/jvst/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
-	};
-	C3C70FB70B457E0A00DA1076 /* jVSTwRapperMAIN.cpp:610 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3C70FB50B457E0A00DA1076 /* jVSTwRapperMAIN.cpp */;
-		functionName = "startJavaThread()";
-		hitCount = 1;
-		lineNumber = 610;
-		modificationTime = 189103843.725466;
-		state = 1;
-	};
-	C3C70FB80B457E1100DA1076 /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/jvst/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
-	};
-	C3C70FBA0B457E1100DA1076 /* jVSTwRapperMAIN.cpp:642 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3C70FB80B457E1100DA1076 /* jVSTwRapperMAIN.cpp */;
-		functionName = "startJavaThread()";
-		hitCount = 1;
-		lineNumber = 642;
-		modificationTime = 189103843.725654;
-		state = 1;
 	};
 	C3C70FBB0B457E3000DA1076 /* XCBreakpointsBucket */ = {
 		isa = XCBreakpointsBucket;
-		name = "Project Breakpoints";
+		name = mac_debug_host;
 		objects = (
-			C3C70FB10B457DC200DA1076 /* minihost.cpp:153 */,
-			C3C70FB40B457DF500DA1076 /* jVSTwRapperMAIN.cpp:551 */,
-			C3C70FB70B457E0A00DA1076 /* jVSTwRapperMAIN.cpp:610 */,
-			C3C70FBA0B457E1100DA1076 /* jVSTwRapperMAIN.cpp:642 */,
-			C3C70FC00B457E5000DA1076 /* jVSTwRapperMAIN.cpp:472 */,
+			C308C0130B49C2A6002B031C /* minihost.cpp:153 */,
+			C308C01C0B49C316002B031C /* jVSTwRapperMAIN.cpp:552 */,
+			C308C01F0B49C33A002B031C /* jVSTwRapperMAIN.cpp:232 */,
+			C308C0220B49C3AD002B031C /* jVSTwRapperMAIN.cpp:610 */,
 		);
-	};
-	C3C70FBE0B457E5000DA1076 /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/jvst/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
-	};
-	C3C70FC00B457E5000DA1076 /* jVSTwRapperMAIN.cpp:472 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3C70FBE0B457E5000DA1076 /* jVSTwRapperMAIN.cpp */;
-		functionName = "startJava()";
-		hitCount = 1;
-		lineNumber = 472;
-		modificationTime = 189103843.72562;
-		state = 1;
 	};
 }

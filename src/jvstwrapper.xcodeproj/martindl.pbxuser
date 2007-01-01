@@ -1,25 +1,13 @@
 // !$*UTF8*$!
 {
 	089C1669FE841209C02AAC07 /* Project object */ = {
-		activeBuildConfigurationName = Release;
+		activeBuildConfigurationName = Debug;
 		activeExecutable = C3E30FDC0B4048010015E591 /* minihost */;
 		activeTarget = C3C70FDF0B45823100DA1076 /* jvstwrapper */;
 		addToTargets = (
 			C3C70FDF0B45823100DA1076 /* jvstwrapper */,
 		);
 		breakpoints = (
-			C3E3100C0B404AD70015E591 /* jVSTwRapperMAIN.cpp:134 */,
-			C3E310100B404B3D0015E591 /* jVSTwRapperMAIN.cpp:117 */,
-			C3E310120B404B410015E591 /* jVSTwRapperMAIN.cpp:124 */,
-			C3E3109E0B4076640015E591 /* asm _start  0x0000238c:1 */,
-			C3547F620B41E5BF00C44E30 /* jVSTwRapperMAIN.cpp:551 */,
-			C3547F7C0B41EBE400C44E30 /* jVSTwRapperMAIN.cpp:473 */,
-			C3547F7E0B41EC6100C44E30 /* VSTV10ToPlug.cpp:99 */,
-			C3547F800B41EC6500C44E30 /* VSTV10ToPlug.cpp:100 */,
-			C3547F820B41EC6900C44E30 /* VSTV10ToPlug.cpp:109 */,
-			C3547F960B41EDC900C44E30 /* VSTGUIWrapper.cpp:128 */,
-			C3E310250B4050F30015E591 /* jVSTwRapperMAIN.cpp:517 */,
-			C3C710B20B45985900DA1076 /* test.h:12 */,
 		);
 		breakpointsGroup = C3EA1CA60B3DE13E00B4C69F /* XCBreakpointsBucket */;
 		codeSenseManager = C3EA1A910B3D904400B4C69F /* Code sense */;
@@ -96,7 +84,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_ObjectSize_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					197,
+					315,
 					20,
 					48,
 					43,
@@ -187,14 +175,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 189170675;
-			PBXWorkspaceStateSaveDate = 189170675;
+			PBXPerProjectTemplateStateSaveDate = 189379700;
+			PBXWorkspaceStateSaveDate = 189379700;
 		};
 		perUserProjectItems = {
+			C308C00E0B49C289002B031C /* PBXTextBookmark */ = C308C00E0B49C289002B031C /* PBXTextBookmark */;
 			C38DD48F0B46926A00803017 /* PBXTextBookmark */ = C38DD48F0B46926A00803017 /* PBXTextBookmark */;
-			C38DD4900B46926A00803017 /* PBXTextBookmark */ = C38DD4900B46926A00803017 /* PBXTextBookmark */;
-			C3C7129A0B45DB6700DA1076 /* PBXTextBookmark */ = C3C7129A0B45DB6700DA1076 /* PBXTextBookmark */;
-			C3C7129D0B45DB6800DA1076 /* PBXTextBookmark */ = C3C7129D0B45DB6800DA1076 /* PBXTextBookmark */;
 		};
 		sourceControlManager = C3EA1A900B3D904400B4C69F /* Source Control */;
 		userBuildSettings = {
@@ -208,95 +194,15 @@
 			sepNavWindowFrame = "{{84, 120}, {750, 558}}";
 		};
 	};
-	C3547F620B41E5BF00C44E30 /* jVSTwRapperMAIN.cpp:551 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
-		functionName = "calculatePaths()";
-		hitCount = 1;
-		lineNumber = 551;
-		location = jvstwrapper;
-		modificationTime = 188998695.9867961;
-		state = 1;
-	};
-	C3547F7C0B41EBE400C44E30 /* jVSTwRapperMAIN.cpp:473 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
-		functionName = "startJava()";
-		hitCount = 1;
-		lineNumber = 473;
-		location = jvstwrapper;
-		modificationTime = 188998695.986902;
-		state = 1;
-	};
-	C3547F7E0B41EC6100C44E30 /* VSTV10ToPlug.cpp:99 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		functionName = "VSTV10ToPlug::~VSTV10ToPlug()";
-		hitCount = 1;
-		lineNumber = 99;
-		location = jvstwrapper;
-		modificationTime = 188998695.986609;
-		state = 1;
-	};
-	C3547F800B41EC6500C44E30 /* VSTV10ToPlug.cpp:100 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		functionName = "VSTV10ToPlug::~VSTV10ToPlug()";
-		hitCount = 1;
-		lineNumber = 100;
-		location = jvstwrapper;
-		modificationTime = 188998695.98685;
-		state = 1;
-	};
-	C3547F820B41EC6900C44E30 /* VSTV10ToPlug.cpp:109 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		functionName = "VSTV10ToPlug::~VSTV10ToPlug()";
-		hitCount = 1;
-		lineNumber = 109;
-		location = jvstwrapper;
-		modificationTime = 188998695.986876;
-		state = 1;
-	};
-	C3547F960B41EDC900C44E30 /* VSTGUIWrapper.cpp:128 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B900B3D97AF00B4C69F /* VSTGUIWrapper.cpp */;
-		functionName = "VSTGUIWrapper::~VSTGUIWrapper()";
-		hitCount = 1;
-		lineNumber = 128;
-		location = jvstwrapper;
-		modificationTime = 188998695.9871239;
-		state = 1;
+	C308C00E0B49C289002B031C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
+		name = DestroyJavaVM;
+		rLen = 13;
+		rLoc = 3455;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
 	};
 	C38DD48F0B46926A00803017 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -308,39 +214,8 @@
 		vrLen = 0;
 		vrLoc = 0;
 	};
-	C38DD4900B46926A00803017 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3C7112E0B45B4D800DA1076 /* VSTGUIWrapperMAC.h */;
-		name = "VSTGUIWrapperMAC.h: 19";
-		rLen = 0;
-		rLoc = 244;
-		rType = 0;
-		vrLen = 298;
-		vrLoc = 0;
-	};
 	C3C70FDF0B45823100DA1076 /* jvstwrapper */ = {
 		activeExec = 0;
-	};
-	C3C710A90B4597B200DA1076 /* test.h */ = {
-		isa = PBXFileReference;
-		fileEncoding = 4;
-		lastKnownFileType = sourcecode.c.h;
-		name = test.h;
-		path = /Users/martindl/jvst/src/test.h;
-		sourceTree = "<absolute>";
-	};
-	C3C710B20B45985900DA1076 /* test.h:12 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3C710A90B4597B200DA1076 /* test.h */;
-		hitCount = 0;
-		lineNumber = 12;
-		modificationTime = 189110361.033123;
-		state = 1;
 	};
 	C3C7112E0B45B4D800DA1076 /* VSTGUIWrapperMAC.h */ = {
 		uiCtxt = {
@@ -357,26 +232,6 @@
 			sepNavVisRect = "{{0, 215}, {596, 499}}";
 			sepNavWindowFrame = "{{43, 3}, {606, 742}}";
 		};
-	};
-	C3C7129A0B45DB6700DA1076 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3C7129D0B45DB6800DA1076 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3C7112E0B45B4D800DA1076 /* VSTGUIWrapperMAC.h */;
-		name = "VSTGUIWrapperMAC.h: 19";
-		rLen = 0;
-		rLoc = 244;
-		rType = 0;
-		vrLen = 305;
-		vrLoc = 0;
 	};
 	C3E30FDC0B4048010015E591 /* minihost */ = {
 		isa = PBXExecutable;
@@ -416,13 +271,13 @@
 		savedGlobals = {
 		};
 		sourceDirectories = (
-			/Users/martindl/Desktop/vstsdk2.4/public.sdk/samples/vst2.x/minihost/source,
-			/Users/martindl/jvst/src/src,
-			/Users/martindl/jvst/src/src/pluginterfaces/vst2.x,
-			/Users/martindl/jvst/src/src/public.sdk/vst2.x,
-			/Users/martindl/jvst/src/src/vstgui,
+			/Users/martindl/workspace/jvst_native/src/src,
+			/Users/martindl/workspace/jvst_native/src/src/mac_debug_host,
+			/Users/martindl/workspace/jvst_native/src/src/pluginterfaces/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/public.sdk/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/vstgui,
 		);
-		startupPath = /Users/martindl/jvst/src/build/Debug;
+		startupPath = "<<ProductDirectory>>";
 		variableFormatDictionary = {
 			$cr = 1;
 			$ctr = 1;
@@ -506,66 +361,6 @@
 		path = /Users/martindl/bin/minihost;
 		sourceTree = "<absolute>";
 	};
-	C3E3100C0B404AD70015E591 /* jVSTwRapperMAIN.cpp:134 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
-		functionName = "jvst_main()";
-		hitCount = 1;
-		lineNumber = 134;
-		location = jvstwrapper;
-		modificationTime = 188998695.986766;
-		state = 1;
-	};
-	C3E310100B404B3D0015E591 /* jVSTwRapperMAIN.cpp:117 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
-		functionName = "VSTPluginMain()";
-		hitCount = 1;
-		lineNumber = 117;
-		location = jvstwrapper;
-		modificationTime = 188998695.986823;
-		state = 1;
-	};
-	C3E310120B404B410015E591 /* jVSTwRapperMAIN.cpp:124 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
-		functionName = "main_macho()";
-		hitCount = 1;
-		lineNumber = 124;
-		location = jvstwrapper;
-		modificationTime = 188998695.986735;
-		state = 1;
-	};
-	C3E310250B4050F30015E591 /* jVSTwRapperMAIN.cpp:517 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
-		functionName = "calculatePaths()";
-		hitCount = 1;
-		lineNumber = 517;
-		location = jvstwrapper;
-		modificationTime = 188998695.986992;
-		state = 1;
-	};
 	C3E310630B405D130015E591 /* libjvstwrapper.jnilib.ini */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {728, 2184}}";
@@ -573,25 +368,6 @@
 			sepNavVisRect = "{{0, 544}, {455, 393}}";
 			sepNavWindowFrame = "{{15, 219}, {500, 522}}";
 		};
-	};
-	C3E3109C0B4076640015E591 /* asm _start  0x0000238c */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = file;
-		path = "asm _start  0x0000238c";
-		sourceTree = "<group>";
-	};
-	C3E3109E0B4076640015E591 /* asm _start  0x0000238c:1 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3E3109C0B4076640015E591 /* asm _start  0x0000238c */;
-		hitCount = 1;
-		lineNumber = 1;
-		modificationTime = 188998622.890405;
-		state = 1;
 	};
 	C3EA1A900B3D904400B4C69F /* Source Control */ = {
 		isa = PBXSourceControlManager;
@@ -767,8 +543,8 @@
 	C3EA1B900B3D97AF00B4C69F /* VSTGUIWrapper.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {686, 6258}}";
-			sepNavSelRange = "{1799, 0}";
-			sepNavVisRect = "{{0, 416}, {577, 613}}";
+			sepNavSelRange = "{2542, 0}";
+			sepNavVisRect = "{{0, 1071}, {560, 452}}";
 			sepNavWindowFrame = "{{0, 4}, {622, 742}}";
 		};
 	};
@@ -844,18 +620,6 @@
 		isa = XCBreakpointsBucket;
 		name = jvstwrapper;
 		objects = (
-			C3E3100C0B404AD70015E591 /* jVSTwRapperMAIN.cpp:134 */,
-			C3E310100B404B3D0015E591 /* jVSTwRapperMAIN.cpp:117 */,
-			C3E310120B404B410015E591 /* jVSTwRapperMAIN.cpp:124 */,
-			C3E310250B4050F30015E591 /* jVSTwRapperMAIN.cpp:517 */,
-			C3E3109E0B4076640015E591 /* asm _start  0x0000238c:1 */,
-			C3547F620B41E5BF00C44E30 /* jVSTwRapperMAIN.cpp:551 */,
-			C3547F7C0B41EBE400C44E30 /* jVSTwRapperMAIN.cpp:473 */,
-			C3547F7E0B41EC6100C44E30 /* VSTV10ToPlug.cpp:99 */,
-			C3547F800B41EC6500C44E30 /* VSTV10ToPlug.cpp:100 */,
-			C3547F820B41EC6900C44E30 /* VSTV10ToPlug.cpp:109 */,
-			C3547F960B41EDC900C44E30 /* VSTGUIWrapper.cpp:128 */,
-			C3C710B20B45985900DA1076 /* test.h:12 */,
 		);
 	};
 }
