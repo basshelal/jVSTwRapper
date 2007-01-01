@@ -45,13 +45,16 @@
 //------------------------------------------------------------------------
 // Prototype of the export functions
 //------------------------------------------------------------------------
+// NOT NEEDED ANY MORE !!!
 
+/*
 #ifndef MACX
-	AEffect *main (audioMasterCallback audioMaster);
+	AEffect* VSTPluginMain (audioMasterCallback pAudioMaster); 
+	//AEffect *main (audioMasterCallback audioMaster); //old vst 2.3 entry function signature
 #else
 	extern "C" AEffect *main_macho (audioMasterCallback audioMaster);
 #endif
-
+*/
 
 
 

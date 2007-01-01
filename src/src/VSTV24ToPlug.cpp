@@ -153,7 +153,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 
 	//processDoubleReplacing replaces the output 
 	//--> send emtpy output (do not copy output from native to java)
-	for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		//create empty float array
 		jdoubleArray darr = this->ProcessDoubleReplacingJEnv->NewDoubleArray(sampleFrames);
 		this->ProcessDoubleReplacingJEnv->SetObjectArrayElement(joutputs, i, darr);
@@ -173,7 +173,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 
 
 	//jetzt elemente von joutput nach output umkopieren...
-	for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		double* out = outputs[i];
 		jdoubleArray jout;
 		jdouble *jval;

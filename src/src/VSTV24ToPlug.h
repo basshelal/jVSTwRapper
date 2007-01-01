@@ -80,7 +80,7 @@ class VSTV24ToPlug : public VSTV23ToPlug {
 #ifndef MACX
 		DWORD ProcessDoubleReplacingThreadID;
 #else
-		int ProcessDoubleReplacingThreadID;
+		pthread_t ProcessDoubleReplacingThreadID;
 #endif
 };
 

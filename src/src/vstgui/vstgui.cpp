@@ -2,7 +2,7 @@
 // VST Plug-Ins SDK
 // VSTGUI: Graphical User Interface Framework for VST plugins : 
 //
-// Version 3.0       $Date: 2006/12/06 16:45:00 $ 
+// Version 3.0       $Date: 2007/01/01 21:25:10 $ 
 //
 // Added Motif/Windows vers.: Yvan Grabit              01.98
 // Added Mac version        : Charlie Steinberg        02.98
@@ -4347,7 +4347,7 @@ bool CFrame::initFrame (void *systemWin)
 
 	InitWindowClass ();
 	pHwnd = CreateWindowEx (0, gClassName, "Window",
-			 WS_CHILD | WS_VISIBLE, 
+			 WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, 
 			 0, 0, size.width (), size.height (), 
 			 (HWND)pSystemWindow, NULL, GetInstance (), NULL);
 
@@ -9342,7 +9342,7 @@ static short keyTable[] = {
 #define   kHIViewFeatureGetsFocusOnClick (1 << 8)
 #endif
 
-bool hiToolboxAllowFocusChange = true;
+bool hiToolboxAllowFocusChange = false;
 
 //---------------------------------------------------------------------------------------
 pascal OSStatus CFrame::carbonEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)

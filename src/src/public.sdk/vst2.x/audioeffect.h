@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4       $Date: 2006/12/06 16:45:23 $
+// Version 2.4       $Date: 2007/01/01 21:25:10 $
 //
 // Category     : VST 2.x Classes
 // Filename     : audioeffect.h
@@ -122,8 +122,6 @@ public:
 	virtual VstInt32 getMasterVersion ();		///< Returns the Host's version (for example 2400 for VST 2.4)
 	virtual VstInt32 getCurrentUniqueId ();		///< Returns current unique identifier when loading shell plug-ins
 	virtual void masterIdle ();					///< Give idle time to Host application
-	virtual bool isInputConnected (VstInt32 input);		///< Returns the input's connection state
-	virtual bool isOutputConnected (VstInt32 output);	///< Returns the output's connection state
 //@}
 
 //-------------------------------------------------------------------------------------------------------
@@ -148,6 +146,8 @@ public:
 	virtual void DECLARE_VST_DEPRECATED (canMono) (bool state = true);
 	virtual void DECLARE_VST_DEPRECATED (setRealtimeQualities) (VstInt32 qualities);
 	virtual void DECLARE_VST_DEPRECATED (setOfflineQualities) (VstInt32 qualities);
+	virtual bool DECLARE_VST_DEPRECATED (isInputConnected) (VstInt32 input);
+	virtual bool DECLARE_VST_DEPRECATED (isOutputConnected) (VstInt32 output);
 /// @endcond
 
 //-------------------------------------------------------------------------------------------------------

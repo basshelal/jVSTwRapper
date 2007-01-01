@@ -3,7 +3,7 @@
 // VSTGUI: Graphical User Interface Framework for VST plugins : 
 // Standard Control Objects
 //
-// Version 3.0       $Date: 2006/12/06 16:45:00 $
+// Version 3.0       $Date: 2007/01/01 21:25:10 $
 //
 // Added new objects        : Michael Schmidt          08.97
 // Added new objects        : Yvan Grabit              01.98
@@ -749,22 +749,26 @@ void CParamDisplay::drawText (CDrawContext *pContext, char *string, CBitmap *new
 	// draw the frame for the 3D effect
 	if (style & (k3DIn|k3DOut)) 
 	{
+		CRect r (size);
+		r.right--; r.top++;
+		r.bottom--;
+		pContext->setLineWidth (1);
 		if (style & k3DIn)
 			pContext->setFrameColor (backColor);
 		else
 			pContext->setFrameColor (frameColor);
 		CPoint p;
-		pContext->moveTo (p (size.left, size.bottom));
-		pContext->lineTo (p (size.left, size.top));
-		pContext->lineTo (p (size.right + 1, size.top));
+		pContext->moveTo (p (r.left, r.bottom));
+		pContext->lineTo (p (r.left, r.top));
+		pContext->lineTo (p (r.right, r.top));
 
 		if (style & k3DIn)
 			pContext->setFrameColor (frameColor);
 		else
 			pContext->setFrameColor (backColor);
-		pContext->moveTo (p (size.right, size.top + 1));
-		pContext->lineTo (p (size.right, size.bottom));
-		pContext->lineTo (p (size.left, size.bottom));
+		pContext->moveTo (p (r.right, r.top));
+		pContext->lineTo (p (r.right, r.bottom));
+		pContext->lineTo (p (r.left, r.bottom));
 	}
 
 	if (!(style & kNoTextStyle) && string)
@@ -1400,7 +1404,7 @@ void CTextEdit::takeFocus (CDrawContext *pContext)
 	wstyle |= WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
 	platformControl = (void*)CreateWindow (
 		"EDIT", text, wstyle,
-		rect.left, rect.top, rect.width () + 1, rect.height () + 1,
+		rect.left, rect.top, rect.width ()/* + 1*/, rect.height ()/* + 1*/,
 		(HWND)getFrame ()->getSystemWindow (), NULL, GetInstance (), 0);
 
 	// get/set the current font
@@ -5199,6 +5203,47 @@ void CKickButton::mouse (CDrawContext *pContext, CPoint &where, long button)
 
 
 //------------------------------------------------------------------------
+class CSplashScreenView : public CView
+{
+public:
+	CSplashScreenView (const CRect& size, CSplashScreen* splashScreen) 
+	: CView (size)
+	, splashScreen (splashScreen) 
+	{
+		setTransparency (splashScreen->getTransparency ());
+		setBackground (splashScreen->getBackground ());
+	}
+	 
+	void draw (CDrawContext *pContext)
+	{
+		if (bTransparencyEnabled)
+		{
+			if (splashScreen->getBitmapTransparency ())
+				pBackground->drawAlphaBlend (pContext, size, splashScreen->getOffset (), splashScreen->getBitmapTransparency ());
+			else
+			pBackground->drawTransparent (pContext, size, splashScreen->getOffset ());
+		}
+		else
+			pBackground->draw (pContext, size, splashScreen->getOffset ());
+		setDirty (false);
+	}
+
+	void mouse (CDrawContext *pContext, CPoint &where, long button)
+	{
+		if (button & kLButton)
+		{
+			splashScreen->unSplash (pContext);
+			getFrame ()->setDirty (true);
+			getFrame ()->setModalView (0);
+			forget ();
+		}
+	}
+
+protected:
+	CSplashScreen* splashScreen;
+};
+
+//------------------------------------------------------------------------
 // CSplashScreen
 //------------------------------------------------------------------------
 /*! @class CSplashScreen
@@ -5273,45 +5318,51 @@ void CSplashScreen::mouse (CDrawContext *pContext, CPoint &where, long button)
 	value = !value;
 	if (value)
 	{
-		if (getFrame () && getFrame ()->setModalView (this))
+		CSplashScreenView* ssv = new CSplashScreenView (toDisplay, this);
+		if (getFrame () && getFrame ()->setModalView (ssv))
 		{
-			keepSize = size;
-			size = toDisplay;
-			mouseableArea = size;
-//			draw (pContext);
+//			keepSize = size;
+//			size = toDisplay;
+//			mouseableArea = size;
 			if (listener)
 				listener->valueChanged (pContext, this);
 		}
 		setDirty ();
 	}
-	else
-	{
-		size = keepSize;
-		mouseableArea = size;
-		if (listener)
-			listener->valueChanged (pContext, this);
-		if (getFrame ())
-		{
-			getFrame ()->setDirty (true);
-			getFrame ()->setModalView (NULL);
-		}
-	}
+//	else
+//	{
+//		size = keepSize;
+//		mouseableArea = size;
+//		if (listener)
+//			listener->valueChanged (pContext, this);
+//		if (getFrame ())
+//		{
+//			getFrame ()->setDirty (true);
+//			getFrame ()->setModalView (NULL);
+//		}
+//	}
 }
 
 //------------------------------------------------------------------------
-void CSplashScreen::unSplash ()
+void CSplashScreen::unSplash (CDrawContext* pContext)
 {
-	setDirty ();
-	value = 0.f;
-
-	size = keepSize;
-	if (getFrame ())
+//	setDirty ();
+//	value = 0.f;
+//
+//	size = keepSize;
+//	if (getFrame ())
+//	{
+//		if (getFrame ()->getModalView () == this)
+//		{
+//			getFrame ()->setModalView (NULL);
+//			getFrame ()->redraw ();
+//		}
+//	}
+	if (value)
 	{
-		if (getFrame ()->getModalView () == this)
-		{
-			getFrame ()->setModalView (NULL);
-			getFrame ()->redraw ();
-		}
+		value = 0;
+		if (listener)
+			listener->valueChanged (pContext, this);
 	}
 }
 

@@ -52,6 +52,7 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 							...);
 
 int log(char* c);
+char *trim (char *string);
 char *replace(char *string, char *oldpiece, char *newpiece);
 bool checkException(JNIEnv *env);
 bool checkAndThrowException(JNIEnv *env);
@@ -61,9 +62,10 @@ bool checkAndThrowException(JNIEnv *env);
 	//stuff to load the jvm.dll dynamically
 	//this removes the need to add the path to jvm.dll to the PATH variable
 	int initJVMFunctionPointers(char *vmlibpath);
-	char* readJVMLibLocation();
+	char* readJVMLibLocation(char* requestedJVM);
+#else
+	int checkJVMVersionRequest(char* requestedJVMVersion);
 #endif
-
 
 
 #endif

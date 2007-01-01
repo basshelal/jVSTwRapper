@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4		$Date: 2006/12/06 16:45:42 $
+// Version 2.4		$Date: 2007/01/01 21:25:10 $
 //
 // Category     : VST 2.x Interfaces
 // Filename     : aeffect.h
@@ -16,19 +16,27 @@
 // gcc based compiler, or CodeWarrior on Mac OS X
 #if ((defined(__GNUC__) && (defined(__APPLE_CPP__) || defined(__APPLE_CC__))) || (defined (__MWERKS__) && defined (__MACH__)))
 	#ifndef TARGET_API_MAC_CARBON
-	#define TARGET_API_MAC_CARBON 1
+		#define TARGET_API_MAC_CARBON 1
+	#endif
+	#if __ppc__
+		#ifndef VST_FORCE_DEPRECATED
+			#define VST_FORCE_DEPRECATED 0
+		#endif
 	#endif
 #endif
 
 #if TARGET_API_MAC_CARBON
 	#ifdef __LP64__
-	#pragma options align=power
+		#pragma options align=power
 	#else
-	#pragma options align=mac68k
+		#pragma options align=mac68k
 	#endif
-#endif
-#if defined __BORLANDC__
+	#define VSTCALLBACK
+#elif defined __BORLANDC__
 	#pragma -a8
+#elif defined(__GNUC__)
+    #pragma pack(push,8)
+    #define VSTCALLBACK __cdecl
 #elif defined(WIN32) || defined(__FLAT__) || defined CBUILDER
 	#pragma pack(push)
 	#pragma pack(8)
@@ -48,7 +56,9 @@
 #define VST_2_1_EXTENSIONS 1 ///< Version 2.1 extensions (08-06-2000)
 #define VST_2_2_EXTENSIONS 1 ///< Version 2.2 extensions (08-06-2001)
 #define VST_2_3_EXTENSIONS 1 ///< Version 2.3 extensions (20-05-2003)
+#ifndef VST_2_4_EXTENSIONS
 #define VST_2_4_EXTENSIONS 1 ///< Version 2.4 extensions (01-01-2006)
+#endif
 
 /** Current VST Version */
 #if VST_2_4_EXTENSIONS
@@ -64,10 +74,9 @@
 #endif
 
 /** Disable for Hosts to serve Plug-ins below VST 2.4 */
-#ifndef VST_FORCE_DEPRECATED
+//#ifndef VST_FORCE_DEPRECATED
 //#define VST_FORCE_DEPRECATED VST_2_4_EXTENSIONS 
-#define VST_FORCE_DEPRECATED 0 //dm: force deprecated stuff to be there. we want to be backward compatible!
-#endif
+//#endif
 
 /** Declares identifier as deprecated. */
 #if VST_FORCE_DEPRECATED
@@ -85,12 +94,15 @@
 // Integral Types
 //-------------------------------------------------------------------------------------------------------
 
+#ifdef WIN32
 typedef short VstInt16;				///< 16 bit integer type
 typedef int VstInt32;				///< 32 bit integer type
-#ifdef WIN32
 typedef __int64 VstInt64;			///< 64 bit integer type
 #else
-typedef long long VstInt64;			///< 64 bit integer type
+#include <stdint.h>
+typedef int16_t VstInt16;			///< 16 bit integer type
+typedef int32_t VstInt32;			///< 32 bit integer type
+typedef int64_t VstInt64;			///< 64 bit integer type
 #endif
 
 //-------------------------------------------------------------------------------------------------------
@@ -155,7 +167,7 @@ struct AEffect
 	VstIntPtr resvd1;		///< reserved for Host, must be 0
 	VstIntPtr resvd2;		///< reserved for Host, must be 0
 	
-	VstInt32 initialDelay;	///< for algorithms which need input in the first place (Group delay or latency). This value should be initialized in a resume state.
+	VstInt32 initialDelay;	///< for algorithms which need input in the first place (Group delay or latency in Samples). This value should be initialized in a resume state.
 	
 	VstInt32 DECLARE_VST_DEPRECATED (realQualities);	///< \deprecated unused member
 	VstInt32 DECLARE_VST_DEPRECATED (offQualities);		///< \deprecated unused member
@@ -258,7 +270,7 @@ enum AudioMasterOpcodes
 	audioMasterVersion,			///< [return value]: Host VST version (for example 2400 for VST 2.4) @see AudioEffect::getMasterVersion
 	audioMasterCurrentId,		///< [return value]: current unique identifier on shell plug-in  @see AudioEffect::getCurrentUniqueId
 	audioMasterIdle,			///< no arguments  @see AudioEffect::masterIdle
-	audioMasterPinConnected		///< [return value]: 0=true, 1=false [index]: pin index [value]: 0=input, 1=output  @see AudioEffect::isInputConnected @see AudioEffect::isOutputConnected
+	DECLARE_VST_DEPRECATED (audioMasterPinConnected) ///< \deprecated deprecated in VST 2.4 r2
 //-------------------------------------------------------------------------------------------------------
 };
 
@@ -291,7 +303,7 @@ inline char* vst_strncpy (char* dst, const char* src, size_t maxLen)
 //-------------------------------------------------------------------------------------------------------
 inline char* vst_strncat (char* dst, const char* src, size_t maxLen)
 {
-	char* result = strncpy (dst, src, maxLen);
+	char* result = strncat (dst, src, maxLen);
 	dst[maxLen] = 0;
 	return result;
 }
@@ -330,7 +342,7 @@ struct ERect
 //-------------------------------------------------------------------------------------------------------
 #if TARGET_API_MAC_CARBON
 	#pragma options align=reset
-#elif defined(WIN32) || defined(__FLAT__)
+#elif defined(WIN32) || defined(__FLAT__) || defined(__GNUC__)
 	#pragma pack(pop)
 #elif defined __BORLANDC__
 	#pragma -a-

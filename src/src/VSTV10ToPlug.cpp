@@ -49,10 +49,6 @@
 #include <string.h>
 
 
-#ifdef MACX
-#include "pthread.h"
-#endif
-
 extern char DllFileName[50];
 
 
@@ -452,7 +448,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
         this->ProcessJEnv->DeleteLocalRef(farr);
 	}
 
-	for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = outputs[i];
 		jfloatArray farr = this->ProcessJEnv->NewFloatArray(sampleFrames);
 	
@@ -473,7 +469,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 
 
 	//jetzt elemente von joutput nach output umkopieren...
-	for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = outputs[i];
 		jfloatArray jout;
 		jfloat *jval;
@@ -544,7 +540,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 
 	//processReplacing replaces the output 
 	//--> send emtpy output (do not copy output from native to java)
-	for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		//create empty float array
 		jfloatArray farr = this->ProcessReplacingJEnv->NewFloatArray(sampleFrames);
 		this->ProcessReplacingJEnv->SetObjectArrayElement(joutputs, i, farr);
@@ -564,7 +560,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 
 
 	//jetzt elemente von joutput nach output umkopieren...
-	for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = outputs[i];
 		jfloatArray jout;
 		jfloat *jval;

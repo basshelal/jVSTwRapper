@@ -2,7 +2,7 @@
 // VST Plug-Ins SDK
 // VSTGUI: Graphical User Interface Framework for VST plugins : 
 //
-// Version 3.0       $Date: 2006/12/06 16:45:00 $ 
+// Version 3.0       $Date: 2007/01/01 21:25:10 $ 
 //
 //-----------------------------------------------------------------------------
 // VSTGUI LICENSE
@@ -33,7 +33,7 @@
 //-----------------------------------------------------------------------------
 
 #if !PLUGGUI
-#include "../public.sdk/vst2.x/AudioEffectX.h"
+#include "AudioEffectX.h"
 #endif
 
 #ifndef __cfileselector__
@@ -778,7 +778,9 @@ long CFileSelector::run (VstFileSelect *vstFileSelect)
 					}
 					else
 					{
-						AECountItems (&navReply.selection, &vstFileSelect->nbReturnPath);
+						long nbReturnPath;
+						AECountItems (&navReply.selection, &nbReturnPath);
+						vstFileSelect->nbReturnPath = nbReturnPath;
 						vstFileSelect->returnMultiplePaths = new char* [vstFileSelect->nbReturnPath];
 						int index = 1;
 					    while (AEGetNthPtr(&navReply.selection, index++, typeFSRef,

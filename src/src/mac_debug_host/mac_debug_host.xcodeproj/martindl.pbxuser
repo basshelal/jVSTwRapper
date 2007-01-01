@@ -1,0 +1,308 @@
+// !$*UTF8*$!
+{
+	C3C70EBF0B4579A800DA1076 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = C3C70EE30B457B2000DA1076 /* minihost */;
+		activeTarget = C3C70EE00B457B2000DA1076 /* minihost */;
+		addToTargets = (
+			C3C70EE00B457B2000DA1076 /* minihost */,
+		);
+		breakpoints = (
+			C3C70FB10B457DC200DA1076 /* minihost.cpp:153 */,
+			C3C70FB40B457DF500DA1076 /* jVSTwRapperMAIN.cpp:551 */,
+			C3C70FB70B457E0A00DA1076 /* jVSTwRapperMAIN.cpp:610 */,
+			C3C70FBA0B457E1100DA1076 /* jVSTwRapperMAIN.cpp:642 */,
+			C3C70FC00B457E5000DA1076 /* jVSTwRapperMAIN.cpp:472 */,
+		);
+		breakpointsGroup = C3C70FBB0B457E3000DA1076 /* XCBreakpointsBucket */;
+		codeSenseManager = C3C70EC40B4579A800DA1076 /* Code sense */;
+		executables = (
+			C3C70EE30B457B2000DA1076 /* minihost */,
+		);
+		ignoreBreakpointsInProjectsDict = {
+		};
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					22,
+					300,
+					131,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXExecutablesDataSource_ActiveFlagID,
+					PBXExecutablesDataSource_NameID,
+					PBXExecutablesDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					243,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXSymbolsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXSymbolsDataSource_SymbolNameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					16,
+					200,
+					50,
+					183,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXSymbolsDataSource_SymbolTypeIconID,
+					PBXSymbolsDataSource_SymbolNameID,
+					PBXSymbolsDataSource_SymbolTypeID,
+					PBXSymbolsDataSource_ReferenceNameID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					200,
+					63,
+					20,
+					48.1626,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 189102505;
+			PBXWorkspaceStateSaveDate = 189102505;
+		};
+		sourceControlManager = C3C70EC30B4579A800DA1076 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	C3C70EC30B4579A800DA1076 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+		scmType = "";
+	};
+	C3C70EC40B4579A800DA1076 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	C3C70ECE0B457A2500DA1076 /* minieditor.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1178, 2856}}";
+			sepNavSelRange = "{508, 0}";
+			sepNavVisRect = "{{0, 0}, {453, 186}}";
+			sepNavWindowFrame = "{{15, -1}, {606, 742}}";
+		};
+	};
+	C3C70ECF0B457A2500DA1076 /* minihost.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {908, 4676}}";
+			sepNavSelRange = "{5022, 0}";
+			sepNavVisRect = "{{0, 1961}, {477, 348}}";
+			sepNavWindowFrame = "{{15, -1}, {606, 742}}";
+		};
+	};
+	C3C70ED40B457A9E00DA1076 /* aeffect.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1136, 4928}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {561, 613}}";
+			sepNavWindowFrame = "{{15, -1}, {606, 742}}";
+		};
+	};
+	C3C70ED50B457A9E00DA1076 /* aeffectx.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {2228, 16016}}";
+			sepNavSelRange = "{627, 7}";
+			sepNavVisRect = "{{0, 15403}, {561, 613}}";
+			sepNavWindowFrame = "{{15, -1}, {606, 742}}";
+		};
+	};
+	C3C70EE00B457B2000DA1076 /* minihost */ = {
+		activeExec = 0;
+		executables = (
+			C3C70EE30B457B2000DA1076 /* minihost */,
+		);
+	};
+	C3C70EE30B457B2000DA1076 /* minihost */ = {
+		isa = PBXExecutable;
+		activeArgIndex = 0;
+		activeArgIndices = (
+			YES,
+		);
+		argumentStrings = (
+			/Users/martindl/jvst/src/build/Debug/jvstwrapper.vst/,
+		);
+		autoAttachOnCrash = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = minihost;
+		savedGlobals = {
+		};
+		sourceDirectories = (
+			/Users/martindl/jvst/src/src,
+			/Users/martindl/jvst/src/src/mac_debug_host,
+			/Users/martindl/jvst/src/src/pluginterfaces,
+			/Users/martindl/jvst/src/src/public.sdk,
+			/Users/martindl/jvst/src/src/vstgui,
+			/Users/martindl/jvst/src/src/public.sdk/vst2.x,
+			/Users/martindl/jvst/src/src/pluginterfaces/vst2.x,
+		);
+		variableFormatDictionary = {
+		};
+	};
+	C3C70FB10B457DC200DA1076 /* minihost.cpp:153 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3C70ECF0B457A2500DA1076 /* minihost.cpp */;
+		functionName = "main()";
+		hitCount = 1;
+		lineNumber = 153;
+		location = minihost.ob;
+		modificationTime = 189103801.672212;
+		state = 1;
+	};
+	C3C70FB20B457DF500DA1076 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/jvst/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {938, 9450}}";
+			sepNavSelRange = "{13768, 0}";
+			sepNavVisRect = "{{0, 6427}, {477, 348}}";
+		};
+	};
+	C3C70FB40B457DF500DA1076 /* jVSTwRapperMAIN.cpp:551 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3C70FB20B457DF500DA1076 /* jVSTwRapperMAIN.cpp */;
+		functionName = "calculatePaths()";
+		hitCount = 1;
+		lineNumber = 551;
+		modificationTime = 189103843.725697;
+		state = 1;
+	};
+	C3C70FB50B457E0A00DA1076 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/jvst/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C3C70FB70B457E0A00DA1076 /* jVSTwRapperMAIN.cpp:610 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3C70FB50B457E0A00DA1076 /* jVSTwRapperMAIN.cpp */;
+		functionName = "startJavaThread()";
+		hitCount = 1;
+		lineNumber = 610;
+		modificationTime = 189103843.725466;
+		state = 1;
+	};
+	C3C70FB80B457E1100DA1076 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/jvst/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C3C70FBA0B457E1100DA1076 /* jVSTwRapperMAIN.cpp:642 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3C70FB80B457E1100DA1076 /* jVSTwRapperMAIN.cpp */;
+		functionName = "startJavaThread()";
+		hitCount = 1;
+		lineNumber = 642;
+		modificationTime = 189103843.725654;
+		state = 1;
+	};
+	C3C70FBB0B457E3000DA1076 /* XCBreakpointsBucket */ = {
+		isa = XCBreakpointsBucket;
+		name = "Project Breakpoints";
+		objects = (
+			C3C70FB10B457DC200DA1076 /* minihost.cpp:153 */,
+			C3C70FB40B457DF500DA1076 /* jVSTwRapperMAIN.cpp:551 */,
+			C3C70FB70B457E0A00DA1076 /* jVSTwRapperMAIN.cpp:610 */,
+			C3C70FBA0B457E1100DA1076 /* jVSTwRapperMAIN.cpp:642 */,
+			C3C70FC00B457E5000DA1076 /* jVSTwRapperMAIN.cpp:472 */,
+		);
+	};
+	C3C70FBE0B457E5000DA1076 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/jvst/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C3C70FC00B457E5000DA1076 /* jVSTwRapperMAIN.cpp:472 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3C70FBE0B457E5000DA1076 /* jVSTwRapperMAIN.cpp */;
+		functionName = "startJava()";
+		hitCount = 1;
+		lineNumber = 472;
+		modificationTime = 189103843.72562;
+		state = 1;
+	};
+}

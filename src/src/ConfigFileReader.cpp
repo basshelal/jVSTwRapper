@@ -46,7 +46,6 @@
 
 
 
-
 extern char DllPath[512];
 extern char ConfigFileName[100];
 
@@ -61,7 +60,7 @@ ConfigFileReader::ConfigFileReader() {
 
 	this->INIFile = fopen(ConfigFileLocation, "rt");
 	if(this->INIFile==NULL) {
-		log("Error opening config file at ");
+		log("** Error opening config file at ");
 		log(ConfigFileLocation);
 	}
 
@@ -79,6 +78,7 @@ ConfigFileReader::ConfigFileReader() {
 	this->AttachToNativePluginWindow = 1;
 	this->CloseNativePluginWindow = 1;
 	this->CustomJVMLocation = NULL;
+	this->RequestedJVMVersion = NULL;
 
 	this->ReadConfigFile();
 
@@ -111,52 +111,56 @@ void ConfigFileReader::ReadConfigFile() {
 
 		if(strcmp(token, "PluginClass")==0) {
 			token = strtok(NULL, sep);
-			if (token != NULL) this->PluginClass = strdup(token);
+			if (token != NULL) this->PluginClass = trim(strdup(token));
 			else log("**ERROR: finding PluginClass token");
 		}
 		if(strcmp(token, "PluginUIClass")==0) {
 			token = strtok(NULL, sep);
-			if (token != NULL) this->PluginUIClass = strdup(token);
+			if (token != NULL) this->PluginUIClass = trim(strdup(token));
 			else log("**ERROR: finding PluginUIClass token");
 		}
 		if(strcmp(token, "ClassPath")==0) {
 			token = strtok(NULL, sep);
-			if (token != NULL) this->JVMClassPath = strdup(token);
+			if (token != NULL) this->JVMClassPath = trim(strdup(token));
 			else log("**ERROR: finding JVMClassPath token");
 		}
 		if(strcmp(token, "JVMOption1")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption1 = strdup(token);
+			if (token != NULL) this->JVMOption1 = trim(strdup(token));
 		}
 		if(strcmp(token, "JVMOption2")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption2 = strdup(token);
+			if (token != NULL) this->JVMOption2 = trim(strdup(token));
 		}
 		if(strcmp(token, "JVMOption3")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption3 = strdup(token);
+			if (token != NULL) this->JVMOption3 = trim(strdup(token));
 		}
 		if(strcmp(token, "JVMOption4")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption4 = strdup(token);
+			if (token != NULL) this->JVMOption4 = trim(strdup(token));
 		}
 		if(strcmp(token, "JVMOption5")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption5 = strdup(token);
+			if (token != NULL) this->JVMOption5 = trim(strdup(token));
 		}
 		if(strcmp(token, "CustomJVMLocation")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->CustomJVMLocation = strdup(token);
+			if (token != NULL) this->CustomJVMLocation = trim(strdup(token));
+		}
+		if(strcmp(token, "RequestJVMVersion")==0) {
+			token = strtok(NULL, "\n");
+			if (token != NULL) this->RequestedJVMVersion = trim(strdup(token));
 		}
 		if(strcmp(token, "SystemClassPath")==0) {
 			token = strtok(NULL, sep);
-			if (token != NULL) this->SystemClassPath = strdup(token);
+			if (token != NULL) this->SystemClassPath = trim(strdup(token));
 			else log("**ERROR: finding SystemClassPath token");
 		}
 		if(strcmp(token, "IsLoggingEnabled")==0) {
 			token = strtok(NULL, sep);
 			if (token != NULL) {
-				char* tmp = strdup(token);
+				char* tmp = trim(strdup(token));
 				this->IsLoggingEnabled = atoi(tmp);
 			}
 			else log("**ERROR: finding IsLoggingEnabled token");
@@ -164,7 +168,7 @@ void ConfigFileReader::ReadConfigFile() {
 		if(strcmp(token, "CloseNativePluginWindow")==0) {
 			token = strtok(NULL, sep);
 			if (token != NULL) {
-				char* tmp = strdup(token);
+				char* tmp = trim(strdup(token));
 				this->CloseNativePluginWindow = atoi(tmp);
 			}
 			else log("**ERROR: finding CloseNativePluginWindow token");
@@ -172,7 +176,7 @@ void ConfigFileReader::ReadConfigFile() {
 		if(strcmp(token, "AttachToNativePluginWindow")==0) {
 			token = strtok(NULL, sep);
 			if (token != NULL) {
-				char* tmp = strdup(token);
+				char* tmp = trim(strdup(token));
 				this->AttachToNativePluginWindow = atoi(tmp);
 			}
 			else log("**ERROR: finding AttachToNativePluginWindow token");

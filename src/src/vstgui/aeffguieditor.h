@@ -38,7 +38,7 @@
 #define __aeffguieditor__
 
 #ifndef __aeffeditor__
-#include "../public.sdk/vst2.x/aeffeditor.h"
+#include "aeffeditor.h"
 #endif
 
 #ifndef __vstgui__

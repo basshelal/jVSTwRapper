@@ -53,8 +53,8 @@
 #ifndef MACX
 	#include <windows.h>
 
-	extern jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *); 
-	extern jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *);
+	extern jint (JNICALL *JNI_CreateJavaVM)(JavaVM **, void **, void *); 
+	extern jint (JNICALL *JNI_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *);
 #else
 	#include <Carbon/Carbon.h>
 	#include <sys/stat.h>
@@ -62,11 +62,16 @@
 	#include <pthread.h>
 
 	extern "C" {
-	#include <mach-o/dyld.h>
-	#include <mach-o/ldsyms.h>
+		#include <mach-o/dyld.h>
+		#include <mach-o/ldsyms.h>
 	}
 	#include <CoreFoundation/CFBundle.h>
 	#include <CoreFoundation/CoreFoundation.h>
+	
+	//cocoa init stuff
+	#include "VSTGUIWrapperMAC.h"
+	
+	#define DEBUG
 #endif
 
 
@@ -75,19 +80,21 @@
 extern int IsLogEnabled;
 
 //------------------------------------------------------------------------
-//VSTV24ToPlug* WrapperInstance;
+VSTV24ToPlug* WrapperInstance;
 
 //------------------------------------------------------------------------
 void calculatePaths();
-VSTV24ToPlug* startJava();
+AEffect* jvst_main(audioMasterCallback pAudioMaster);
 
 
 #ifdef MACX
 	CFTypeRef runLoop;
 
 	void sourceCallBack(void *info);
-	void loadCFApp();
-	void startJavaThread();
+	int loadCFApp();
+	int startJavaThread();
+	
+	int checkJVMVersionRequest(char* requestedJVMVersion);
 #endif
 
 //------------------------------------------------------------------------
@@ -99,29 +106,48 @@ char LogFileName[100];
 audioMasterCallback audioMaster;
 
 
-//new vst2.4 main
-//------------------------------------------------------------------------
-
-AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {
-#ifdef MACX
-	pthread_t *newThread;
+//main entry points for different platforms
+extern "C" {
+#if defined (__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
+	#define VST_EXPORT	__attribute__ ((visibility ("default")))
+#else
+	#define VST_EXPORT
 #endif
 
-	calculatePaths();
+VST_EXPORT AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+//------------------------------------------------------------------------
+#ifndef MACX
+//disabled because vc++ 2005 does strict ansi c++ checks now (no other return type than int allowed for main!)
+//nope, second try //old win main entry function
+VST_EXPORT AEffect *MAIN (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+#else	
+VST_EXPORT AEffect *main_macho (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+#endif
+} // extern "C"
 
+
+
+//-----------------------------------------------------------------------
+//main entry point! --> The real thing
+//-----------------------------------------------------------------------
+AEffect* jvst_main(audioMasterCallback pAudioMaster) {
+	calculatePaths();
+	
 	audioMaster=pAudioMaster;
 
 	char log_location[700];
 	strcpy(log_location, DllPath);
 	strcat(log_location, LogFileName);
 
-
+#ifndef DEBUG
 	//redirecting system streams...
 	FILE *err_stream = freopen(log_location, "a", stderr);
 	if (err_stream!=NULL) log("\nredirecting stderr stream OK");
 	FILE *out_stream = freopen(log_location, "a", stdout);
 	if (out_stream!=NULL) log("redirecting stdout stream OK");
-	
+#else
+	log("***** ACHTUNG: DEBUG=true ****");
+#endif
 	log("\n***** START *****");
 	log(log_location);
 	
@@ -129,32 +155,43 @@ AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {
 	if (!pAudioMaster(0, audioMasterVersion, 0, 0, 0, 0)) return 0;  // old version
 	log("Get VST Version OK!");
 
+	WrapperInstance = NULL;
 
-
-
+	ConfigFileReader *cfg = new ConfigFileReader();
+	
 #ifndef MACX
 	//see if there is a custom JVM we want to load (from the .ini file)!
-	//MAYBE WE ALSO WANT THIS FEATURE ON THE MAC ???
 	char* jvmLibLocation;
-	
-	ConfigFileReader *cfg = new ConfigFileReader();
 	jvmLibLocation = cfg->CustomJVMLocation;
-	delete cfg;
-
+	
 	if (jvmLibLocation==NULL) {
-		log("querying registry for location of default jvm.dll");
-		//no custom JVM configured in the .ini. Look in the windows registry
-		//get jvm location from registry and load jvm interface pointers
-		jvmLibLocation = readJVMLibLocation();
-
-		if (jvmLibLocation==NULL) {
-			log("* WARNING: Could not find jvm.dll location in registry! \n using the one from the PATH environment variable!");
-			//try loading jvm.dll from PATH
-			jvmLibLocation = "jvm.dll";
+		//no custom jvm specified, see if there is a request for a specific version in the .ini
+		if (cfg->RequestedJVMVersion!=NULL) {
+			log("Looking for a JVM version");
+			log(cfg->RequestedJVMVersion);
+			jvmLibLocation = readJVMLibLocation(cfg->RequestedJVMVersion);
+			if(jvmLibLocation!=NULL) {
+				log("desired JVM version found in registry at");
+				log(jvmLibLocation);
+			}
+			else log("Could not find desired JVM version, seems not to be installed. Falling back to default JVM.");
 		}
-		else {
-			log("found jvm.lib in registry at");
-			log(jvmLibLocation);
+		
+		if (jvmLibLocation==NULL) {
+			log("querying registry for location of DEFAULT jvm.dll");
+			//no custom JVM configured in the .ini. Look in the windows registry
+			//get jvm location from registry and load jvm interface pointers
+			jvmLibLocation = readJVMLibLocation(NULL);
+
+			if (jvmLibLocation==NULL) {
+				log("* WARNING: Could not find jvm.dll location in registry! \n using the one from the PATH environment variable!");
+				//try loading jvm.dll from PATH
+				jvmLibLocation = "jvm.dll";
+			}
+			else {
+				log("found jvm.lib in registry at");
+				log(jvmLibLocation);
+			}
 		}
 	}
 	else {
@@ -162,56 +199,74 @@ AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {
 		jvmLibLocation = replace(jvmLibLocation, "{WrapperPath}", DllPath);
 		log(jvmLibLocation);
 	}
-
-
+	
+	
 	if (initJVMFunctionPointers(jvmLibLocation) != 0) {
 		log("** ERROR: cant init jvm interface pointers!");
-		return 0;
+		return NULL;
+	}
+	
+	//start the jvm
+	if (startJava(NULL) != 0)  {
+		log("**ERROR in startJava()");
+		return NULL;
 	}
 
-	//start the jvm
-    VSTV24ToPlug* WrapperInstance = startJava();
-	if (WrapperInstance == NULL) {
-		log("**ERROR in startJava()");
-		return 0;
-	}
 
 #else
 	//mac doesnt need all this custom jvm loading mess
-	//it comes with a preinstalled jvm ;-)
-	startJavaThread();
+	//it comes with a preinstalled jvm ;-), but we need to start he jvm in a separate thread
+	
+	//and we have the feature of requesting a specific jvm in the .ini file
+	if (cfg->RequestedJVMVersion!=NULL) {
+		int ret = -1;
+		ret = checkJVMVersionRequest(cfg->RequestedJVMVersion);
+		
+		//make sure that we use any jvm
+		if (ret!=0) {
+			log("Warning: Could NOT find requested JVM version, using default JVM instead");
+			unsetenv("JAVA_JVM_VERSION");
+		} 
+	}
+	
+	if (startJavaThread() != 0) {
+		log("**ERROR in startJavaThread()");
+		return NULL;
+	}
+	
 #endif
 
-	log("ALLES OK!");
-
+	if (cfg) delete cfg;
+	log("ALLES OK!"); 
 	return WrapperInstance->getAeffect();
 }
 
 //------------------------------------------------------------------------
 #ifndef MACX
-//disabled because vc++ 2005 does strict ansi c++ checks now (no other return type than int allowed for main!)
-//AEffect *main (audioMasterCallback pAudioMaster) {return VSTPluginMain (pAudioMaster);}
-#else	
-AEffect *main_macho (audioMasterCallback pAudioMaster) {return VSTPluginMain (pAudioMaster);}
+int startJava(void *nix) {
+#else
+void* startJava(void *nix) {
 #endif
-
-
-VSTV24ToPlug* startJava() {
-
 	//Create JVM
 	//**********************************************
 	JNIEnv *env;
 	JavaVM *jvm;
 	jint res;
+	int result;
 	JavaVMInitArgs vm_args;
 	JavaVMOption options[6]; //assume the max number of options...
 	char java_path[1024]; //we need to add jVSTsYstem_bin.jar to the ClassPath of the Bootstrap ClassLoader!
 	char class_path[1024];
 
-	VSTV24ToPlug* WrapperInstance;
-
+	//VSTV24ToPlug* WrapperInstance;
+	
+	result = -1;
+	
 	ConfigFileReader *cfg = new ConfigFileReader();
 	IsLogEnabled = cfg->IsLoggingEnabled;
+	
+	log("DllPath (implicitly added to the classpath)");
+	log(DllPath);
 	
 	strcpy(class_path, DllPath);
 #ifdef MACX
@@ -268,8 +323,11 @@ VSTV24ToPlug* startJava() {
 
 
 	optionNum++;
-
+#ifndef MACX
 	vm_args.version = JNI_VERSION_1_2;
+#else
+	vm_args.version = JNI_VERSION_1_4; //we want at least 1.4 on the mac!
+#endif
 	vm_args.options = options;
 	vm_args.nOptions = optionNum;
 	vm_args.ignoreUnrecognized = JNI_FALSE; //use -X options as well!
@@ -278,14 +336,13 @@ VSTV24ToPlug* startJava() {
 	JavaVM *vmBuffer;
 	jsize nVMs;
 
-#ifndef MACX
-	res = PTR_GetCreatedJavaVMs(&vmBuffer, 1, &nVMs);
-#else
+	bool hasGUI = false;
+	jclass guiClass = NULL;
+
 	res = JNI_GetCreatedJavaVMs(&vmBuffer, 1, &nVMs);
-#endif
 	if (res < 0) {
 		log("** ERROR: Can't get created Java VMs");
-		return 0;
+		goto leave;
 	}
 
 	if (nVMs>0) {
@@ -306,32 +363,27 @@ VSTV24ToPlug* startJava() {
 		if (res < 0) {
 			log("** ERROR: getting Java env!");
 			if (res==JNI_EVERSION) log("GetEnv Error because of different JNI Version!");
-			return 0;
+			goto leave;
 		}
 	} 
 	else {
 		log("before JNI_CreateJavaVM");
+		
 		/* Create the Java VM */
-#ifndef MACX
-		res = PTR_CreateJavaVM(&jvm, (void**)&env, &vm_args);
-#else
 		res = JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
-#endif
+		
 		log("AFTER JNI_CreateJavaVM");
 		
 		if (res < 0) {
 			log("** ERROR: Can't create Java VM (are your VM options correct?)");
-			return 0;
+			goto leave;
 		}
-		if (checkException(env)) return 0;
+		if (checkException(env)) goto leave;
 	}
 	//***********************************************
 
 	//IMPORTANT: clear possible pending exceptions...
-	if (checkException(env)) return 0;
-
-	/* Get a reference to obj's class */
-
+	if (checkException(env)) goto leave;
 
 	//USE THE VSTiClassLoaderManager here!!!
 	//load this ClassLoader with the bootstrap ClassLoader
@@ -339,21 +391,21 @@ VSTV24ToPlug* startJava() {
 	if (manager == NULL) {
 		log("** ERROR: cannot find jvst/wrapper/system/VSTiClassLoaderManager");
 		checkException(env); //print statck trace...
-		return 0;
+		goto leave;
 	}
 
 	jmethodID loadcl_mid = env->GetStaticMethodID(manager, "loadVSTiClass", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class;");
 	if (loadcl_mid == NULL)  {
 		log("** ERROR: cannot find static method loadVSTiClass(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class;");
 		checkException(env); //print statck trace...
-		return 0;
+		goto leave;
 	}
 
 	jstring dllloc = env->NewStringUTF(DllLocation);
 	jstring plug = env->NewStringUTF(cfg->PluginClass);
 	jstring cp = env->NewStringUTF(class_path);
 	jclass clazz = (jclass)env->CallStaticObjectMethod(manager, loadcl_mid, dllloc, plug, cp);
-	if (checkException(env)) return 0;
+	if (checkException(env)) goto leave;
 
 
 	//calling static _initPlugFromNative
@@ -362,13 +414,13 @@ VSTV24ToPlug* startJava() {
 	if (init_mid == NULL)  {
 		log("** ERROR: cannot find static method _initPlugFromNative(Ljava/lang/String;Z)V");
 		checkException(env); //print statck trace...
-		return 0;
+		goto leave;
 	}
 	jstring dll = env->NewStringUTF(DllLocation);
 	jboolean doLogging = cfg->IsLoggingEnabled;
 	env->CallStaticVoidMethod(clazz, init_mid, dll, doLogging);
 
-	if (checkException(env)) return 0;
+	if (checkException(env)) goto leave;
 
 
 	// Create the AudioEffect
@@ -378,12 +430,10 @@ VSTV24ToPlug* startJava() {
 		log("** ERROR: Error Creating VST Wrapper instance");
 		delete WrapperInstance;
 		checkException(env); //print statck trace...
-		return 0;
+		goto leave;
 	}
 
 	//test if we can load the GUI class
-	bool hasGUI = false;
-	jclass guiClass = NULL;
 	if (cfg->PluginUIClass!=NULL) {
 		log("loding gui class");
 		log(cfg->PluginUIClass);
@@ -400,30 +450,31 @@ VSTV24ToPlug* startJava() {
 		else hasGUI = true;
 	}
 	
-
-
 	//calling Java side constructors
 	log("calling effects java construtor!");
-	if (WrapperInstance->initJavaSide(clazz, hasGUI)) return 0;
+	if (WrapperInstance->initJavaSide(clazz, hasGUI)) goto leave;
 
-	if (checkException(env)) return 0;
-
+	if (checkException(env)) goto leave;
 
 
 	//calling java guis init!
 	if((WrapperInstance->getEditor() != NULL) && hasGUI) {
-		if (((VSTGUIWrapper*)WrapperInstance->getEditor())->initJavaSide(guiClass)) return 0;
+		if (((VSTGUIWrapper*)WrapperInstance->getEditor())->initJavaSide(guiClass)) goto leave;
 	}
 
-	if (checkException(env)) return 0;
+	if (checkException(env)) goto leave;
 
 	delete cfg;
+	result = NULL; //everythign is fine when we came to this point
 
+leave:
 #ifdef MACX
+	//TODO: ASK Gerard why we need this ???
 	CFRunLoopStop((CFRunLoopRef)runLoop);
+	return NULL; //NULL //man, this makes the whole result var unecessary...
+#else
+	return result;
 #endif
-
-	return WrapperInstance; //everythings fine...
 }
 
 //------------------------------------------------------------------------
@@ -457,50 +508,48 @@ void calculatePaths() {
 	DllPath[len]='\0';
 	
 #else
-	
+
 	const mach_header* header = &_mh_bundle_header;
 	const char* imagename = 0;
 	int cnt = _dyld_image_count();
-	for (int idx1 = 1; idx1 < cnt; idx1++) 
-	{
-		if (_dyld_get_image_header((unsigned long)idx1) == header)
-		{			
+	for (int idx1 = 1; idx1 < cnt; idx1++) {
+		if (_dyld_get_image_header((unsigned long)idx1) == header) {			
 			imagename = _dyld_get_image_name(idx1);
 			break;
 		}
 	}
-	if (imagename == 0)
+	if (imagename == 0) {
+		log("** ERROR: Cant read image name from bundle!");
 		return;
+	}
 	
-	char* lastSlash = strrchr(imagename, '/');
+	char* lastSlash = strrchr(imagename, '/') + 1;
 	
-	//dll file name
-	//hi gerard, you might get a compile error here ;-) (I deleted the var DllFileName, 
-	//because we now use System.load("absolute native lib location") instead of System.loadLibrary(...))
-	//you might need to modify your code to provide the correct value for DllLocation... sorry!
-	strcpy(DllFileName, ++lastSlash);
 	int len = strlen(lastSlash);
-	strncpy(DllFileName + len , ".jnilib\0", 7);
-
+	strcpy(DllLocation, imagename);
+	printf("DllLocation=%s\n", DllLocation);
+	
 	//config file name
 	strcpy(ConfigFileName, lastSlash);
-	char* lastPoint = strrchr(ConfigFileName, '.');
-	len = strlen(ConfigFileName); 
-	strncpy(ConfigFileName + len , ".INI\0", 4); // add dot
+	strncpy(ConfigFileName + len , ".ini\0", 5);
+	printf("ConfigFileName=%s\n", ConfigFileName);
 	
 	//log file name
 	strcpy(LogFileName, lastSlash);
 	strncpy(LogFileName + len, "_log.txt\0", 9);
+	printf("LogFileName=%s\n", LogFileName);
 
 	//DllPath
-	len = lastSlash - imagename -1;
+	len = lastSlash - imagename - 1;
 	char tmp[1024];
 	strncpy(tmp, imagename, len);
+	tmp[len]='\0';
 	lastSlash = strrchr(tmp, '/');
 	len = lastSlash - tmp;
 	strncpy(DllPath, imagename, len);
 	DllPath[len]='\0';
 	strcat(DllPath,"/Resources/\0");
+	printf("DllPath=%s\n", DllPath);
 #endif
 	
 }
@@ -526,15 +575,21 @@ BOOL WINAPI DllMain (HINSTANCE hInst, DWORD dwReason, LPVOID lpvReserved) {
 
 void sourceCallBack (  void *info  ) {}
 
+int startJavaThread(){
+	log("starting java thread");
 
-//gerard, it might be a good idea to return an int from this 
-//method to provide an indicator if the initialisation failed or not. 
-//so that main_macho can fail cleanly, return 0 and doessnt crash the host.
-void startJavaThread(){
-	log("starting java thread ");
-	loadCFApp();
+	//init cocoa to be able to interop with it in carbon
+	if (initializeCocoa()==0) log("Cocoa initialized successfully!");
+	else {
+		log("** Error while initilizing Cocoa");
+		return -1;
+	}
+	
+	/* Start the thread that runs the VM. */
 	CFRunLoopSourceContext sourceContext;
 	pthread_t vmthread;
+	
+	/* create a new pthread copying the stack size of the primordial pthread */ 
 	struct rlimit limit;
     size_t stack_size = 0;
     int rc = getrlimit(RLIMIT_STACK, &limit);
@@ -551,9 +606,17 @@ void startJavaThread(){
         pthread_attr_setstacksize(&thread_attr, stack_size);
     }	
 
-    pthread_create(&vmthread, &thread_attr, &startJava, NULL);
-    pthread_attr_destroy(&thread_attr);
-    sourceContext.version = 0;
+    /* Start the thread that we will start the JVM on. */
+    rc = pthread_create(&vmthread, &thread_attr, &startJava, NULL);
+	if (rc != 0) {
+		log("** Error creating thread via pthread_create() !");
+		return -1;
+	}
+	pthread_attr_destroy(&thread_attr);
+    
+	/* Create a a sourceContext to be used by our source that makes */
+    /* sure the CFRunLoop doesn't exit right away */
+	sourceContext.version = 0;
     sourceContext.info = NULL;
     sourceContext.retain = NULL;
     sourceContext.release = NULL;
@@ -563,34 +626,23 @@ void startJavaThread(){
     sourceContext.schedule = NULL;
     sourceContext.cancel = NULL;
     sourceContext.perform = &sourceCallBack;
-	CFRunLoopSourceRef sourceRef = CFRunLoopSourceCreate (NULL, 0, &sourceContext);    
+	
+	/* Create the Source from the sourceContext */
+	CFRunLoopSourceRef sourceRef = CFRunLoopSourceCreate (NULL, 0, &sourceContext); 
+	
+	/* Use the constant kCFRunLoopCommonModes to add the source to the set of objects */ 
+    /* monitored by all the common modes */
     CFRunLoopAddSource (CFRunLoopGetCurrent(),sourceRef,kCFRunLoopCommonModes); 	
+	
+	//get ref to stop the run loop later on (at the end of startJava())
 	EventLoopRef eventLoop = GetCurrentEventLoop ();
 	runLoop=GetCFRunLoopFromEventLoop(eventLoop);	
-    CFRunLoopRun();		
+    
+	/* Park this thread in the runloop */
+	CFRunLoopRun();		
 
+	return 0;
 }
 
-
-
-void loadCFApp()
-{
-    CFBundleRef myAppsBundle= NULL;
-	CFURLRef    bundleURL   = NULL;	
-	OSStatus osStatus = noErr;
-	OSStatus (*funcPtr)();
-	Boolean isDir = true;
-	int res;
-	bundleURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,CFSTR("/System/Library/Frameworks/AppKit.framework"),kCFURLPOSIXPathStyle,isDir);	
-	myAppsBundle = CFBundleCreate(NULL, bundleURL);
-	
-	funcPtr = CFBundleGetFunctionPointerForName(myAppsBundle,CFSTR("NSApplicationLoad"));
-	log("loading cocoa");
-	res = (int)funcPtr();
-	if(!res)
-	{
-		log("***ERROR Unable to call NSApplication load in loadCFApp");
-	}
-}
 #endif
 

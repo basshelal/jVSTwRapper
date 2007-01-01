@@ -44,6 +44,10 @@
 #include "ConfigFileReader.h"
 #endif
 
+#ifdef MACX
+	#include <Carbon/Carbon.h>
+	#include <sys/stat.h>
+#endif
 
 //------------------------------------------------------------------------
 int IsLogEnabled = 1;
@@ -118,7 +122,6 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 }
 
 //------------------------------------------------------------------------
-
 int log(char* data) {
     int retval = -1;
 	int isWarningOrError = 1;    
@@ -127,20 +130,39 @@ int log(char* data) {
 
 	isWarningOrError = (*data == '*') && (*(data+1)=='*');
 
-
-//hi gerard! 
-//I commented this out that you get some compiler errors ;-)
-//maybe you want to implement the message box feature for the mac too?
-
-//#ifndef MACX
 	//show MessageBox on Error or warning!
 	//restrict it to 5 messages per session.
 	//more would just be annoying...
 	if (isWarningOrError) {
 		MessageBoxCount++;	
-		if (MessageBoxCount<5) MessageBoxA(0, data, "jVSTwRapper", 0);
+		if (MessageBoxCount<5) {
+#ifndef MACX
+			MessageBoxA(0, data, "jVSTwRapper", 0);
+#else
+//Uses Carbon Alert window. But the window displayed doesnt receive any input. 
+//this blocks the whole application here... so its commented out by now. Maybe someone knows a solution?
+/*
+			DialogRef alertref = NULL;
+			CFStringRef msg = CFStringCreateWithCString(NULL, data, kCFStringEncodingASCII);
+			
+			AlertStdCFStringAlertParamRec param;
+			param.version=kStdCFStringAlertVersionOne;
+			param.movable=true;
+			param.helpButton=false;
+			param.defaultText=(CFStringRef)kAlertDefaultOKText;
+			param.cancelText=NULL;
+			param.otherText=NULL;
+			param.defaultButton=kAlertStdAlertOKButton;
+			param.cancelButton=NULL;
+			param.position=kWindowDefaultPosition;
+			param.flags=0;
+			
+			CreateStandardAlert (kAlertCautionAlert, CFSTR("jVSTwRapper"), msg, &param, &alertref);
+			RunStandardAlert (alertref, NULL, &buttonPressed);
+*/
+#endif
+		}
 	}
-//#endif
 
 	if (IsLogEnabled || isWarningOrError) {
 		fprintf(stderr, "\n");
@@ -150,6 +172,38 @@ int log(char* data) {
 	} else retval = 0;
 
     return retval;
+}
+
+
+#define WHITESPACE_STR  " \f\n\r\t\v"
+/**
+ * Remove whitespace characters from both ends of a copy of
+ *  '\0' terminated STRING and return the result.
+ **/
+char *trim (char *string) {
+  char *result = 0;
+
+  /* Ignore NULL pointers.  */
+  if (string) {
+      char *ptr = string;
+
+      /* Skip leading whitespace.  */
+      while (strchr (WHITESPACE_STR, *ptr))
+        ++ptr;
+
+      /* Make a copy of the remainder.  */
+      result = strdup (ptr);
+
+      /* Move to the last character of the copy.  */
+      for (ptr = result; *ptr; ++ptr);
+      --ptr;
+
+      /* Remove trailing whitespace.  */
+      for (--ptr; strchr (WHITESPACE_STR, *ptr); --ptr)
+          *ptr = '\0';
+   }
+
+  return result;
 }
 
 
@@ -281,46 +335,65 @@ bool checkAndThrowException(JNIEnv *env) {
 #define JVM_REG_12 "Software\\JavaSoft\\Java Runtime Environment\\1.2"
 
 
-char* readJVMLibLocation() {
+char* readJVMLibLocation(char* requestedJVMVersion) {
 	DWORD	rc; 
 	HKEY	regKey;
 	DWORD	len; 
 	DWORD	dwType; 
 	char	javaLibLocation[512]; //value stored here
 	
-	//check for jvm 1.8 (future) in registry
-	rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_18, 0, KEY_ALL_ACCESS, &regKey); 
-	if (rc != ERROR_SUCCESS) {
+	if(requestedJVMVersion==NULL) {
+		//Auto check for installed JVMs
 		
-		//check for jvm 1.7 (future) in registry
-		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_17, 0, KEY_ALL_ACCESS, &regKey); 
+		//check for jvm 1.8 (future) in registry
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_18, 0, KEY_ALL_ACCESS, &regKey); 
 		if (rc != ERROR_SUCCESS) {
-
-			//check for jvm 1.6 (future) in registry
-			rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_16, 0, KEY_ALL_ACCESS, &regKey); 
+			
+			//check for jvm 1.7 (future) in registry
+			rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_17, 0, KEY_ALL_ACCESS, &regKey); 
 			if (rc != ERROR_SUCCESS) {
-				
-				//no 1.6, try 1.5
-				rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_15, 0, KEY_ALL_ACCESS, &regKey); 
+
+				//check for jvm 1.6 (future) in registry
+				rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_16, 0, KEY_ALL_ACCESS, &regKey); 
 				if (rc != ERROR_SUCCESS) {
 					
-					//no 1.5 try 1.4!
-					rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_14, 0, KEY_ALL_ACCESS, &regKey); 
+					//no 1.6, try 1.5
+					rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_15, 0, KEY_ALL_ACCESS, &regKey); 
 					if (rc != ERROR_SUCCESS) {
-					
-						//no 1.4 try 1.3!
-						rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_13, 0, KEY_ALL_ACCESS, &regKey); 
+						
+						//no 1.5 try 1.4!
+						rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_14, 0, KEY_ALL_ACCESS, &regKey); 
 						if (rc != ERROR_SUCCESS) {
 						
-							//no 1.3 try 1.2!
-							rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_12, 0, KEY_ALL_ACCESS, &regKey); 
+							//no 1.4 try 1.3!
+							rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_13, 0, KEY_ALL_ACCESS, &regKey); 
 							if (rc != ERROR_SUCCESS) {
-								return NULL;
+							
+								//no 1.3 try 1.2!
+								rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_12, 0, KEY_ALL_ACCESS, &regKey); 
+								if (rc != ERROR_SUCCESS) {
+									return NULL;
+								}
 							}
 						}
-					}
-				} 
+					} 
+				}
 			}
+		}
+	}
+	else {
+		//there is a specific jvm version mentioned in the .ini, try to locate this one...
+		char[512] jvmRegKey = {'\0'};
+		strcat(jvmRegKey, "Software\\JavaSoft\\Java Runtime Environment\\\0");
+		strcat(jvmRegKey, requestedJVMVersion);
+		
+		log("Trying to locate specific jvm version with regkey:");
+		log(jvmRegKey);
+		
+		//check if this key is available
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey); 
+		if (rc != ERROR_SUCCESS) {
+			return NULL;
 		}
 	}
 
@@ -335,8 +408,8 @@ char* readJVMLibLocation() {
 
 
 //globals
-jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *) = NULL; 
-jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *) = NULL;
+jint (JNICALL *JNI_CreateJavaVM)(JavaVM **, void **, void *) = NULL; 
+jint (JNICALL *JNI_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *) = NULL;
 
 
 int initJVMFunctionPointers(char *vmlibpath) {
@@ -363,9 +436,9 @@ int initJVMFunctionPointers(char *vmlibpath) {
 		return -1;
 	}
 	
-	PTR_CreateJavaVM = (jint (JNICALL *)(JavaVM **, void **, void *))GetProcAddress(hVM, "JNI_CreateJavaVM");
-    PTR_GetCreatedJavaVMs = (jint (JNICALL *)(JavaVM **, jsize, jsize *))GetProcAddress(hVM, "JNI_GetCreatedJavaVMs");
-	if (PTR_CreateJavaVM==NULL || PTR_GetCreatedJavaVMs==NULL) {
+	JNI_CreateJavaVM = (jint (JNICALL *)(JavaVM **, void **, void *))GetProcAddress(hVM, "JNI_CreateJavaVM");
+    JNI_GetCreatedJavaVMs = (jint (JNICALL *)(JavaVM **, jsize, jsize *))GetProcAddress(hVM, "JNI_GetCreatedJavaVMs");
+	if (JNI_CreateJavaVM==NULL || JNI_GetCreatedJavaVMs==NULL) {
 		log("**ERROR: Cant find jvm interface pointers!");
 		return -1;
 	}
@@ -373,6 +446,93 @@ int initJVMFunctionPointers(char *vmlibpath) {
 	return 0;
 }
 
+#else
+//**************************************************************************************************
+// Mac feature for requesting a specific JVM
 
+
+/*
+To invoke Java 1.4.1 or the currently preferred JDK as defined by the operating system 
+(1.4.2 as of the release of this sample and the release of Mac OS X 10.4) nothing changes in 10.4 vs 10.3 
+in that when a JNI_VERSION_1_4 is passed into JNI_CreateJavaVM as the vm_args.version it returns 
+the current preferred JDK.
+
+To specify the current preferred JDK in a family of JVM's, say the 1.5.x family, applications should set 
+the environment variable JAVA_JVM_VERSION to 1.5, and then pass JNI_VERSION_1_4 into JNI_CreateJavaVM 
+as the vm_args.version. To get a specific Java 1.5 JVM, say Java 1.5.0, set the environment variable 
+JAVA_JVM_VERSION to 1.5.0. For Java 1.6 it will be the same in that applications will need to set 
+the environment variable JAVA_JVM_VERSION to 1.6 to specify the current preferred 1.6 Java VM, and 
+to get a specific Java 1.6 JVM, say Java 1.6.1, set the environment variable JAVA_JVM_VERSION to 1.6.1.
+
+To make this sample bring up the current preferred 1.5 JVM, set the environment variable 
+JAVA_JVM_VERSION to 1.5 before calling JNI_CreateJavaVM as shown below.  Applications must currently 
+check for availability of JDK 1.5 before requesting it.  If your application requires JDK 1.5 and it is not 
+found, it is your responsibility to report an error to the user. To verify if a JVM is installed, check 
+to see if the symlink, or directory exists for the JVM in /System/Library/Frameworks/JavaVM.framework/Versions/ 
+before setting the environment variable JAVA_JVM_VERSION.
+
+If the environment variable JAVA_JVM_VERSION is not set, and JNI_VERSION_1_4 is passed into 
+JNI_CreateJavaVM as the vm_args.version, JNI_CreateJavaVM will return the current preferred JDK. 
+Java 1.4.2 is the preferred JDK as of the release of this sample and the release of Mac OS X 10.4.
+*/
+
+
+int checkJVMVersionRequest(char* requestedJVMVersion) {
+	if (requestedJVMVersion==NULL) return -1;
+	
+	log("checking for a jvm version");
+	log(requestedJVMVersion);
+	
+	CFStringRef targetJVM = CFStringCreateWithCString(NULL, requestedJVMVersion, kCFStringEncodingASCII);
+	CFBundleRef JavaVMBundle;
+	CFURLRef    JavaVMBundleURL;
+	CFURLRef    JavaVMBundlerVersionsDirURL;
+	CFURLRef    TargetJavaVM;
+	UInt8 pathToTargetJVM [PATH_MAX] = "\0";
+	struct stat sbuf;
+	int retval = -1;
+	
+	// Look for the JavaVM bundle using its identifier
+	JavaVMBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.JavaVM") );
+	
+	if(JavaVMBundle != NULL) {
+		// Get a path for the JavaVM bundle
+		JavaVMBundleURL = CFBundleCopyBundleURL(JavaVMBundle);
+		CFRelease(JavaVMBundle);
+		
+		if(JavaVMBundleURL != NULL) {
+			// Append to the path the Versions Component
+			JavaVMBundlerVersionsDirURL = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault,JavaVMBundleURL,CFSTR("Versions"),true);
+			CFRelease(JavaVMBundleURL);
+			
+			if(JavaVMBundlerVersionsDirURL != NULL) {
+				// Append to the path the target JVM's Version
+				TargetJavaVM = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault,JavaVMBundlerVersionsDirURL,targetJVM,true);
+				CFRelease(JavaVMBundlerVersionsDirURL);
+				
+				if(TargetJavaVM != NULL) {
+					if(CFURLGetFileSystemRepresentation (TargetJavaVM,true,pathToTargetJVM,PATH_MAX )) {
+						// Check to see if the directory, or a sym link for the target JVM directory exists, and if so set the
+						// environment variable JAVA_JVM_VERSION to the target JVM.
+						if(stat((char*)pathToTargetJVM,&sbuf) == 0) {
+							// Ok, the directory exists, so now we need to set the environment var JAVA_JVM_VERSION to the CFSTR targetJVM
+							// We can reuse the pathToTargetJVM buffer to set the environement var.
+							if(CFStringGetCString(targetJVM, (char*)pathToTargetJVM, PATH_MAX, kCFStringEncodingUTF8)) {
+								setenv("JAVA_JVM_VERSION", (char*)pathToTargetJVM, 1);
+								retval = 0;
+								log("Found a JVM that matches the one requested, loading that one!!!");
+								log((char*)pathToTargetJVM);
+							} else log("Error getting path to target jvm");
+						} else log("Error checking symlink for target jvm");
+					} else log("Error getting file system representation for bundle url");
+					CFRelease(TargetJavaVM);
+				} else log("Error appending version component to bundle url");
+			} else log("Error appending path component to bundle url");
+		} else log("Error copying bulde url");
+	} else log("ERROR: cant find bundle: com.apple.JavaVM");
+	
+	
+	return retval;
+}
 
 #endif

@@ -782,7 +782,7 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
         this->JEnv->DeleteLocalRef(farr);
 	  }
 
-	  for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	  for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = varIo->outputs[i];
 		jfloatArray farr = this->JEnv->NewFloatArray(varIo->numSamplesOutput);
 	
@@ -806,7 +806,7 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 	  //copy values back to varIo struct
 	  jinputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldInputs);
 	  joutputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldOutputs);
-	  for (i=0; i<this->getAeffect()->numInputs; i++) {
+	  for (int i=0; i<this->getAeffect()->numInputs; i++) {
 		float* in = varIo->inputs[i];
 		jfloatArray jin;
 		jfloat *jval;
@@ -819,7 +819,7 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 		this->JEnv->ReleaseFloatArrayElements(jin, jval, 0);
 		this->JEnv->DeleteLocalRef(jin);
 	  }
-	  for (i=0; i<this->getAeffect()->numOutputs; i++) {
+	  for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = varIo->outputs[i];
 		jfloatArray jout;
 		jfloat *jval;
@@ -956,7 +956,7 @@ bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, Vs
 	}
 	jobjectArray jOutProps = this->JEnv->NewObjectArray(pluginOutput->numChannels, this->jSpeakerPropsClass, NULL);
 
-	for (i=0; i<pluginOutput->numChannels; i++) {
+	for (int i=0; i<pluginOutput->numChannels; i++) {
 		jobject jSpeakerPropsObject = this->JEnv->NewObject(this->jSpeakerPropsClass, this->SpeakerPropsConstructor);
 		if (jSpeakerPropsObject == NULL) {
 			log("** ERROR: cannot create VSTSpeakerProperties Object!");

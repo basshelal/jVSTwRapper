@@ -58,6 +58,7 @@ class ConfigFileReader {
 		int CloseNativePluginWindow;
 		int AttachToNativePluginWindow;
 		char* CustomJVMLocation;
+		char* RequestedJVMVersion;
 
 	protected:
 		virtual void ReadConfigFile ();

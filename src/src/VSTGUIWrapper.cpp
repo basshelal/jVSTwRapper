@@ -48,12 +48,12 @@
 #include "JNIUtils.h"
 #endif
 
-#include "jawt_md.h"
 
 #ifndef MACX
-#include <windows.h>
+	#include <windows.h>
+	#include "jawt_md.h"
 #else
-#include <pthread.h>
+	#include <pthread.h>
 #endif
 
 
@@ -61,14 +61,15 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 	: AEffGUIEditor (effect) {
 
 	this->ThreadID = 0;	
-	this->JavaWindowHandle = 0;
+#ifndef MACX 
+	this->JavaWindowHandle = 0; //TODO DM FIX: we also need a win handle on OSX
+#endif
 	this->Jvm = ((VSTV10ToPlug*)effect)->Jvm;
 	this->JEnv = ((VSTV10ToPlug*)effect)->JEnv;
 	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;	
 #ifndef MACX
 	ConfigFileReader *cfg = new ConfigFileReader();
-	if(cfg!=NULL)
-	{
+	if(cfg!=NULL) {
 	  this->AttachWindow=(cfg->AttachToNativePluginWindow==1);
 	  delete cfg;
 	}
@@ -78,8 +79,7 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 }
 
 //-----------------------------------------------------------------------------
-bool VSTGUIWrapper::getRect (ERect **ppErect)
-{
+bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	if(this->AttachWindow) {
 	   //Set Size
 	   this->ensureJavaThreadAttachment();
@@ -104,7 +104,8 @@ bool VSTGUIWrapper::getRect (ERect **ppErect)
        rect.top    = 0;
 	   rect.right  = (short)width;
        rect.bottom = (short)height;
-	} else {
+	} 
+	else {
        rect.left   = 0;
        rect.top    = 0;
 	   rect.right  = 0;
@@ -119,11 +120,13 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 	this->ensureJavaThreadAttachment();
 	
 	//destroy() der gui aufrufen
+	//macx tends to block forever here...
+#ifndef MACX
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "destroy", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method destroy()V");
 	
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
-
+#endif
 	this->checkException();
 
 	//free global referencw
@@ -136,15 +139,11 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 //-----------------------------------------------------------------------------
 
 #ifndef MACX
-
 static WNDPROC oldWndProcEdit;
 LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-{	
-	switch (message)
-	{
-		case WM_ERASEBKGND :
-		{		
+LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {	
+	switch (message) {
+		case WM_ERASEBKGND : {		
 			CFrame* frame=(CFrame*)GetWindowLong(hwnd,GWL_USERDATA);
 			HWND javaHandle=((VSTGUIWrapper*)frame->getEditor())->JavaWindowHandle;
 			RedrawWindow(javaHandle,NULL,NULL,RDW_NOERASE);
@@ -155,8 +154,8 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 }
 #endif
 
-bool VSTGUIWrapper::open (void *ptr) {
 
+bool VSTGUIWrapper::open (void *ptr) {
     this->ensureJavaThreadAttachment();
 
 #ifndef MACX
@@ -164,24 +163,29 @@ bool VSTGUIWrapper::open (void *ptr) {
 	JAWT awt;	
 	jboolean result;
 	bool isAttached = false;
-	if (this->AttachWindow){  
+	
+	if (this->AttachWindow) {  
 	   this->AttachWindow=false;
 	   jfieldID libraryOk = this->JEnv->GetStaticFieldID(this->JavaPlugGUIClass, "libraryOk", "Z");	
 	   this->checkException();
+	   
 	   if (libraryOk != NULL) {
 		   jboolean lOk = this->JEnv->GetStaticBooleanField(this->JavaPlugGUIClass,libraryOk);
 		   this->checkException();
+		   
 		   if(lOk==JNI_TRUE) {  
 				// Get the AWT
 				awt.version = JAWT_VERSION_1_3;
 				result = JAWT_GetAWT(this->JEnv, &awt);
-				if(result != JNI_FALSE)  { 
+				if(result != JNI_FALSE) { 
 				  //Inform the class
 				  jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
    			      jboolean val=JNI_TRUE;
 				  this->checkException();
-                  if (attachField != NULL) 
-				  this->JEnv->SetBooleanField(this->JavaPlugGUIObj,attachField,val);
+                  
+				  if (attachField != NULL) 
+					this->JEnv->SetBooleanField(this->JavaPlugGUIObj,attachField,val);
+				  
 				  this->checkException();    
 				  isAttached=true;
 				  this->AttachWindow=true;
@@ -220,6 +224,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 		  if((lock & JAWT_LOCK_ERROR) == 0) {
    		    // Get the drawing surface info
 			dsi = ds->GetDrawingSurfaceInfo(ds);
+			
 			if(dsi!=NULL) {
    			  // Get the platform-specific drawing info
 			  dsi_win = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
@@ -227,15 +232,12 @@ bool VSTGUIWrapper::open (void *ptr) {
 			  //Create Frame to embedd the java Frame
 			  ERect* thissize;
 			  this->getRect(&thissize);
-			  CRect size (
-				0,
-				0,
-				thissize->right,
-				thissize->bottom
-			  );
-			  if(frame!=NULL) delete frame;
+			  CRect size (0, 0, thissize->right, thissize->bottom);
+			  
+			  if (frame!=NULL) delete frame;
 			  frame = new CFrame (size, ptr, this);
 			  HWND frhwnd=(HWND)frame->getSystemWindow();
+			  
 			  //Get Java Window-Handle
 			  this->JavaWindowHandle=dsi_win->hwnd;
 			  //Set Parent Window
@@ -299,9 +301,9 @@ bool VSTGUIWrapper::open (void *ptr) {
         if (attachField != NULL) 
 	    this->JEnv->SetBooleanField(this->JavaPlugGUIObj,attachField,val);
 	    this->checkException();                
-        // Detach the Window
-	    if(this->JavaWindowHandle!=NULL)
-		{
+        
+		// Detach the Window
+	    if (this->JavaWindowHandle!=NULL) {
 			SetParent(this->JavaWindowHandle,NULL);
 			this->JavaWindowHandle=NULL;
 		}
@@ -347,13 +349,14 @@ void VSTGUIWrapper::close () {
 	  jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
    	  jboolean val=JNI_FALSE;
 	  this->checkException();
+
       if (attachField != NULL) 
 	  val=this->JEnv->GetBooleanField(this->JavaPlugGUIObj,attachField);
 	  this->checkException();                
-      if(val==JNI_TRUE) // Detach the Window
-	  {   
-		if(this->JavaWindowHandle!=NULL)
-		{
+	  
+	  // Detach the Window
+      if(val==JNI_TRUE) {   
+		if(this->JavaWindowHandle!=NULL) {
 			SetParent(this->JavaWindowHandle,NULL);
 			this->JavaWindowHandle=NULL;
 		}

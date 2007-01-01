@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4		$Date: 2006/12/06 16:45:42 $
+// Version 2.4		$Date: 2007/01/01 21:25:10 $
 //
 // Category     : VST 2.x Interfaces
 // Filename     : aeffectx.h
@@ -26,6 +26,8 @@
 	#endif
 #elif defined __BORLANDC__
 	#pragma -a8
+#elif defined(__GNUC__)
+    #pragma pack(push,8)
 #elif defined(WIN32) || defined(__FLAT__)
 	#pragma pack(push)
 	#pragma pack(8)
@@ -101,7 +103,7 @@ struct VstMidiEvent
 	VstInt32 deltaFrames;	///< sample frames related to the current block start sample position
 	VstInt32 flags;			///< @see VstMidiEventFlags
 	VstInt32 noteLength;	///< (in sample frames) of entire note, if available, else 0
-	VstInt32 noteOffset;	///< offset into note from note start if available, else 0
+	VstInt32 noteOffset;	///< offset (in sample frames) into note from note start if available, else 0
 	char midiData[4];		///< 1 to 3 MIDI bytes; midiData[3] is reserved (zero)
 	char detune;			///< -64 to +63 cents; for scales other than 'well-tempered' ('microtuning')
 	char noteOffVelocity;	///< Note Off Velocity [0, 127]
@@ -116,7 +118,7 @@ struct VstMidiEvent
 enum VstMidiEventFlags
 {
 //-------------------------------------------------------------------------------------------------------
-	kVstMidiEventIsRealtime = 1 << 0	///< means that this event is played life (not in playback)
+	kVstMidiEventIsRealtime = 1 << 0	///< means that this event is played life (not in playback from a sequencer track).\n This allows the Plug-In to handle these flagged events with higher priority, especially when the Plug-In has a big latency (AEffect::initialDelay)
 //-------------------------------------------------------------------------------------------------------
 };
 
@@ -127,7 +129,7 @@ struct VstMidiSysexEvent
 {
 //-------------------------------------------------------------------------------------------------------
 	VstInt32 type;			///< #kVstSysexType
-	VstInt32 byteSize;		///< sizeof(VstMidiSysexEvent)
+	VstInt32 byteSize;		///< sizeof (VstMidiSysexEvent)
 	VstInt32 deltaFrames;	///< sample frames related to the current block start sample position
 	VstInt32 flags;			///< none defined yet (should be zero)
 	VstInt32 dumpBytes;		///< byte size of sysexDump
@@ -251,7 +253,7 @@ enum VstHostLanguage
 enum AudioMasterOpcodesX
 {
 //-------------------------------------------------------------------------------------------------------
-	DECLARE_VST_DEPRECATED (audioMasterWantMidi) = audioMasterPinConnected + 2,	///< \deprecated deprecated in VST 2.4
+	DECLARE_VST_DEPRECATED (audioMasterWantMidi) = DECLARE_VST_DEPRECATED (audioMasterPinConnected) + 2,	///< \deprecated deprecated in VST 2.4
 
 	audioMasterGetTime,				///< [return value]: #VstTimeInfo* or null if not supported [value]: request mask  @see VstTimeInfoFlags @see AudioEffectX::getTimeInfo
 	audioMasterProcessEvents,		///< [ptr]: pointer to #VstEvents  @see VstEvents @see AudioEffectX::sendVstEventsToHost
@@ -309,7 +311,7 @@ enum AudioMasterOpcodesX
 	
 	DECLARE_VST_DEPRECATED (audioMasterEditFile),		///< \deprecated deprecated in VST 2.4
 	
-	DECLARE_VST_DEPRECATED (audioMasterGetChunkFile),	///< \deprecated deprecated in VST 2.4 [ptr]: char[2048] or sizeof(FSSpec) [return value]: 1 if supported  @see AudioEffectX::getChunkFile
+	DECLARE_VST_DEPRECATED (audioMasterGetChunkFile),	///< \deprecated deprecated in VST 2.4 [ptr]: char[2048] or sizeof (FSSpec) [return value]: 1 if supported  @see AudioEffectX::getChunkFile
 
 	DECLARE_VST_DEPRECATED (audioMasterGetInputSpeakerArrangement)	///< \deprecated deprecated in VST 2.4
 };
@@ -412,8 +414,8 @@ enum AEffectXOpcodes
 //-------------------------------------------------------------------------------------------------------
 enum VstProcessPrecision
 {
-	kVstProcessPrecision32 = 0,		///< single precision float
-	kVstProcessPrecision64			///< double precision
+	kVstProcessPrecision32 = 0,		///< single precision float (32bits)
+	kVstProcessPrecision64			///< double precision (64bits)
 };
 
 //-------------------------------------------------------------------------------------------------------
@@ -1131,7 +1133,7 @@ enum VstAutomationStates
 //-------------------------------------------------------------------------------------------------------
 #if TARGET_API_MAC_CARBON
 	#pragma options align=reset
-#elif defined(WIN32) || defined(__FLAT__)
+#elif defined(WIN32) || defined(__FLAT__) || defined(__GNUC__)
 	#pragma pack(pop)
 #elif defined __BORLANDC__
 	#pragma -a-

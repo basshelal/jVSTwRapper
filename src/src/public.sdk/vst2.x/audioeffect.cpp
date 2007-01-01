@@ -1,13 +1,13 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4       $Date: 2006/12/06 16:45:23 $
+// Version 2.4       $Date: 2007/01/01 21:25:10 $
 //
 // Category     : VST 2.x Classes
 // Filename     : audioeffect.cpp
 // Created by   : Steinberg Media Technologies
 // Description  : Class AudioEffect (VST 1.0)
 //
-// © 2005, Steinberg Media Technologies, All Rights Reserved
+// © 2006, Steinberg Media Technologies, All Rights Reserved
 //-------------------------------------------------------------------------------------------------------
 
 #include "audioeffect.h"
@@ -175,7 +175,7 @@ VstIntPtr AudioEffect::dispatcher (VstInt32 opcode, VstInt32 index, VstIntPtr va
 		case effEditClose:			if (editor) editor->close ();						break;		
 		case effEditIdle:			if (editor) editor->idle ();						break;
 		
-	#if (MAC && !VST_FORCE_DEPRECATED)
+	#if (TARGET_API_MAC_CARBON && !VST_FORCE_DEPRECATED)
 		case effEditDraw:			if (editor) editor->draw ((ERect*)ptr);				break;
 		case effEditMouse:			if (editor) v = editor->mouse (index, value);		break;
 		case effEditKey:			if (editor) v = editor->key (value);				break;
@@ -232,38 +232,20 @@ void AudioEffect::masterIdle ()
 }
 
 //-------------------------------------------------------------------------------------------------------
-/*!
-	There is no negotiation currently, thus numInputs must not change at any time. A VST plug-in is taken to
-	be a device with a fixed number of i/o pins. How these are beeing used depends on the application.
-	
-	\param input The index of the input, starting at 0 (e.g. left=0, right=1).
-	\return The input's state
-
-	This method should be called from resume() rather than from the constructor or from process function.
-*/
-bool AudioEffect::isInputConnected (VstInt32 input)
+bool AudioEffect::DECLARE_VST_DEPRECATED (isInputConnected) (VstInt32 input)
 {
 	VstInt32 ret = 0;
 	if (audioMaster)
-		ret = (VstInt32)audioMaster (&cEffect, audioMasterPinConnected, input, 0, 0, 0);
+		ret = (VstInt32)audioMaster (&cEffect, DECLARE_VST_DEPRECATED (audioMasterPinConnected), input, 0, 0, 0);
 	return ret ? false : true;		// return value is 0 for true
 }
 
 //-------------------------------------------------------------------------------------------------------
-/*!
-	There is no negotiation currently, thus numOutputs must not change at any time. A VST plug-in is taken to
-	be a device with a fixed number of i/o pins. How these are beeing used depends on the application.
-	
-	\param output The index of the output, starting at 0 (e.g. left=0, right=1).
-	\return The output's state
-
-	This method should be called from resume() rather than from the constructor or from process function.
-*/
-bool AudioEffect::isOutputConnected (VstInt32 output)
+bool AudioEffect::DECLARE_VST_DEPRECATED (isOutputConnected) (VstInt32 output)
 {
 	VstInt32 ret = 0;
 	if (audioMaster)
-		ret = (VstInt32)audioMaster (&cEffect, audioMasterPinConnected, output, 1, 0, 0);
+		ret = (VstInt32)audioMaster (&cEffect, DECLARE_VST_DEPRECATED (audioMasterPinConnected), output, 1, 0, 0);
 	return ret ? false : true;		// return value is 0 for true
 }
 
@@ -450,7 +432,7 @@ void AudioEffect::float2string (float value, char* text, VstInt32 maxLen)
 			return;
 		}
 	}
-	else if( v > 99999999.)
+	else if (v > 99999999.)
 	{
 		vst_strncpy (string, "Huge!", 31);
 		return;
@@ -521,7 +503,7 @@ void AudioEffect::int2string (VstInt32 value, char* text, VstInt32 maxLen)
 		vst_strncpy (text, "", maxLen);
 
 	bool state = false;
-	for(VstInt32 div = 100000000; div >= 1; div /= 10)
+	for (VstInt32 div = 100000000; div >= 1; div /= 10)
 	{
 		VstInt32 digit = value / div;
 		value -= digit * div;

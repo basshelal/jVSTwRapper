@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4       $Date: 2006/12/06 16:45:23 $
+// Version 2.4       $Date: 2007/01/01 21:25:10 $
 //
 // Category     : VST 2.x Classes
 // Filename     : audioeffectx.cpp
@@ -367,9 +367,12 @@ bool AudioEffectX::sendVstEventsToHost (VstEvents* events)
 /*!
 	\fn VstInt32 AudioEffectX::processEvents (VstEvents* events)
 
-	\return	0 means 'wants no more'...else return 1!
+	\return	return value is ignored
 
-	\sa VstEvents, VstMidiEvents, wantEvents()
+	\remarks	Events are always related to the current audio block. For each process cycle, processEvents() is called 
+			<b>once</b> before a processReplacing() call (if new events are available).
+	
+	\sa VstEvents, VstMidiEvent
 */
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -538,7 +541,7 @@ VstInt32 AudioEffectX::getOutputLatency ()
 	\sa getOutputProperties()
 	\note Example
 	<pre>
-	bool MyPlug::getInputProperties (long index, VstPinProperties* properties)
+	bool MyPlug::getInputProperties (VstInt32 index, VstPinProperties* properties)
 	{
 		bool returnCode = false;
 		if (index < kNumInputs)
@@ -562,7 +565,7 @@ VstInt32 AudioEffectX::getOutputLatency ()
 	\sa getInputProperties()
 	\note Example 1
 	<pre>
-	bool MyPlug::getOutputProperties (long index, VstPinProperties* properties)
+	bool MyPlug::getOutputProperties (VstInt32 index, VstPinProperties* properties)
 	{
 		bool returnCode = false;
 		if (index < kNumOutputs)
@@ -577,7 +580,7 @@ VstInt32 AudioEffectX::getOutputLatency ()
 
 	\note Example 2 : plug-in with 1 mono, 1 stereo and one 5.1 outputs (kNumOutputs = 9):
 	<pre>
-	bool MyPlug::getOutputProperties (long index, VstPinProperties* properties)
+	bool MyPlug::getOutputProperties (VstInt32 index, VstPinProperties* properties)
 	{
 		bool returnCode = false;
 		if (index >= 0 && index < kNumOutputs)
@@ -1305,7 +1308,7 @@ bool AudioEffectX::DECLARE_VST_DEPRECATED (getChunkFile) (void* nativePath)
 	{ 
 		// scan shell for subplugins
 		char tempName[64] = {0}; 
-		long plugUniqueID = 0;
+		VstInt32 plugUniqueID = 0;
 		while ((plugUniqueID = effect->dispatchEffect (effShellGetNextPlugin, 0, 0, tempName)) != 0)
 		{ 
 			// subplug needs a name 
@@ -1330,14 +1333,14 @@ bool AudioEffectX::DECLARE_VST_DEPRECATED (getChunkFile) (void* nativePath)
 	// at start (instanciation) reset the index for the getNextShellPlugin call.
 	myPluginShell::index = 0;
 	// implementation of getNextShellPlugin (char* name);
-	long myPluginShell::getNextShellPlugin (char* name)
+	VstInt32 myPluginShell::getNextShellPlugin (char* name)
 	{
 		strcpy (name, MyNameTable[index]);
 		return MyUniqueIDTable[index++];
 	}
 	....
 	//---From the plugin-Shell Side: when instanciation-----
-	long uniqueID = host->getCurrentUniqueID ();
+	VstInt32 uniqueID = host->getCurrentUniqueID ();
 	if (uniqueID == 0) // the host instanciates the shell
 	{}
 	else // host try to instanciate one of my subplugin...identified by the uniqueID
@@ -1510,16 +1513,34 @@ bool AudioEffectX::matchArrangement (VstSpeakerArrangement** to, VstSpeakerArran
 /*!
 	\fn VstInt32 AudioEffectX::getNumMidiInputChannels ()
 
-	\return Number of MIDI Input Channels: 1-15, otherwise: 16 or no MIDI Channels at all 
+	Called by the host application to determine how many MIDI input channels are actually used by a plugin
+	e.g. to hide unused channels from the user. 
+	For compatibility with VST 2.3 and below, the default return value 0 means 'not implemented' -
+	in this case the host assumes 16 MIDI channels to be present (or none at all).
 
-	\sa getNumMidiOutputChannels()
+	\return Number of MIDI input channels: 1-15, otherwise: 16 or no MIDI channels at all (0)
+
+	\note The VST 2.x protocol is limited to a maximum of 16 MIDI channels as defined by the MIDI Standard. This might change in future revisions of the API.
+	
+	\sa
+	getNumMidiOutputChannels() @n
+	PlugCanDos::canDoReceiveVstMidiEvent
 */
 
 //-----------------------------------------------------------------------------------------------------------------
 /*!
 	\fn VstInt32 AudioEffectX::getNumMidiOutputChannels ()
 
-	\return Number of MIDI Output Channels: 1-15, otherwise: 16 or no MIDI Channels at all
+	Called by the host application to determine how many MIDI output channels are actually used by a plugin
+	e.g. to hide unused channels from the user. 
+	For compatibility with VST 2.3 and below, the default return value 0 means 'not implemented' -
+	in this case the host assumes 16 MIDI channels to be present (or none at all).
 
-	\sa getNumMidiInputChannels()
+	\return Number of MIDI output channels: 1-15, otherwise: 16 or no MIDI channels at all (0)
+
+	\note The VST 2.x protocol is limited to a maximum of 16 MIDI channels as defined by the MIDI Standard. This might change in future revisions of the API.
+
+	\sa
+	getNumMidiInputChannels() @n
+	PlugCanDos::canDoSendVstMidiEvent
 */

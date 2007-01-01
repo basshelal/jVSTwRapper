@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4       $Date: 2006/12/06 16:45:23 $
+// Version 2.4       $Date: 2007/01/01 21:25:10 $
 //
 // Category     : VST 2.x Classes
 // Filename     : audioeffectx.h
@@ -73,17 +73,17 @@ public:
 
 	virtual bool setSpeakerArrangement (VstSpeakerArrangement* pluginInput, VstSpeakerArrangement* pluginOutput) { return false; } ///< Set the plug-in's speaker arrangements
 	virtual bool getSpeakerArrangement (VstSpeakerArrangement** pluginInput, VstSpeakerArrangement** pluginOutput) { *pluginInput = 0; *pluginOutput = 0; return false; } ///< Return the plug-in's speaker arrangements
-	virtual bool setBypass (bool onOff) { return false; }				///< For 'soft-bypass' (this could be automated).
+	virtual bool setBypass (bool onOff) { return false; }				///< For 'soft-bypass' (this could be automated (in Audio Thread) that why you could NOT call iochanged (if needed) in this function, do it in fxidle).
 
 #if VST_2_3_EXTENSIONS
-	virtual bool setPanLaw (VstInt32 type, float val) { return false; }	///< Set the Panning Law used by the Host.
+	virtual bool setPanLaw (VstInt32 type, float val) { return false; }	///< Set the Panning Law used by the Host @see VstPanLawType.
 #endif // VST_2_3_EXTENSIONS
 
 #if VST_2_4_EXTENSIONS
 	virtual bool setProcessPrecision (VstInt32 precision) { return false; }	///< Set floating-point precision used for processing (32 or 64 bit)
 
-	virtual VstInt32 getNumMidiInputChannels () { return 0; }				///< Return number of MIDI input channels
-	virtual VstInt32 getNumMidiOutputChannels () { return 0; }				///< Return number of MIDI output channels
+	virtual VstInt32 getNumMidiInputChannels ()  { return 0; }				///< Returns number of MIDI input channels used [0, 16]
+	virtual VstInt32 getNumMidiOutputChannels () { return 0; }				///< Returns number of MIDI output channels used [0, 16]
 #endif // VST_2_4_EXTENSIONS
 //@}
 

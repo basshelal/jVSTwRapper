@@ -1,3 +1,8 @@
+2006-02-08 arne
+
+	* fix CSplashScreen view
+	* fix CTextEdit
+
 2005-10-03 arne
 
 	* bugfix: CTabView does not release its subviews

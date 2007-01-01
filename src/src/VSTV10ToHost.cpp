@@ -45,6 +45,11 @@
 #include "VSTV24ToPlug.h"
 #endif
 
+#ifdef MACX
+#include "pthread.h"
+#endif
+
+
 
 VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj)
 {
@@ -253,8 +258,14 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_getBlockSize
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setParameterAutomated(JNIEnv *env, jobject obj, jint index, jfloat value) {
 	log("setParameterAutomated");
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+	
+#ifndef MACX
 	//Workaround for energyXT: Save Thread for setParameterAutomated
 	WrapperInstance->ToHostThread=GetCurrentThreadId();
+#else
+	WrapperInstance->ToHostThread=pthread_self();
+#endif
+	
 	if (WrapperInstance!=NULL) WrapperInstance->setParameterAutomated(index, value);
 
     WrapperInstance->ToHostThread=0;

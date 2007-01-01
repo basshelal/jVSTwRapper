@@ -3,7 +3,7 @@
 // VSTGUI: Graphical User Interface Framework for VST plugins : 
 // Standard Control Objects
 //
-// Version 3.0       $Date: 2006/12/06 16:45:00 $
+// Version 3.0       $Date: 2007/01/01 21:25:10 $
 //
 //-----------------------------------------------------------------------------
 // VSTGUI LICENSE
@@ -937,9 +937,12 @@ public:
 	virtual void draw (CDrawContext*);
 	virtual bool hitTest (const CPoint& where, const long buttons = -1);
 	virtual void mouse (CDrawContext *pContext, CPoint &where, long button = -1);
-	virtual void unSplash ();
+	virtual void unSplash (CDrawContext *pContext = 0);
 
 	void setBitmapTransparency (unsigned char transparency);
+	unsigned char getBitmapTransparency () const { return bitmapTransparency; }
+
+	const CPoint& getOffset () const { return offset; }
 
 	CLASS_METHODS(CSplashScreen, CControl)
 

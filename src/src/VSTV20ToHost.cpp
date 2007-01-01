@@ -590,7 +590,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getSpeak
 
 		jobjectArray jOutProps = env->NewObjectArray(output->numChannels, jSpeakerPropsClass, NULL);
 
-		for (i=0; i<output->numChannels; i++) {
+		for (int i=0; i<output->numChannels; i++) {
 			jobject jSpeakerPropsObject = env->NewObject(jSpeakerPropsClass, SpeakerPropsConstructor);
 			if (jSpeakerPropsObject == NULL) {
 				log("** ERROR: cannot create VSTSpeakerProperties Object!");
