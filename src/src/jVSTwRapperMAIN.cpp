@@ -53,8 +53,8 @@
 #ifndef MACX
 	#include <windows.h>
 
-	extern jint (JNICALL *JNI_CreateJavaVM)(JavaVM **, void **, void *); 
-	extern jint (JNICALL *JNI_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *);
+	extern jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *); 
+	extern jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *);
 #else
 	#include <Carbon/Carbon.h>
 	#include <sys/stat.h>
@@ -93,8 +93,12 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster);
 	void sourceCallBack(void *info);
 	int loadCFApp();
 	int startJavaThread();
-	
+
+	void* startJava(void *nix); 
+
 	int checkJVMVersionRequest(char* requestedJVMVersion);
+#else
+	int startJava(void *nix);
 #endif
 
 //------------------------------------------------------------------------
@@ -339,7 +343,11 @@ void* startJava(void *nix) {
 	bool hasGUI = false;
 	jclass guiClass = NULL;
 
+#ifndef MACX
+	res = PTR_GetCreatedJavaVMs(&vmBuffer, 1, &nVMs);
+#else
 	res = JNI_GetCreatedJavaVMs(&vmBuffer, 1, &nVMs);
+#endif
 	if (res < 0) {
 		log("** ERROR: Can't get created Java VMs");
 		goto leave;
@@ -368,10 +376,12 @@ void* startJava(void *nix) {
 	} 
 	else {
 		log("before JNI_CreateJavaVM");
-		
 		/* Create the Java VM */
-		res = JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
-		
+#ifndef MACX
+	res = PTR_CreateJavaVM(&jvm, (void**)&env, &vm_args);
+#else
+	res = JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
+#endif		
 		log("AFTER JNI_CreateJavaVM");
 		
 		if (res < 0) {

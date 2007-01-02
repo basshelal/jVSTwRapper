@@ -49,7 +49,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" /D &quot;_CRT_SECURE_NO_DEPRECATE&quot;"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Programme\Java\jdk1.5.0_06\include\win32;C:\Programme\Java\jdk1.5.0_06\include"
+				AdditionalIncludeDirectories="&quot;C:\@DATA\private\jvst\jvst_native\src\src\public.sdk\vst2.x&quot;;C:\Programme\Java\jdk1.5.0_06\include\win32;C:\Programme\Java\jdk1.5.0_06\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JVSTWRAPPER_EXPORTS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -151,7 +151,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="C:\Programme\Java\jdk1.5.0_06\include\win32;C:\Programme\Java\jdk1.5.0_06\include"
+				AdditionalIncludeDirectories="&quot;C:\@DATA\private\jvst\jvst_native\src\src\public.sdk\vst2.x&quot;;C:\Programme\Java\jdk1.5.0_06\include\win32;C:\Programme\Java\jdk1.5.0_06\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JVSTWRAPPER_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -398,14 +398,6 @@
 				</File>
 				<File
 					RelativePath=".\src\vstgui\ctabview.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\vstgui\plugguieditor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\vstgui\plugguieditor.h"
 					>
 				</File>
 				<File

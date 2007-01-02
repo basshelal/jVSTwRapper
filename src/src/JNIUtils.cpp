@@ -383,7 +383,7 @@ char* readJVMLibLocation(char* requestedJVMVersion) {
 	}
 	else {
 		//there is a specific jvm version mentioned in the .ini, try to locate this one...
-		char[512] jvmRegKey = {'\0'};
+		char jvmRegKey[512] = {'\0'};
 		strcat(jvmRegKey, "Software\\JavaSoft\\Java Runtime Environment\\\0");
 		strcat(jvmRegKey, requestedJVMVersion);
 		
@@ -408,8 +408,8 @@ char* readJVMLibLocation(char* requestedJVMVersion) {
 
 
 //globals
-jint (JNICALL *JNI_CreateJavaVM)(JavaVM **, void **, void *) = NULL; 
-jint (JNICALL *JNI_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *) = NULL;
+jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *) = NULL; 
+jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *) = NULL;
 
 
 int initJVMFunctionPointers(char *vmlibpath) {
@@ -436,9 +436,9 @@ int initJVMFunctionPointers(char *vmlibpath) {
 		return -1;
 	}
 	
-	JNI_CreateJavaVM = (jint (JNICALL *)(JavaVM **, void **, void *))GetProcAddress(hVM, "JNI_CreateJavaVM");
-    JNI_GetCreatedJavaVMs = (jint (JNICALL *)(JavaVM **, jsize, jsize *))GetProcAddress(hVM, "JNI_GetCreatedJavaVMs");
-	if (JNI_CreateJavaVM==NULL || JNI_GetCreatedJavaVMs==NULL) {
+	PTR_CreateJavaVM = (jint (JNICALL *)(JavaVM **, void **, void *))GetProcAddress(hVM, "JNI_CreateJavaVM");
+    PTR_GetCreatedJavaVMs = (jint (JNICALL *)(JavaVM **, jsize, jsize *))GetProcAddress(hVM, "JNI_GetCreatedJavaVMs");
+	if (PTR_CreateJavaVM==NULL || PTR_GetCreatedJavaVMs==NULL) {
 		log("**ERROR: Cant find jvm interface pointers!");
 		return -1;
 	}
