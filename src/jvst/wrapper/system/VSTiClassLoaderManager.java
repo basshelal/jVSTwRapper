@@ -98,6 +98,9 @@ public class VSTiClassLoaderManager {
 		
 		fqClassName = fqClassName.replaceAll("/", ".");
 
+		//The virtual machine does not allow a given JNI native library to be loaded 
+		//by more than one class loader. Attempting to load the same native library 
+		//by multiple class loaders causes an UnsatisfiedLinkError to be thrown
 		ClassLoader loader = (ClassLoader) classLoaders.get(nativeLib);
 
 		if (loader == null) {
