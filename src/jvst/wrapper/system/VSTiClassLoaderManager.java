@@ -37,7 +37,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-
+/*
+ * the reason why we need this class is that classloaders provide means to 
+ * enforce native library separation. See 
+ * http://java.sun.com/docs/books/jni/html/design.html
+ * for more information.   
+ */
+ 
 public class VSTiClassLoaderManager {
 
 	private static Map classLoaders = new HashMap(10);
