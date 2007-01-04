@@ -490,7 +490,8 @@ leave:
 //------------------------------------------------------------------------
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
-	return JNI_VERSION_1_2;
+	return JNI_VERSION_1_2; //we use JNI 1.2 functions, tell that the jvm that loads us. 
+							//we dont need jni 1.4 functionality, so 1.2 is enough
 }
 
 //------------------------------------------------------------------------
