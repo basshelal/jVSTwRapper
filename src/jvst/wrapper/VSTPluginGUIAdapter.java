@@ -35,6 +35,9 @@ import jvst.wrapper.gui.*;
 
 public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI {
 
+  //idea borrowed from apple developer connection	
+  public static final boolean RUNNING_MAC_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");	
+	
   static public boolean libraryOk=false;
   public boolean WindowAttached;
      
@@ -129,7 +132,12 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 
   public void destroy() {
     this.log("GUI destroy");
-    this.dispose();
+ 
+    //NOTE: This method is currently not called in the jvstwrapper 
+    //		macx implementation! It caused some hosts to block forever...
+    if (!RUNNING_MAC_X) {
+    	this.dispose();
+    }
   }
 
   //***********************************************************************
