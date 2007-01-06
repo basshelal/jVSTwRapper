@@ -241,7 +241,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	}
 	
 #endif
-//This is the place where Amadeus II never comes to, everything before runs fine...
+
 	if (cfg) delete cfg;
 	log("ALLES OK!"); 
 	return WrapperInstance->getAeffect();
@@ -264,7 +264,6 @@ void* startJava(void *nix) {
 	char java_path[1024]; //we need to add jVSTsYstem_bin.jar to the ClassPath of the Bootstrap ClassLoader!
 	char class_path[1024];
 
-	//VSTV24ToPlug* WrapperInstance;
 	
 	result = -1;
 	
@@ -390,7 +389,7 @@ void* startJava(void *nix) {
 		log("AFTER JNI_CreateJavaVM");
 		
 		if (res < 0) {
-			log("** ERROR: Can't create Java VM (are your VM options correct?)");
+			log("** ERROR: Can't create Java VM (are your VM options in the .ini file correct?)");
 			goto leave;
 		}
 		if (checkException(env)) goto leave;

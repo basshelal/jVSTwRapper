@@ -175,15 +175,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 189783466;
-			PBXWorkspaceStateSaveDate = 189783466;
+			PBXPerProjectTemplateStateSaveDate = 189790270;
+			PBXWorkspaceStateSaveDate = 189790270;
 		};
 		perUserProjectItems = {
-			C38CDD200B4FD449004C739E = C38CDD200B4FD449004C739E /* PBXTextBookmark */;
-			C38CDD490B4FDD48004C739E = C38CDD490B4FDD48004C739E /* PBXTextBookmark */;
-			C38CDD600B4FDE1C004C739E /* PBXTextBookmark */ = C38CDD600B4FDE1C004C739E /* PBXTextBookmark */;
-			C38CDD650B4FDE38004C739E /* PBXTextBookmark */ = C38CDD650B4FDE38004C739E /* PBXTextBookmark */;
-			C38CDD680B4FDE7D004C739E /* PBXTextBookmark */ = C38CDD680B4FDE7D004C739E /* PBXTextBookmark */;
+			C372F0300B4FF85C004771C8 /* PBXTextBookmark */ = C372F0300B4FF85C004771C8 /* PBXTextBookmark */;
+			C38CDD6C0B4FEC0F004C739E /* PBXTextBookmark */ = C38CDD6C0B4FEC0F004C739E /* PBXTextBookmark */;
 		};
 		sourceControlManager = C3EA1A900B3D904400B4C69F /* Source Control */;
 		userBuildSettings = {
@@ -197,7 +194,7 @@
 			sepNavWindowFrame = "{{84, 120}, {750, 558}}";
 		};
 	};
-	C38CDD200B4FD449004C739E /* PBXTextBookmark */ = {
+	C372F0300B4FF85C004771C8 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
 		name = DestroyJavaVM;
@@ -207,37 +204,7 @@
 		vrLen = 0;
 		vrLoc = 0;
 	};
-	C38CDD490B4FDD48004C739E /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C38CDD600B4FDE1C004C739E /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C38CDD650B4FDE38004C739E /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C38CDD680B4FDE7D004C739E /* PBXTextBookmark */ = {
+	C38CDD6C0B4FEC0F004C739E /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
 		name = DestroyJavaVM;
