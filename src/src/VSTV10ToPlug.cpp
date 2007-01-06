@@ -422,9 +422,9 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		log(temp);
 	}
 
-#ifdef MACX		//hey gerard, why did you do this? I added it just for safety... 
+//#ifdef MACX		//hey gerard, why did you do this? I added it just for safety... 
 	if (this->ProcessJEnv == NULL)this->ProcessJEnv = this->JEnv;	
-#endif
+//#endif
 		
 	if(this->JavaFloatClass == NULL) {
 		this->JavaFloatClass = this->ProcessJEnv->FindClass("[F");

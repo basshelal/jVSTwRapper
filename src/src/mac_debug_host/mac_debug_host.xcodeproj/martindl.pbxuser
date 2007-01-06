@@ -1,108 +1,265 @@
 // !$*UTF8*$!
 {
-	C308C0130B49C2A6002B031C /* minihost.cpp:153 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C3C70ECF0B457A2500DA1076 /* minihost.cpp */;
-		functionName = "main()";
-		hitCount = 1;
-		lineNumber = 153;
-		location = minihost;
-		modificationTime = 189383409.939029;
-		state = 1;
-	};
-	C308C01A0B49C316002B031C /* jVSTwRapperMAIN.cpp */ = {
+	C348DCFD0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp */ = {
 		isa = PBXFileReference;
 		lastKnownFileType = sourcecode.cpp.cpp;
 		name = jVSTwRapperMAIN.cpp;
 		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
 		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {938, 9086}}";
-			sepNavSelRange = "{3257, 0}";
-			sepNavVisRect = "{{0, 8359}, {485, 348}}";
-		};
 	};
-	C308C01C0B49C316002B031C /* jVSTwRapperMAIN.cpp:552 */ = {
+	C348DCFF0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp:630 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
 		);
 		breakpointStyle = 0;
 		continueAfterActions = 0;
 		delayBeforeContinue = 0;
-		fileReference = C308C01A0B49C316002B031C /* jVSTwRapperMAIN.cpp */;
-		functionName = "calculatePaths()";
-		hitCount = 1;
-		lineNumber = 552;
-		location = libjvstwrapper.jnilib;
-		modificationTime = 189383450.106992;
-		state = 1;
-	};
-	C308C01D0B49C33A002B031C /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
-	};
-	C308C01F0B49C33A002B031C /* jVSTwRapperMAIN.cpp:232 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C308C01D0B49C33A002B031C /* jVSTwRapperMAIN.cpp */;
-		functionName = "jvst_main()";
-		hitCount = 1;
-		lineNumber = 232;
-		location = libjvstwrapper.jnilib;
-		modificationTime = 189383487.473685;
-		state = 1;
-	};
-	C308C0200B49C3AD002B031C /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
-	};
-	C308C0220B49C3AD002B031C /* jVSTwRapperMAIN.cpp:610 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C308C0200B49C3AD002B031C /* jVSTwRapperMAIN.cpp */;
+		fileReference = C348DCFD0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp */;
 		functionName = "startJavaThread()";
 		hitCount = 1;
-		lineNumber = 610;
+		lineNumber = 630;
 		location = libjvstwrapper.jnilib;
-		modificationTime = 189383600.711729;
+		modificationTime = 189734095.930134;
 		state = 1;
+	};
+	C348DD100B4F127C008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C348DD120B4F127C008A8C17 /* jVSTwRapperMAIN.cpp:635 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C348DD100B4F127C008A8C17 /* jVSTwRapperMAIN.cpp */;
+		functionName = "startJavaThread()";
+		hitCount = 1;
+		lineNumber = 635;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189734099.992584;
+		state = 1;
+	};
+	C348DD130B4F1287008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C348DD150B4F1287008A8C17 /* jVSTwRapperMAIN.cpp:651 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C348DD130B4F1287008A8C17 /* jVSTwRapperMAIN.cpp */;
+		functionName = "startJavaThread()";
+		hitCount = 1;
+		lineNumber = 651;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189734102.23963;
+		state = 1;
+	};
+	C348DD180B4F133D008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C348DD1A0B4F133D008A8C17 /* jVSTwRapperMAIN.cpp:665 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C348DD180B4F133D008A8C17 /* jVSTwRapperMAIN.cpp */;
+		functionName = "startJavaThread()";
+		hitCount = 1;
+		lineNumber = 665;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189734110.399279;
+		state = 1;
+	};
+	C348DD1C0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C348DD1E0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp:247 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C348DD1C0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp */;
+		functionName = "jvst_main()";
+		hitCount = 1;
+		lineNumber = 247;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189734287.463516;
+		state = 1;
+	};
+	C348DD220B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C348DD240B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp:488 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C348DD220B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp */;
+		functionName = "startJava()";
+		hitCount = 1;
+		lineNumber = 488;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189734107.260017;
+		state = 1;
+	};
+	C348DD250B4F1BC2008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<absolute>";
+	};
+	C348DD270B4F1BC2008A8C17 /* jVSTwRapperMAIN.cpp:238 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C348DD250B4F1BC2008A8C17 /* jVSTwRapperMAIN.cpp */;
+		functionName = "jvst_main()";
+		hitCount = 1;
+		lineNumber = 238;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189734088.672698;
+		state = 1;
+	};
+	C348DD280B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C348DD2A0B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp:245 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C348DD280B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp */;
+		functionName = "jvst_main()";
+		hitCount = 1;
+		lineNumber = 245;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189734112.698668;
+		state = 1;
+	};
+	C348DD2B0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = jVSTwRapperMAIN.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		sourceTree = "<group>";
+	};
+	C348DD2D0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp:246 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C348DD2B0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp */;
+		functionName = "jvst_main()";
+		hitCount = 1;
+		lineNumber = 246;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189734286.298279;
+		state = 1;
+	};
+	C38F7FC10B4F031F004C8249 /* Amadeus II */ = {
+		isa = PBXExecutable;
+		activeArgIndex = 2147483647;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		launchableReference = C38F7FC20B4F0320004C8249 /* Amadeus II.app */;
+		libgmallocEnabled = 0;
+		name = "Amadeus II";
+		sourceDirectories = (
+			/Users/martindl/workspace/jvst_native/src/src/mac_debug_host,
+			/Users/martindl/workspace/jvst_native/src/src,
+			/Users/martindl/workspace/jvst_native/src/src/pluginterfaces/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/public.sdk/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/vstgui,
+		);
+		startupPath = /Users/martindl/Desktop;
+	};
+	C38F7FC20B4F0320004C8249 /* Amadeus II.app */ = {
+		isa = PBXFileReference;
+		explicitFileType = wrapper.application;
+		name = "Amadeus II.app";
+		path = "/Applications/Amadeus II.app";
+		sourceTree = "<absolute>";
 	};
 	C3C70EBF0B4579A800DA1076 /* Project object */ = {
 		activeBuildConfigurationName = Debug;
-		activeExecutable = C3C70EE30B457B2000DA1076 /* minihost */;
+		activeExecutable = C3D571A90B4DBBFD00637740 /* MissWatson */;
 		activeTarget = C3C70EE00B457B2000DA1076 /* minihost */;
 		addToTargets = (
 			C3C70EE00B457B2000DA1076 /* minihost */,
 		);
 		breakpoints = (
-			C308C0130B49C2A6002B031C /* minihost.cpp:153 */,
-			C308C01C0B49C316002B031C /* jVSTwRapperMAIN.cpp:552 */,
-			C308C01F0B49C33A002B031C /* jVSTwRapperMAIN.cpp:232 */,
-			C308C0220B49C3AD002B031C /* jVSTwRapperMAIN.cpp:610 */,
+			C348DCFF0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp:630 */,
+			C348DD120B4F127C008A8C17 /* jVSTwRapperMAIN.cpp:635 */,
+			C348DD150B4F1287008A8C17 /* jVSTwRapperMAIN.cpp:651 */,
+			C348DD1A0B4F133D008A8C17 /* jVSTwRapperMAIN.cpp:665 */,
+			C348DD1E0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp:247 */,
+			C348DD240B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp:488 */,
+			C348DD270B4F1BC2008A8C17 /* jVSTwRapperMAIN.cpp:238 */,
+			C348DD2A0B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp:245 */,
+			C348DD2D0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp:246 */,
 		);
 		breakpointsGroup = C3C70FBB0B457E3000DA1076 /* XCBreakpointsBucket */;
 		codeSenseManager = C3C70EC40B4579A800DA1076 /* Code sense */;
 		executables = (
 			C3C70EE30B457B2000DA1076 /* minihost */,
+			C3D571A90B4DBBFD00637740 /* MissWatson */,
+			C38F7FC10B4F031F004C8249 /* Amadeus II */,
 		);
 		ignoreBreakpointsInProjectsDict = {
 		};
@@ -129,13 +286,27 @@
 					PBXBreakpointsDataSource_ContinueID,
 				);
 			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXErrorsWarningsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXErrorsWarningsDataSource_LocationID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					300,
+					133,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXErrorsWarningsDataSource_TypeID,
+					PBXErrorsWarningsDataSource_MessageID,
+					PBXErrorsWarningsDataSource_LocationID,
+				);
+			};
 			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
 				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
 				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					22,
 					300,
-					131,
+					130.5835,
 				);
 				PBXFileTableDataSourceColumnsKey = (
 					PBXExecutablesDataSource_ActiveFlagID,
@@ -148,7 +319,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					243,
+					315,
 					20,
 					48,
 					43,
@@ -203,8 +374,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 189380071;
-			PBXWorkspaceStateSaveDate = 189380071;
+			PBXPerProjectTemplateStateSaveDate = 189780709;
+			PBXWorkspaceStateSaveDate = 189780709;
 		};
 		sourceControlManager = C3C70EC30B4579A800DA1076 /* Source Control */;
 		userBuildSettings = {
@@ -234,7 +405,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {908, 4676}}";
 			sepNavSelRange = "{5022, 0}";
-			sepNavVisRect = "{{0, 1961}, {485, 348}}";
+			sepNavVisRect = "{{0, 1961}, {526, 348}}";
 			sepNavWindowFrame = "{{15, -1}, {606, 742}}";
 		};
 	};
@@ -307,10 +478,74 @@
 		isa = XCBreakpointsBucket;
 		name = mac_debug_host;
 		objects = (
-			C308C0130B49C2A6002B031C /* minihost.cpp:153 */,
-			C308C01C0B49C316002B031C /* jVSTwRapperMAIN.cpp:552 */,
-			C308C01F0B49C33A002B031C /* jVSTwRapperMAIN.cpp:232 */,
-			C308C0220B49C3AD002B031C /* jVSTwRapperMAIN.cpp:610 */,
+			C348DCFF0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp:630 */,
+			C348DD120B4F127C008A8C17 /* jVSTwRapperMAIN.cpp:635 */,
+			C348DD150B4F1287008A8C17 /* jVSTwRapperMAIN.cpp:651 */,
+			C348DD1A0B4F133D008A8C17 /* jVSTwRapperMAIN.cpp:665 */,
+			C348DD1E0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp:247 */,
+			C348DD240B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp:488 */,
+			C348DD270B4F1BC2008A8C17 /* jVSTwRapperMAIN.cpp:238 */,
+			C348DD2A0B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp:245 */,
+			C348DD2D0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp:246 */,
 		);
+	};
+	C3D571A90B4DBBFD00637740 /* MissWatson */ = {
+		isa = PBXExecutable;
+		activeArgIndex = 0;
+		activeArgIndices = (
+			YES,
+			YES,
+			YES,
+		);
+		argumentStrings = (
+			"--plugin=jvstwrapper.vst",
+			"--verbose",
+			"--info",
+		);
+		autoAttachOnCrash = 1;
+		configStateDict = {
+			"PBXLSLaunchAction-0" = {
+				PBXLSLaunchAction = 0;
+				PBXLSLaunchStartAction = 1;
+				PBXLSLaunchStdioStyle = 2;
+				PBXLSLaunchStyle = 0;
+				class = PBXLSRunLaunchConfig;
+				displayName = "Executable Runner";
+				identifier = com.apple.Xcode.launch.runConfig;
+				remoteHostInfo = "";
+				startActionInfo = "";
+			};
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		launchableReference = C3D571AA0B4DBBFD00637740 /* MissWatson */;
+		libgmallocEnabled = 0;
+		name = MissWatson;
+		savedGlobals = {
+		};
+		sourceDirectories = (
+			/Users/martindl/workspace/jvst_native/src/src/mac_debug_host,
+			/Users/martindl/workspace/jvst_native/src/src,
+			/Users/martindl/workspace/jvst_native/src/src/pluginterfaces/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/public.sdk/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/vstgui,
+		);
+		startupPath = /Users/martindl/workspace/jvst_native/src/build/Debug;
+		variableFormatDictionary = {
+		};
+	};
+	C3D571AA0B4DBBFD00637740 /* MissWatson */ = {
+		isa = PBXFileReference;
+		explicitFileType = "compiled.mach-o.executable";
+		name = MissWatson;
+		path = /Users/martindl/bin/MissWatson;
+		sourceTree = "<absolute>";
 	};
 }

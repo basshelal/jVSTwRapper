@@ -71,7 +71,9 @@
 	//cocoa init stuff
 	#include "VSTGUIWrapperMAC.h"
 	
-	#define DEBUG
+	//*** TODO: Set these defines accordingly before relaesing any files! ***
+	//#define DEBUG
+	//#define MACX_INIT_COCOA
 #endif
 
 
@@ -239,7 +241,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	}
 	
 #endif
-
+//This is the place where Amadeus II never comes to, everything before runs fine...
 	if (cfg) delete cfg;
 	log("ALLES OK!"); 
 	return WrapperInstance->getAeffect();
@@ -291,6 +293,9 @@ void* startJava(void *nix) {
 
 	options[0].optionString = java_path;
 	
+	//If the mac still causes problems even when not using a java swing gui
+	//try running the jvm in "headless" mode (so that cocoa doesnt even get initialised)
+	//-Djava.awt.headless=true
 	
 	//apply the options from the .ini file
 	int optionNum = 0;	
@@ -589,13 +594,17 @@ void sourceCallBack (  void *info  ) {}
 int startJavaThread(){
 	log("starting java thread");
 
+#ifdef MACX_INIT_COCOA
 	//init cocoa to be able to interop with it in carbon
 	if (initializeCocoa()==0) log("Cocoa initialized successfully!");
 	else {
 		log("** Error while initilizing Cocoa");
 		return -1;
 	}
-	
+#else
+	log("NOT using Cocoa!");
+#endif
+
 	/* Start the thread that runs the VM. */
 	CFRunLoopSourceContext sourceContext;
 	pthread_t vmthread;
@@ -646,9 +655,10 @@ int startJavaThread(){
     CFRunLoopAddSource (CFRunLoopGetCurrent(),sourceRef,kCFRunLoopCommonModes); 	
 	
 	//get ref to stop the run loop later on (at the end of startJava())
-	EventLoopRef eventLoop = GetCurrentEventLoop ();
-	runLoop=GetCFRunLoopFromEventLoop(eventLoop);	
-    
+	//EventLoopRef eventLoop = GetCurrentEventLoop ();
+	//runLoop=GetCFRunLoopFromEventLoop(eventLoop);	
+    runLoop = CFRunLoopGetCurrent(); //This one fixed the infite block with the Amadeus II host!
+	
 	/* Park this thread in the runloop */
 	CFRunLoopRun();		
 

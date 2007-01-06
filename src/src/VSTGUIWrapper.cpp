@@ -121,12 +121,12 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 	
 	//destroy() der gui aufrufen
 	//macx tends to block forever here...
-#ifndef MACX
+	//BUT WE SOLVE THIS ON THE JAVA SIDE!
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "destroy", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method destroy()V");
 	
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
-#endif
+
 	this->checkException();
 
 	//free global referencw
