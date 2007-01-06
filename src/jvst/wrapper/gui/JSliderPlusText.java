@@ -62,7 +62,7 @@ public class JSliderPlusText extends Box implements ChangeListener {
 		this.add(this.slider);
 		
 		this.text = new JTextField("0.00");
-		this.text.setEditable(false); //TODO: make editable --> more fancy!
+		this.text.setEditable(false);
 		this.text.setAlignmentX(CENTER_ALIGNMENT);
 		this.text.setMaximumSize(new Dimension(5000, 18));
 	    this.add(this.text);

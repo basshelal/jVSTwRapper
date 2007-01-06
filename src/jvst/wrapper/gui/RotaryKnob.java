@@ -90,7 +90,7 @@ public class RotaryKnob extends JComponent {
 	private float startVal;
 	private Color focusColor  = DEFAULT_FOCUS_COLOR;;
 	private double lastAng;
-	private int dragType = DRAGTYPE_ROUND;
+	private int dragType = DRAGTYPE_SIMPLE;
 	private int shadowSizeX = 1;
 	private int shadowSizeY = 1;
 	private float dragIncrement = 0.01F;
