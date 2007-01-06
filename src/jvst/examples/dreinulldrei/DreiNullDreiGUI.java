@@ -396,7 +396,8 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
 	 */
 	private void initialize() {
 		this.setSize(415, 258);
-		this.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+		//*** IMPORTANT *** dont set the close behavior, this is done in some super class already!!!
+		//this.setDefaultCloseOperation(javax.swing.JFrame.HIDE_ON_CLOSE);
 		this.setContentPane(getJContentPane());
 		this.setTitle("DreiNullDrei");
 		this.setVisible(true);
@@ -428,4 +429,4 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
 
 
 
-}  //  @jve:decl-index=0:visual-constraint="118,91"
+}  //  @jve:decl-index=0:visual-constraint="137,6"
