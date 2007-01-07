@@ -123,6 +123,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 
   public void resume() {
      this.wantEvents(1); //deprecated as of vst2.4
+     					 //keep it anyways to be backward compatible...
   }
 
   public void setSampleRate(float sampleRate) {
@@ -418,7 +419,9 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 
   //DEPRECATED SINCE 2.4!
   //process is ACCUMULATING the calculated floats to the output
- /* public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
+  //BUT STILL, leave it there for backward compatibility (some hosts only call this one
+  //and are not aware of processReplacing...)
+  public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
     // process () is required, and accumulating (out += h)
     // processReplacing () is optional, and in place (out = h). even though
     // processReplacing () is optional, it is very highly recommended to support it
@@ -458,7 +461,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
     }
 
   }
-*/
+
   //processReplacing is REPLACING the calculated floats to the output
   public void processReplacing(float[][] inputs, float[][] outputs, int sampleFrames) {
     if (this.noteIsOn) {

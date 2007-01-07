@@ -301,7 +301,9 @@ public class JayDLay extends VSTPluginAdapter {
 
   //DEPRECATED SINCE 2.4!
   //process is ACCUMULATING the calculated floats to the output
-/*  public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
+  //BUT STILL, leave it there for backward compatibility (some hosts only call this one
+  //and are not aware of processReplacing...)
+  public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
     float[] in = inputs[0];
     float[] out1 = outputs[0];
     float[] out2 = outputs[1];
@@ -316,7 +318,7 @@ public class JayDLay extends VSTPluginAdapter {
       out1[i] += y; //IMPORTANT!!! Here is the difference between process() [accumulation]
       out2[i] += y; //and processReplacing() [replacement]
     }
-  }*/
+  }
 
 
 
