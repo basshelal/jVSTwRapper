@@ -1,93 +1,5 @@
 // !$*UTF8*$!
 {
-	C348DCFD0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<absolute>";
-	};
-	C348DCFF0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp:630 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C348DCFD0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp */;
-		functionName = "startJavaThread()";
-		hitCount = 1;
-		lineNumber = 630;
-		location = libjvstwrapper.jnilib;
-		modificationTime = 189734095.930134;
-		state = 1;
-	};
-	C348DD100B4F127C008A8C17 /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
-	};
-	C348DD120B4F127C008A8C17 /* jVSTwRapperMAIN.cpp:635 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C348DD100B4F127C008A8C17 /* jVSTwRapperMAIN.cpp */;
-		functionName = "startJavaThread()";
-		hitCount = 1;
-		lineNumber = 635;
-		location = libjvstwrapper.jnilib;
-		modificationTime = 189734099.992584;
-		state = 1;
-	};
-	C348DD130B4F1287008A8C17 /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
-	};
-	C348DD150B4F1287008A8C17 /* jVSTwRapperMAIN.cpp:651 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C348DD130B4F1287008A8C17 /* jVSTwRapperMAIN.cpp */;
-		functionName = "startJavaThread()";
-		hitCount = 1;
-		lineNumber = 651;
-		location = libjvstwrapper.jnilib;
-		modificationTime = 189734102.23963;
-		state = 1;
-	};
-	C348DD180B4F133D008A8C17 /* jVSTwRapperMAIN.cpp */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
-	};
-	C348DD1A0B4F133D008A8C17 /* jVSTwRapperMAIN.cpp:665 */ = {
-		isa = PBXFileBreakpoint;
-		actions = (
-		);
-		breakpointStyle = 0;
-		continueAfterActions = 0;
-		delayBeforeContinue = 0;
-		fileReference = C348DD180B4F133D008A8C17 /* jVSTwRapperMAIN.cpp */;
-		functionName = "startJavaThread()";
-		hitCount = 1;
-		lineNumber = 665;
-		location = libjvstwrapper.jnilib;
-		modificationTime = 189734110.399279;
-		state = 1;
-	};
 	C348DD1C0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp */ = {
 		isa = PBXFileReference;
 		lastKnownFileType = sourcecode.cpp.cpp;
@@ -104,10 +16,10 @@
 		delayBeforeContinue = 0;
 		fileReference = C348DD1C0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp */;
 		functionName = "jvst_main()";
-		hitCount = 1;
+		hitCount = 2;
 		lineNumber = 247;
 		location = libjvstwrapper.jnilib;
-		modificationTime = 189734287.463516;
+		modificationTime = 189899290.810287;
 		state = 1;
 	};
 	C348DD220B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp */ = {
@@ -126,10 +38,10 @@
 		delayBeforeContinue = 0;
 		fileReference = C348DD220B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp */;
 		functionName = "startJava()";
-		hitCount = 1;
+		hitCount = 2;
 		lineNumber = 488;
 		location = libjvstwrapper.jnilib;
-		modificationTime = 189734107.260017;
+		modificationTime = 189899286.340818;
 		state = 1;
 	};
 	C348DD250B4F1BC2008A8C17 /* jVSTwRapperMAIN.cpp */ = {
@@ -151,52 +63,708 @@
 		hitCount = 1;
 		lineNumber = 238;
 		location = libjvstwrapper.jnilib;
-		modificationTime = 189734088.672698;
+		modificationTime = 189884218.102795;
 		state = 1;
 	};
-	C348DD280B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+	C3893EEC0B5161AF00925067 /* Luna */ = {
+		isa = PBXExecutable;
+		activeArgIndex = 2147483647;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		configStateDict = {
+			"PBXLSLaunchAction-0" = {
+				PBXLSLaunchAction = 0;
+				PBXLSLaunchStartAction = 1;
+				PBXLSLaunchStdioStyle = 2;
+				PBXLSLaunchStyle = 0;
+				class = PBXLSRunLaunchConfig;
+				displayName = "Executable Runner";
+				identifier = com.apple.Xcode.launch.runConfig;
+				remoteHostInfo = "";
+				startActionInfo = "";
+			};
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		launchableReference = C3893EED0B5161AF00925067 /* LUNA.app */;
+		libgmallocEnabled = 0;
+		name = Luna;
+		sourceDirectories = (
+			/Users/martindl/workspace/jvst_native/src/src/mac_debug_host,
+			/Users/martindl/workspace/jvst_native/src/src,
+			/Users/martindl/workspace/jvst_native/src/src/pluginterfaces/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/public.sdk/vst2.x,
+			/Users/martindl/workspace/jvst_native/src/src/vstgui,
+		);
+		startupPath = /Users/martindl/Desktop;
+	};
+	C3893EED0B5161AF00925067 /* LUNA.app */ = {
+		isa = PBXFileReference;
+		explicitFileType = wrapper.application;
+		name = LUNA.app;
+		path = "/Applications/LUNA Free/LUNA.app";
+		sourceTree = "<absolute>";
+	};
+	C3893F0B0B5167B700925067 /* VSTV10ToPlug.cpp */ = {
 		isa = PBXFileReference;
 		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
-		sourceTree = "<group>";
+		name = VSTV10ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToPlug.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {866, 9856}}";
+			sepNavSelRange = "{13528, 0}";
+			sepNavVisRect = "{{0, 5446}, {531, 377}}";
+			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
+		};
 	};
-	C348DD2A0B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp:245 */ = {
+	C3893F0D0B5167B700925067 /* VSTV10ToPlug.cpp:403 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
 		);
 		breakpointStyle = 0;
 		continueAfterActions = 0;
 		delayBeforeContinue = 0;
-		fileReference = C348DD280B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp */;
-		functionName = "jvst_main()";
+		fileReference = C3893F0B0B5167B700925067 /* VSTV10ToPlug.cpp */;
+		functionName = "VSTV10ToPlug::process()";
 		hitCount = 1;
-		lineNumber = 245;
+		lineNumber = 403;
 		location = libjvstwrapper.jnilib;
-		modificationTime = 189734112.698668;
-		state = 1;
+		modificationTime = 189898888.090158;
+		state = 2;
 	};
-	C348DD2B0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp */ = {
+	C3893F0E0B5167BD00925067 /* VSTV10ToPlug.cpp */ = {
 		isa = PBXFileReference;
 		lastKnownFileType = sourcecode.cpp.cpp;
-		name = jVSTwRapperMAIN.cpp;
-		path = /Users/martindl/workspace/jvst_native/src/src/jVSTwRapperMAIN.cpp;
+		name = VSTV10ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToPlug.cpp;
 		sourceTree = "<group>";
 	};
-	C348DD2D0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp:246 */ = {
+	C3893F100B5167BD00925067 /* VSTV10ToPlug.cpp:494 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
 		);
 		breakpointStyle = 0;
 		continueAfterActions = 0;
 		delayBeforeContinue = 0;
-		fileReference = C348DD2B0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp */;
-		functionName = "jvst_main()";
+		fileReference = C3893F0E0B5167BD00925067 /* VSTV10ToPlug.cpp */;
+		functionName = "VSTV10ToPlug::processReplacing()";
 		hitCount = 1;
-		lineNumber = 246;
+		lineNumber = 494;
 		location = libjvstwrapper.jnilib;
-		modificationTime = 189734286.298279;
+		modificationTime = 189899008.118679;
 		state = 1;
+	};
+	C3893F170B516C9D00925067 /* VSTV10ToHost.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToHost.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToHost.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {878, 4956}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 4343}, {742, 613}}";
+			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
+		};
+	};
+	C3893F190B516C9D00925067 /* VSTV10ToHost.cpp:95 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F170B516C9D00925067 /* VSTV10ToHost.cpp */;
+		functionName = "Java_jvst_wrapper_communication_VSTV10ToHost_setNumInputs()";
+		hitCount = 1;
+		lineNumber = 95;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189898888.214777;
+		state = 2;
+	};
+	C3893F1A0B516CA000925067 /* VSTV10ToHost.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToHost.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToHost.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F1C0B516CA000925067 /* VSTV10ToHost.cpp:107 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F1A0B516CA000925067 /* VSTV10ToHost.cpp */;
+		functionName = "Java_jvst_wrapper_communication_VSTV10ToHost_setNumOutputs()";
+		hitCount = 1;
+		lineNumber = 107;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189898888.282928;
+		state = 2;
+	};
+	C3893F200B516CD800925067 /* VSTV10ToHost.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToHost.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToHost.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F220B516CD800925067 /* VSTV10ToHost.cpp:282 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F200B516CD800925067 /* VSTV10ToHost.cpp */;
+		functionName = "Java_jvst_wrapper_communication_VSTV10ToHost_getMasterVersion()";
+		hitCount = 1;
+		lineNumber = 282;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899008.629329;
+		state = 1;
+	};
+	C3893F230B516D3C00925067 /* VSTV10ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F250B516D3C00925067 /* VSTV10ToPlug.cpp:279 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F230B516D3C00925067 /* VSTV10ToPlug.cpp */;
+		functionName = "VSTV10ToPlug::open()";
+		hitCount = 1;
+		lineNumber = 279;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189898888.411083;
+		state = 2;
+	};
+	C3893F260B516D3E00925067 /* VSTV10ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F280B516D3E00925067 /* VSTV10ToPlug.cpp:291 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F260B516D3E00925067 /* VSTV10ToPlug.cpp */;
+		functionName = "VSTV10ToPlug::close()";
+		hitCount = 1;
+		lineNumber = 291;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189898888.477749;
+		state = 2;
+	};
+	C3893F290B516D4100925067 /* VSTV10ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F2B0B516D4100925067 /* VSTV10ToPlug.cpp:266 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F290B516D4100925067 /* VSTV10ToPlug.cpp */;
+		functionName = "VSTV10ToPlug::resume()";
+		hitCount = 1;
+		lineNumber = 266;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189898888.53569;
+		state = 2;
+	};
+	C3893F2C0B516D4B00925067 /* VSTV10ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F2E0B516D4B00925067 /* VSTV10ToPlug.cpp:253 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F2C0B516D4B00925067 /* VSTV10ToPlug.cpp */;
+		functionName = "VSTV10ToPlug::suspend()";
+		hitCount = 1;
+		lineNumber = 253;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189898888.606136;
+		state = 2;
+	};
+	C3893F2F0B516D5C00925067 /* VSTV10ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F310B516D5C00925067 /* VSTV10ToPlug.cpp:393 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F2F0B516D5C00925067 /* VSTV10ToPlug.cpp */;
+		functionName = "VSTV10ToPlug::setSampleRate()";
+		hitCount = 1;
+		lineNumber = 393;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189898888.66075;
+		state = 2;
+	};
+	C3893F320B516DA400925067 /* VSTV24ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV24ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV24ToPlug.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {944, 2758}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 2145}, {742, 613}}";
+			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
+		};
+	};
+	C3893F340B516DA400925067 /* VSTV24ToPlug.cpp:108 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F320B516DA400925067 /* VSTV24ToPlug.cpp */;
+		functionName = "VSTV24ToPlug::processDoubleReplacing()";
+		hitCount = 1;
+		lineNumber = 108;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899009.100532;
+		state = 1;
+	};
+	C3893F350B516DCD00925067 /* VSTV20ToHost.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToHost.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToHost.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {742, 14784}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 14171}, {742, 613}}";
+			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
+		};
+	};
+	C3893F370B516DCD00925067 /* VSTV20ToHost.cpp:152 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F350B516DCD00925067 /* VSTV20ToHost.cpp */;
+		functionName = "Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo()";
+		hitCount = 1;
+		lineNumber = 152;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899009.764499;
+		state = 1;
+	};
+	C3893F380B516DF300925067 /* VSTV20ToHost.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToHost.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToHost.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F3A0B516DF300925067 /* VSTV20ToHost.cpp:429 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F380B516DF300925067 /* VSTV20ToHost.cpp */;
+		functionName = "Java_jvst_wrapper_communication_VSTV20ToHost_getHostProductString()";
+		hitCount = 1;
+		lineNumber = 429;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899010.264767;
+		state = 1;
+	};
+	C3893F3B0B516DF700925067 /* VSTV20ToHost.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToHost.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToHost.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F3D0B516DF700925067 /* VSTV20ToHost.cpp:443 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F3B0B516DF700925067 /* VSTV20ToHost.cpp */;
+		functionName = "Java_jvst_wrapper_communication_VSTV20ToHost_getHostVendorVersion()";
+		hitCount = 1;
+		lineNumber = 443;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899010.955548;
+		state = 1;
+	};
+	C3893F3E0B516E4400925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<absolute>";
+	};
+	C3893F400B516E4400925067 /* VSTV20ToPlug.cpp:164 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F3E0B516E4400925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::getProductString()";
+		hitCount = 1;
+		lineNumber = 164;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899011.45004;
+		state = 1;
+	};
+	C3893F410B516E4700925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F430B516E4700925067 /* VSTV20ToPlug.cpp:181 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F410B516E4700925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::getVendorString()";
+		hitCount = 1;
+		lineNumber = 181;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899011.981954;
+		state = 1;
+	};
+	C3893F440B516E5100925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F460B516E5100925067 /* VSTV20ToPlug.cpp:198 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F440B516E5100925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::getPlugCategory()";
+		hitCount = 1;
+		lineNumber = 198;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899013.256372;
+		state = 1;
+	};
+	C3893F470B516E5800925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F490B516E5800925067 /* VSTV20ToPlug.cpp:250 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F470B516E5800925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::canDo()";
+		hitCount = 1;
+		lineNumber = 250;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899013.322297;
+		state = 1;
+	};
+	C3893F4A0B516E5D00925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F4C0B516E5D00925067 /* VSTV20ToPlug.cpp:279 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F4A0B516E5D00925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::setBypass()";
+		hitCount = 1;
+		lineNumber = 279;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899014.493312;
+		state = 1;
+	};
+	C3893F4D0B516E6600925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F4F0B516E6600925067 /* VSTV20ToPlug.cpp:309 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F4D0B516E6600925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::getEffectName()";
+		hitCount = 1;
+		lineNumber = 309;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899015.115835;
+		state = 1;
+	};
+	C3893F500B516E6800925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F520B516E6800925067 /* VSTV20ToPlug.cpp:295 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F500B516E6800925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::getVendorVersion()";
+		hitCount = 1;
+		lineNumber = 295;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899015.930414;
+		state = 1;
+	};
+	C3893F560B516EA800925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F580B516EA800925067 /* VSTV20ToPlug.cpp:594 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F560B516EA800925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::getVstVersion()";
+		hitCount = 2;
+		lineNumber = 594;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899293.747523;
+		state = 1;
+	};
+	C3893F590B516EB600925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1262, 18704}}";
+			sepNavSelRange = "{20336, 0}";
+			sepNavVisRect = "{{0, 8121}, {531, 377}}";
+			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
+		};
+	};
+	C3893F5B0B516EB600925067 /* VSTV20ToPlug.cpp:639 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F590B516EB600925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::processEvents()";
+		hitCount = 2;
+		lineNumber = 639;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899069.422732;
+		state = 2;
+	};
+	C3893F5C0B516F0000925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F5E0B516F0000925067 /* VSTV20ToPlug.cpp:754 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F5C0B516F0000925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::processVariableIo()";
+		hitCount = 1;
+		lineNumber = 754;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899016.981324;
+		state = 1;
+	};
+	C3893F610B51700900925067 /* VSTV10ToHost.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV10ToHost.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV10ToHost.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {878, 4956}}";
+			sepNavSelRange = "{5199, 0}";
+			sepNavVisRect = "{{0, 1135}, {531, 377}}";
+		};
+	};
+	C3893F630B51700900925067 /* VSTV10ToHost.cpp:162 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = C3893F610B51700900925067 /* VSTV10ToHost.cpp */;
+		functionName = "Java_jvst_wrapper_communication_VSTV10ToHost_canProcessReplacing()";
+		hitCount = 1;
+		lineNumber = 162;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189898889.747301;
+		state = 2;
+	};
+	C3893F670B51750000925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<group>";
+	};
+	C3893F690B51750000925067 /* VSTV20ToPlug.cpp:601 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+			C3893F720B51A29B00925067 /* XCBreakpointCommandAction */,
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 1;
+		delayBeforeContinue = 0;
+		fileReference = C3893F670B51750000925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::getVstVersion()";
+		hitCount = 2;
+		lineNumber = 601;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899389.812664;
+		state = 1;
+	};
+	C3893F6C0B519DE500925067 /* VSTV20ToPlug.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = VSTV20ToPlug.cpp;
+		path = /Users/martindl/workspace/jvst_native/src/src/VSTV20ToPlug.cpp;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1262, 18704}}";
+			sepNavSelRange = "{20378, 0}";
+			sepNavVisRect = "{{0, 10277}, {531, 377}}";
+			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
+		};
+	};
+	C3893F6E0B519DE500925067 /* VSTV20ToPlug.cpp:748 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+			C3893F700B51A0D100925067 /* XCBreakpointCommandAction */,
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 1;
+		delayBeforeContinue = 0;
+		fileReference = C3893F6C0B519DE500925067 /* VSTV20ToPlug.cpp */;
+		functionName = "VSTV20ToPlug::processEvents()";
+		hitCount = 0;
+		lineNumber = 748;
+		location = libjvstwrapper.jnilib;
+		modificationTime = 189899934.755386;
+		state = 1;
+	};
+	C3893F700B51A0D100925067 /* XCBreakpointCommandAction */ = {
+		isa = XCBreakpointCommandAction;
+		command = "set ret=1";
+		fallbackIsa = XCBreakpointAction;
+		logCommand = 0;
+		useDebuggerSideImplementation = 1;
+	};
+	C3893F720B51A29B00925067 /* XCBreakpointCommandAction */ = {
+		isa = XCBreakpointCommandAction;
+		command = "set ret=2300";
+		fallbackIsa = XCBreakpointAction;
+		logCommand = 0;
+		useDebuggerSideImplementation = 1;
 	};
 	C38F7FC10B4F031F004C8249 /* Amadeus II */ = {
 		isa = PBXExecutable;
@@ -244,15 +812,35 @@
 			C3C70EE00B457B2000DA1076 /* minihost */,
 		);
 		breakpoints = (
-			C348DCFF0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp:630 */,
-			C348DD120B4F127C008A8C17 /* jVSTwRapperMAIN.cpp:635 */,
-			C348DD150B4F1287008A8C17 /* jVSTwRapperMAIN.cpp:651 */,
-			C348DD1A0B4F133D008A8C17 /* jVSTwRapperMAIN.cpp:665 */,
 			C348DD1E0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp:247 */,
 			C348DD240B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp:488 */,
-			C348DD270B4F1BC2008A8C17 /* jVSTwRapperMAIN.cpp:238 */,
-			C348DD2A0B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp:245 */,
-			C348DD2D0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp:246 */,
+			C3893F0D0B5167B700925067 /* VSTV10ToPlug.cpp:403 */,
+			C3893F100B5167BD00925067 /* VSTV10ToPlug.cpp:494 */,
+			C3893F190B516C9D00925067 /* VSTV10ToHost.cpp:95 */,
+			C3893F1C0B516CA000925067 /* VSTV10ToHost.cpp:107 */,
+			C3893F220B516CD800925067 /* VSTV10ToHost.cpp:282 */,
+			C3893F250B516D3C00925067 /* VSTV10ToPlug.cpp:279 */,
+			C3893F280B516D3E00925067 /* VSTV10ToPlug.cpp:291 */,
+			C3893F2B0B516D4100925067 /* VSTV10ToPlug.cpp:266 */,
+			C3893F2E0B516D4B00925067 /* VSTV10ToPlug.cpp:253 */,
+			C3893F310B516D5C00925067 /* VSTV10ToPlug.cpp:393 */,
+			C3893F340B516DA400925067 /* VSTV24ToPlug.cpp:108 */,
+			C3893F370B516DCD00925067 /* VSTV20ToHost.cpp:152 */,
+			C3893F3A0B516DF300925067 /* VSTV20ToHost.cpp:429 */,
+			C3893F3D0B516DF700925067 /* VSTV20ToHost.cpp:443 */,
+			C3893F400B516E4400925067 /* VSTV20ToPlug.cpp:164 */,
+			C3893F430B516E4700925067 /* VSTV20ToPlug.cpp:181 */,
+			C3893F460B516E5100925067 /* VSTV20ToPlug.cpp:198 */,
+			C3893F490B516E5800925067 /* VSTV20ToPlug.cpp:250 */,
+			C3893F4C0B516E5D00925067 /* VSTV20ToPlug.cpp:279 */,
+			C3893F4F0B516E6600925067 /* VSTV20ToPlug.cpp:309 */,
+			C3893F520B516E6800925067 /* VSTV20ToPlug.cpp:295 */,
+			C3893F580B516EA800925067 /* VSTV20ToPlug.cpp:594 */,
+			C3893F5B0B516EB600925067 /* VSTV20ToPlug.cpp:639 */,
+			C3893F5E0B516F0000925067 /* VSTV20ToPlug.cpp:754 */,
+			C3893F630B51700900925067 /* VSTV10ToHost.cpp:162 */,
+			C3893F690B51750000925067 /* VSTV20ToPlug.cpp:601 */,
+			C3893F6E0B519DE500925067 /* VSTV20ToPlug.cpp:748 */,
 		);
 		breakpointsGroup = C3C70FBB0B457E3000DA1076 /* XCBreakpointsBucket */;
 		codeSenseManager = C3C70EC40B4579A800DA1076 /* Code sense */;
@@ -260,6 +848,7 @@
 			C3C70EE30B457B2000DA1076 /* minihost */,
 			C3D571A90B4DBBFD00637740 /* MissWatson */,
 			C38F7FC10B4F031F004C8249 /* Amadeus II */,
+			C3893EEC0B5161AF00925067 /* Luna */,
 		);
 		ignoreBreakpointsInProjectsDict = {
 		};
@@ -270,10 +859,10 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
 					20,
-					210,
+					173,
 					20,
-					110,
-					109,
+					73,
+					72,
 					20,
 				);
 				PBXFileTableDataSourceColumnsKey = (
@@ -374,8 +963,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 189780709;
-			PBXWorkspaceStateSaveDate = 189780709;
+			PBXPerProjectTemplateStateSaveDate = 189882756;
+			PBXWorkspaceStateSaveDate = 189882756;
 		};
 		sourceControlManager = C3C70EC30B4579A800DA1076 /* Source Control */;
 		userBuildSettings = {
@@ -478,15 +1067,36 @@
 		isa = XCBreakpointsBucket;
 		name = mac_debug_host;
 		objects = (
-			C348DCFF0B4F0B6F008A8C17 /* jVSTwRapperMAIN.cpp:630 */,
-			C348DD120B4F127C008A8C17 /* jVSTwRapperMAIN.cpp:635 */,
-			C348DD150B4F1287008A8C17 /* jVSTwRapperMAIN.cpp:651 */,
-			C348DD1A0B4F133D008A8C17 /* jVSTwRapperMAIN.cpp:665 */,
 			C348DD1E0B4F13FD008A8C17 /* jVSTwRapperMAIN.cpp:247 */,
 			C348DD240B4F1B97008A8C17 /* jVSTwRapperMAIN.cpp:488 */,
 			C348DD270B4F1BC2008A8C17 /* jVSTwRapperMAIN.cpp:238 */,
-			C348DD2A0B4F1BD0008A8C17 /* jVSTwRapperMAIN.cpp:245 */,
-			C348DD2D0B4F1BD1008A8C17 /* jVSTwRapperMAIN.cpp:246 */,
+			C3893F0D0B5167B700925067 /* VSTV10ToPlug.cpp:403 */,
+			C3893F100B5167BD00925067 /* VSTV10ToPlug.cpp:494 */,
+			C3893F190B516C9D00925067 /* VSTV10ToHost.cpp:95 */,
+			C3893F1C0B516CA000925067 /* VSTV10ToHost.cpp:107 */,
+			C3893F220B516CD800925067 /* VSTV10ToHost.cpp:282 */,
+			C3893F250B516D3C00925067 /* VSTV10ToPlug.cpp:279 */,
+			C3893F280B516D3E00925067 /* VSTV10ToPlug.cpp:291 */,
+			C3893F2B0B516D4100925067 /* VSTV10ToPlug.cpp:266 */,
+			C3893F2E0B516D4B00925067 /* VSTV10ToPlug.cpp:253 */,
+			C3893F310B516D5C00925067 /* VSTV10ToPlug.cpp:393 */,
+			C3893F340B516DA400925067 /* VSTV24ToPlug.cpp:108 */,
+			C3893F370B516DCD00925067 /* VSTV20ToHost.cpp:152 */,
+			C3893F3A0B516DF300925067 /* VSTV20ToHost.cpp:429 */,
+			C3893F3D0B516DF700925067 /* VSTV20ToHost.cpp:443 */,
+			C3893F400B516E4400925067 /* VSTV20ToPlug.cpp:164 */,
+			C3893F430B516E4700925067 /* VSTV20ToPlug.cpp:181 */,
+			C3893F460B516E5100925067 /* VSTV20ToPlug.cpp:198 */,
+			C3893F490B516E5800925067 /* VSTV20ToPlug.cpp:250 */,
+			C3893F4C0B516E5D00925067 /* VSTV20ToPlug.cpp:279 */,
+			C3893F4F0B516E6600925067 /* VSTV20ToPlug.cpp:309 */,
+			C3893F520B516E6800925067 /* VSTV20ToPlug.cpp:295 */,
+			C3893F580B516EA800925067 /* VSTV20ToPlug.cpp:594 */,
+			C3893F5B0B516EB600925067 /* VSTV20ToPlug.cpp:639 */,
+			C3893F5E0B516F0000925067 /* VSTV20ToPlug.cpp:754 */,
+			C3893F630B51700900925067 /* VSTV10ToHost.cpp:162 */,
+			C3893F690B51750000925067 /* VSTV20ToPlug.cpp:601 */,
+			C3893F6E0B519DE500925067 /* VSTV20ToPlug.cpp:748 */,
 		);
 	};
 	C3D571A90B4DBBFD00637740 /* MissWatson */ = {

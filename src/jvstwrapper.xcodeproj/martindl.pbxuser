@@ -175,12 +175,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 189790270;
-			PBXWorkspaceStateSaveDate = 189790270;
+			PBXPerProjectTemplateStateSaveDate = 189899759;
+			PBXWorkspaceStateSaveDate = 189899759;
 		};
 		perUserProjectItems = {
 			C372F0300B4FF85C004771C8 /* PBXTextBookmark */ = C372F0300B4FF85C004771C8 /* PBXTextBookmark */;
-			C38CDD6C0B4FEC0F004C739E /* PBXTextBookmark */ = C38CDD6C0B4FEC0F004C739E /* PBXTextBookmark */;
+			C3893F890B51A48100925067 /* PBXTextBookmark */ = C3893F890B51A48100925067 /* PBXTextBookmark */;
 		};
 		sourceControlManager = C3EA1A900B3D904400B4C69F /* Source Control */;
 		userBuildSettings = {
@@ -204,7 +204,7 @@
 		vrLen = 0;
 		vrLoc = 0;
 	};
-	C38CDD6C0B4FEC0F004C739E /* PBXTextBookmark */ = {
+	C3893F890B51A48100925067 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
 		name = DestroyJavaVM;
