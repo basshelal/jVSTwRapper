@@ -164,9 +164,9 @@ public class RotaryKnob extends JComponent {
 
 			public void keyPressed(KeyEvent e) {
 				int k = e.getKeyCode();
-				if (k == KeyEvent.VK_RIGHT)
+				if (k == KeyEvent.VK_RIGHT || k == KeyEvent.VK_UP)
 					incValue();
-				else if (k == KeyEvent.VK_LEFT)
+				else if (k == KeyEvent.VK_LEFT || k == KeyEvent.VK_DOWN)
 					decValue();
 			}
 		});
@@ -227,6 +227,8 @@ public class RotaryKnob extends JComponent {
 	}
 
 	public void setClickIncrement(float clickIncrement) {
+		if (clickIncrement>=0.5f || clickIncrement<=0f)
+			throw new IllegalArgumentException("value must be within the interval ]0,0.5[");
 		this.clickIncrement = clickIncrement;
 	}
 
@@ -235,6 +237,8 @@ public class RotaryKnob extends JComponent {
 	}
 
 	public void setDragIncrement(float dragIncrement) {
+		if (dragIncrement>=0.5f || dragIncrement<=0f)
+			throw new IllegalArgumentException("value must be within the interval ]0,0.5[");
 		this.dragIncrement = dragIncrement;
 	}
 
