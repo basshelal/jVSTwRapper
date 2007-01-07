@@ -400,7 +400,8 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
 		//this.setDefaultCloseOperation(javax.swing.JFrame.HIDE_ON_CLOSE);
 		this.setContentPane(getJContentPane());
 		this.setTitle("DreiNullDrei");
-		this.setVisible(true);
+		//*** IMPORTANT *** this stuff is all covered by the underlying class (VSTPluginGUIAdapter)
+		//this.setVisible(true);
 		
 		this.setResizable(false);
 	}
