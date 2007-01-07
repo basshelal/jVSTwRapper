@@ -135,6 +135,7 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
  
     //NOTE: This method is currently not called in the jvstwrapper 
     //		macx implementation! It caused some hosts to block forever...
+    //TODO: check again now, the gui integration stuff has changed significantly on the mac
     if (!RUNNING_MAC_X) {
     	this.dispose();
     }
