@@ -591,18 +591,20 @@ BOOL WINAPI DllMain (HINSTANCE hInst, DWORD dwReason, LPVOID lpvReserved) {
 void sourceCallBack (  void *info  ) {}
 
 int startJavaThread(){
-	log("starting java thread");
-
-#ifdef MACX_INIT_COCOA
-	//init cocoa to be able to interop with it in carbon
-	if (initializeCocoa()==0) log("Cocoa initialized successfully!");
-	else {
-		log("** Error while initilizing Cocoa");
-		return -1;
+	//If there is a Java GUI class configured, then we need to initialize cocoa by hand
+	ConfigFileReader *cfg = new ConfigFileReader();
+	if (cfg->PluginUIClass!=NULL) {
+		//init cocoa to be able to interop with it in carbon
+		if (initializeCocoa()==0) log("Cocoa initialized successfully!");
+		else {
+			log("** Error while initilizing Cocoa");
+			return -1;
+		}
 	}
-#else
-	log("NOT using Cocoa!");
-#endif
+	else log("NOT using Cocoa!");
+	if(cfg) delete(cfg);
+
+	log("starting java thread");
 
 	/* Start the thread that runs the VM. */
 	CFRunLoopSourceContext sourceContext;

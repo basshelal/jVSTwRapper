@@ -1,7 +1,7 @@
 // !$*UTF8*$!
 {
 	089C1669FE841209C02AAC07 /* Project object */ = {
-		activeBuildConfigurationName = Debug;
+		activeBuildConfigurationName = Release;
 		activeExecutable = C3E30FDC0B4048010015E591 /* minihost */;
 		activeTarget = C3C70FDF0B45823100DA1076 /* jvstwrapper */;
 		addToTargets = (
@@ -175,12 +175,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 189899759;
-			PBXWorkspaceStateSaveDate = 189899759;
+			PBXPerProjectTemplateStateSaveDate = 190150547;
+			PBXWorkspaceStateSaveDate = 190150547;
 		};
 		perUserProjectItems = {
-			C372F0300B4FF85C004771C8 /* PBXTextBookmark */ = C372F0300B4FF85C004771C8 /* PBXTextBookmark */;
-			C3893F890B51A48100925067 /* PBXTextBookmark */ = C3893F890B51A48100925067 /* PBXTextBookmark */;
+			C3D1B2910B5577B000E96D51 /* PBXTextBookmark */ = C3D1B2910B5577B000E96D51 /* PBXTextBookmark */;
+			C3D1B2960B5577D500E96D51 /* PBXTextBookmark */ = C3D1B2960B5577D500E96D51 /* PBXTextBookmark */;
+			C3E0B1500B54194100790D24 = C3E0B1500B54194100790D24 /* PBXTextBookmark */;
+			C3F9CC610B52D61C0085453F = C3F9CC610B52D61C0085453F /* PBXTextBookmark */;
 		};
 		sourceControlManager = C3EA1A900B3D904400B4C69F /* Source Control */;
 		userBuildSettings = {
@@ -193,26 +195,6 @@
 			sepNavVisRect = "{{0, 0}, {705, 429}}";
 			sepNavWindowFrame = "{{84, 120}, {750, 558}}";
 		};
-	};
-	C372F0300B4FF85C004771C8 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3893F890B51A48100925067 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
 	};
 	C3C70FDF0B45823100DA1076 /* jvstwrapper */ = {
 		activeExec = 0;
@@ -232,6 +214,36 @@
 			sepNavVisRect = "{{0, 215}, {596, 499}}";
 			sepNavWindowFrame = "{{43, 3}, {606, 742}}";
 		};
+	};
+	C3D1B2910B5577B000E96D51 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
+		name = DestroyJavaVM;
+		rLen = 13;
+		rLoc = 3455;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	C3D1B2960B5577D500E96D51 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
+		name = DestroyJavaVM;
+		rLen = 13;
+		rLoc = 3455;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	C3E0B1500B54194100790D24 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
+		name = DestroyJavaVM;
+		rLen = 13;
+		rLoc = 3455;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
 	};
 	C3E30FDC0B4048010015E591 /* minihost */ = {
 		isa = PBXExecutable;
@@ -364,7 +376,7 @@
 	C3E310630B405D130015E591 /* libjvstwrapper.jnilib.ini */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {626, 1624}}";
-			sepNavSelRange = "{4585, 0}";
+			sepNavSelRange = "{3644, 66}";
 			sepNavVisRect = "{{0, 1011}, {565, 613}}";
 			sepNavWindowFrame = "{{15, 4}, {610, 742}}";
 		};
@@ -415,10 +427,10 @@
 	};
 	C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {938, 9380}}";
-			sepNavSelRange = "{2329, 0}";
-			sepNavVisRect = "{{0, 765}, {640, 612}}";
-			sepNavWindowFrame = "{{99, 5}, {685, 741}}";
+			sepNavIntBoundsRect = "{{0, 0}, {938, 9394}}";
+			sepNavSelRange = "{14202, 0}";
+			sepNavVisRect = "{{0, 6382}, {640, 612}}";
+			sepNavWindowFrame = "{{97, 5}, {685, 741}}";
 		};
 	};
 	C3EA1B6E0B3D97AE00B4C69F /* jVSTwRapperMAIN.h */ = {
@@ -544,7 +556,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {686, 6258}}";
 			sepNavSelRange = "{3732, 0}";
-			sepNavVisRect = "{{0, 1503}, {560, 452}}";
+			sepNavVisRect = "{{0, 1424}, {577, 613}}";
 			sepNavWindowFrame = "{{0, 4}, {622, 742}}";
 		};
 	};
@@ -591,7 +603,8 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1262, 18704}}";
 			sepNavSelRange = "{29292, 0}";
-			sepNavVisRect = "{{0, 11070}, {599, 498}}";
+			sepNavVisRect = "{{0, 3800}, {742, 613}}";
+			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
 		};
 	};
 	C3EA1BA20B3D97AF00B4C69F /* VSTV23ToHost.cpp */ = {
@@ -621,5 +634,15 @@
 		name = jvstwrapper;
 		objects = (
 		);
+	};
+	C3F9CC610B52D61C0085453F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
+		name = DestroyJavaVM;
+		rLen = 13;
+		rLoc = 3455;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
 	};
 }

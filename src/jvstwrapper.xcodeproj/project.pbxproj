@@ -17,7 +17,6 @@
 		C3C70FED0B45830A00DA1076 /* VSTV24ToPlug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3EA1BA80B3D97AF00B4C69F /* VSTV24ToPlug.cpp */; };
 		C3C70FEE0B45830A00DA1076 /* jVSTwRapperMAIN.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */; };
 		C3C70FEF0B45830A00DA1076 /* VSTV23ToPlug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3EA1BA40B3D97AF00B4C69F /* VSTV23ToPlug.cpp */; };
-		C3C70FF00B45830A00DA1076 /* VSTGUIWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3EA1B900B3D97AF00B4C69F /* VSTGUIWrapper.cpp */; };
 		C3C70FF10B45830A00DA1076 /* cscrollview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3EA1B810B3D97AE00B4C69F /* cscrollview.cpp */; };
 		C3C70FF20B45830A00DA1076 /* VSTV22ToPlug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3EA1BA00B3D97AF00B4C69F /* VSTV22ToPlug.cpp */; };
 		C3C70FF30B45830A00DA1076 /* VSTV10ToHost.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3EA1B920B3D97AF00B4C69F /* VSTV10ToHost.cpp */; };
@@ -37,6 +36,7 @@
 		C3C710320B45834300DA1076 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3B7D3F40B3EEFE700EE5C26 /* Carbon.framework */; };
 		C3C711300B45B4D800DA1076 /* VSTGUIWrapperMAC.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3C7112F0B45B4D800DA1076 /* VSTGUIWrapperMAC.mm */; };
 		C3C7114D0B45B60100DA1076 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C7114C0B45B60100DA1076 /* Cocoa.framework */; };
+		C3F9CC4B0B52D54B0085453F /* VSTGUIWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3EA1B900B3D97AF00B4C69F /* VSTGUIWrapper.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -359,7 +359,6 @@
 				C3C70FED0B45830A00DA1076 /* VSTV24ToPlug.cpp in Sources */,
 				C3C70FEE0B45830A00DA1076 /* jVSTwRapperMAIN.cpp in Sources */,
 				C3C70FEF0B45830A00DA1076 /* VSTV23ToPlug.cpp in Sources */,
-				C3C70FF00B45830A00DA1076 /* VSTGUIWrapper.cpp in Sources */,
 				C3C70FF10B45830A00DA1076 /* cscrollview.cpp in Sources */,
 				C3C70FF20B45830A00DA1076 /* VSTV22ToPlug.cpp in Sources */,
 				C3C70FF30B45830A00DA1076 /* VSTV10ToHost.cpp in Sources */,
@@ -375,6 +374,7 @@
 				C3C70FFD0B45830A00DA1076 /* ConfigFileReader.cpp in Sources */,
 				C3C70FFE0B45830A00DA1076 /* VSTV22ToHost.cpp in Sources */,
 				C3C711300B45B4D800DA1076 /* VSTGUIWrapperMAC.mm in Sources */,
+				C3F9CC4B0B52D54B0085453F /* VSTGUIWrapper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
