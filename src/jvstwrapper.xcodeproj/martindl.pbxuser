@@ -1,7 +1,7 @@
 // !$*UTF8*$!
 {
 	089C1669FE841209C02AAC07 /* Project object */ = {
-		activeBuildConfigurationName = Release;
+		activeBuildConfigurationName = Debug;
 		activeExecutable = C3E30FDC0B4048010015E591 /* minihost */;
 		activeTarget = C3C70FDF0B45823100DA1076 /* jvstwrapper */;
 		addToTargets = (
@@ -179,10 +179,8 @@
 			PBXWorkspaceStateSaveDate = 190150547;
 		};
 		perUserProjectItems = {
-			C3D1B2910B5577B000E96D51 /* PBXTextBookmark */ = C3D1B2910B5577B000E96D51 /* PBXTextBookmark */;
-			C3D1B2960B5577D500E96D51 /* PBXTextBookmark */ = C3D1B2960B5577D500E96D51 /* PBXTextBookmark */;
-			C3E0B1500B54194100790D24 = C3E0B1500B54194100790D24 /* PBXTextBookmark */;
-			C3F9CC610B52D61C0085453F = C3F9CC610B52D61C0085453F /* PBXTextBookmark */;
+			C3D1B2B60B55823900E96D51 /* PBXTextBookmark */ = C3D1B2B60B55823900E96D51 /* PBXTextBookmark */;
+			C3E0B1500B54194100790D24 /* PBXTextBookmark */ = C3E0B1500B54194100790D24 /* PBXTextBookmark */;
 		};
 		sourceControlManager = C3EA1A900B3D904400B4C69F /* Source Control */;
 		userBuildSettings = {
@@ -215,17 +213,7 @@
 			sepNavWindowFrame = "{{43, 3}, {606, 742}}";
 		};
 	};
-	C3D1B2910B5577B000E96D51 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3D1B2960B5577D500E96D51 /* PBXTextBookmark */ = {
+	C3D1B2B60B55823900E96D51 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
 		name = DestroyJavaVM;
@@ -427,9 +415,9 @@
 	};
 	C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {938, 9394}}";
-			sepNavSelRange = "{14202, 0}";
-			sepNavVisRect = "{{0, 6382}, {640, 612}}";
+			sepNavIntBoundsRect = "{{0, 0}, {938, 9380}}";
+			sepNavSelRange = "{2258, 6}";
+			sepNavVisRect = "{{0, 803}, {560, 452}}";
 			sepNavWindowFrame = "{{97, 5}, {685, 741}}";
 		};
 	};
@@ -447,6 +435,13 @@
 			sepNavSelRange = "{16256, 3}";
 			sepNavVisRect = "{{0, 4437}, {596, 437}}";
 			sepNavWindowFrame = "{{15, -1}, {500, 742}}";
+		};
+	};
+	C3EA1B720B3D97AE00B4C69F /* aeffectx.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {2228, 16016}}";
+			sepNavSelRange = "{24593, 15}";
+			sepNavVisRect = "{{0, 4919}, {560, 452}}";
 		};
 	};
 	C3EA1B760B3D97AE00B4C69F /* aeffeditor.h */ = {
@@ -473,11 +468,18 @@
 			sepNavWindowFrame = "{{84, 156}, {500, 522}}";
 		};
 	};
+	C3EA1B790B3D97AE00B4C69F /* audioeffectx.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1286, 21658}}";
+			sepNavSelRange = "{7361, 15}";
+			sepNavVisRect = "{{0, 2315}, {560, 452}}";
+		};
+	};
 	C3EA1B7A0B3D97AE00B4C69F /* audioeffectx.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1562, 3542}}";
-			sepNavSelRange = "{757, 0}";
-			sepNavVisRect = "{{0, 0}, {596, 437}}";
+			sepNavSelRange = "{16767, 15}";
+			sepNavVisRect = "{{0, 535}, {560, 452}}";
 			sepNavWindowFrame = "{{107, 4}, {500, 742}}";
 		};
 	};
@@ -602,9 +604,16 @@
 	C3EA1B980B3D97AF00B4C69F /* VSTV20ToPlug.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1262, 18704}}";
-			sepNavSelRange = "{29292, 0}";
-			sepNavVisRect = "{{0, 3800}, {742, 613}}";
+			sepNavSelRange = "{36814, 0}";
+			sepNavVisRect = "{{0, 13895}, {560, 452}}";
 			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
+		};
+	};
+	C3EA1B990B3D97AF00B4C69F /* VSTV20ToPlug.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {722, 2590}}";
+			sepNavSelRange = "{3641, 15}";
+			sepNavVisRect = "{{0, 1139}, {560, 452}}";
 		};
 	};
 	C3EA1BA20B3D97AF00B4C69F /* VSTV23ToHost.cpp */ = {
@@ -634,15 +643,5 @@
 		name = jvstwrapper;
 		objects = (
 		);
-	};
-	C3F9CC610B52D61C0085453F /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
 	};
 }

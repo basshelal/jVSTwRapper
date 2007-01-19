@@ -1004,8 +1004,8 @@ bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, Vs
 }
 
 
-//ignored, we have our own UI handling!
-//TODO: implement that later, so that swing ui can be positioned by native app...
+//TODO: maybe implement that later, so that swing ui can be positioned by native app...
+//but this is deprecated since 2.3 anyways, so I dont know if any of the hosts use it
 /*
 bool VSTV20ToPlug::setViewPosition (long x, long y) {
 	return false;

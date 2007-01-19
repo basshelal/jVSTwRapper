@@ -73,7 +73,6 @@
 	
 	//*** TODO: Set these defines accordingly before relaesing any files! ***
 	//#define DEBUG
-	//#define MACX_INIT_COCOA
 #endif
 
 
