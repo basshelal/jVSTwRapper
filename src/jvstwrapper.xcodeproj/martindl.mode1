@@ -270,12 +270,15 @@
 							<array>
 								<string>089C166AFE841209C02AAC07</string>
 								<string>1C37FBAC04509CD000000102</string>
+								<string>C3C3AEAD0B62469F00C0F71B</string>
+								<string>C3C3AEAE0B62469F00C0F71B</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>2</integer>
-									<integer>0</integer>
+									<integer>16</integer>
+									<integer>10</integer>
+									<integer>9</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -326,10 +329,10 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>C3D1B2B60B55823900E96D51</string>
+										<string>C3C3AECF0B624DDB00C0F71B</string>
 										<key>history</key>
 										<array>
-											<string>C3E0B1500B54194100790D24</string>
+											<string>C3D6578E0B622754003888FC</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -389,9 +392,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>C3D1B2920B5577B000E96D51</string>
+				<string>C3C3AEB00B62469F00C0F71B</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>C3D1B2930B5577B000E96D51</string>
+				<string>C3C3AEB10B62469F00C0F71B</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -516,7 +519,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>190153273.31018201</real>
+	<real>190991835.49510401</real>
 	<key>ToolbarDisplayMode</key>
 	<integer>1</integer>
 	<key>ToolbarIsVisible</key>
@@ -531,7 +534,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>C3EA1BD80B3D9CF100B4C69F</string>
 		<string>/Users/martindl/workspace/jvst_native/src/jvstwrapper.xcodeproj</string>
 	</array>
@@ -615,7 +617,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>C3EA1BD80B3D9CF100B4C69F</string>
-				<string>C3D1B2940B5577B000E96D51</string>
+				<string>C3C3AEA20B6244D400C0F71B</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

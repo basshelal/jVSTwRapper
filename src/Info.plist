@@ -6,12 +6,14 @@
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>libjvstwrapper.jnilib</string>
-	<key>CFBundleIconFile</key>
-	<string></string>
+	<key>CFBundleGetInfoString</key>
+	<string>jVSTwRapper - The Java way into VST world - http://jvstwrapper.sf.net/</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.sourceforge.jvstwrapper</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>jVSTwRapper VST PlugIn</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
