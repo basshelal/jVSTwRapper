@@ -1,7 +1,7 @@
 // !$*UTF8*$!
 {
 	089C1669FE841209C02AAC07 /* Project object */ = {
-		activeBuildConfigurationName = Release;
+		activeBuildConfigurationName = Debug;
 		activeExecutable = C3E30FDC0B4048010015E591 /* minihost */;
 		activeTarget = C3C70FDF0B45823100DA1076 /* jvstwrapper */;
 		addToTargets = (
@@ -175,19 +175,12 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 190988784;
-			PBXWorkspaceStateSaveDate = 190988784;
+			PBXPerProjectTemplateStateSaveDate = 190999615;
+			PBXWorkspaceStateSaveDate = 190999615;
 		};
 		perUserProjectItems = {
-			C3C3AEAF0B62469F00C0F71B /* PBXTextBookmark */ = C3C3AEAF0B62469F00C0F71B /* PBXTextBookmark */;
-			C3C3AEB30B6247B900C0F71B /* PBXTextBookmark */ = C3C3AEB30B6247B900C0F71B /* PBXTextBookmark */;
-			C3C3AEB70B6247E300C0F71B /* PBXTextBookmark */ = C3C3AEB70B6247E300C0F71B /* PBXTextBookmark */;
-			C3C3AEBA0B6248C700C0F71B /* PBXTextBookmark */ = C3C3AEBA0B6248C700C0F71B /* PBXTextBookmark */;
-			C3C3AEC50B624C9800C0F71B /* PBXTextBookmark */ = C3C3AEC50B624C9800C0F71B /* PBXTextBookmark */;
-			C3C3AECA0B624D6100C0F71B /* PBXTextBookmark */ = C3C3AECA0B624D6100C0F71B /* PBXTextBookmark */;
-			C3C3AECF0B624DDB00C0F71B /* PBXTextBookmark */ = C3C3AECF0B624DDB00C0F71B /* PBXTextBookmark */;
+			C3C3AEE00B626B5F00C0F71B = C3C3AEE00B626B5F00C0F71B /* PBXTextBookmark */;
 			C3D6578E0B622754003888FC = C3D6578E0B622754003888FC /* PBXTextBookmark */;
-			C3D6FBE50B617F26006521AA = C3D6FBE50B617F26006521AA /* PBXTextBookmark */;
 		};
 		sourceControlManager = C3EA1A900B3D904400B4C69F /* Source Control */;
 		userBuildSettings = {
@@ -195,7 +188,7 @@
 	};
 	8D01CCD10486CAD60068D4B7 /* Info.plist */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {705, 429}}";
+			sepNavIntBoundsRect = "{{0, 0}, {705, 434}}";
 			sepNavSelRange = "{0, 0}";
 			sepNavVisRect = "{{0, 0}, {705, 429}}";
 			sepNavWindowFrame = "{{84, 120}, {750, 558}}";
@@ -209,67 +202,7 @@
 			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
 		};
 	};
-	C3C3AEAF0B62469F00C0F71B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3C3AEB30B6247B900C0F71B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3C3AEB70B6247E300C0F71B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3C3AEBA0B6248C700C0F71B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3C3AEC50B624C9800C0F71B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3C3AECA0B624D6100C0F71B /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3C3AECF0B624DDB00C0F71B /* PBXTextBookmark */ = {
+	C3C3AEE00B626B5F00C0F71B /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
 		name = DestroyJavaVM;
@@ -299,16 +232,6 @@
 		};
 	};
 	C3D6578E0B622754003888FC /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C3D6FBE50B617F26006521AA /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
 		name = DestroyJavaVM;

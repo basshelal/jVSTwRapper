@@ -8,6 +8,8 @@
 	<string>libjvstwrapper.jnilib</string>
 	<key>CFBundleGetInfoString</key>
 	<string>jVSTwRapper - The Java way into VST world - http://jvstwrapper.sf.net/</string>
+	<key>CFBundleIconFile</key>
+	<string>jvstwrapper.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.sourceforge.jvstwrapper</string>
 	<key>CFBundleInfoDictionaryVersion</key>
