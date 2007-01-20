@@ -11,7 +11,7 @@ The Resources Directory will be added to the classpath by default. You can add a
 
 4. Rename the bundle to YourPlugsName.vst. ALso, rename libjvstwrapper.jnilib to YourPlugsName.jnilib. 
    But make sure to keep the .jnilib extension for the wrapper library. ALSO, edit the Info.plist file 
-   in the bundle to reflect the new executable name (e.g. YourPlugsName.jnilib).
+   in the bundle to reflect the new CFBundleExecutable (e.g. YourPlugsName.jnilib) and CFBundleName values.
 
 5. Look for problems. If you left IsLoggingEnabled=1 in the ini file, the log files will appear in the Resources directory and the MacOS directory inside the .vst bundle
 
