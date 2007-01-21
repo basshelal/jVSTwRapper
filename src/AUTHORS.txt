@@ -1,0 +1,8 @@
+Main Development and Project Lead: 
+	Daniel Martin [daniel309@users.sourceforge.net]
+
+Native GUI integration and many bug fixes: 
+	Daniel Reinert
+
+Port to Mac OSX: 
+	Gerard Roma, Michael from LevelGroundMedia.com
