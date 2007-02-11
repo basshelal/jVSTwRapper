@@ -316,7 +316,7 @@ bool VSTV21ToPlug::hasMidiProgramsChanged (VstInt32 channel) {
 	
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, channel);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }
@@ -389,7 +389,7 @@ bool VSTV21ToPlug::getMidiKeyName (VstInt32 channel, MidiKeyName* keyName) {
 		this->JEnv->DeleteLocalRef(jstr);
 	}
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }
@@ -403,7 +403,7 @@ bool VSTV21ToPlug::beginSetProgram () {
 	
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 } 
@@ -417,7 +417,7 @@ bool VSTV21ToPlug::endSetProgram () {
 	
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }   

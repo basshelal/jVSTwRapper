@@ -272,7 +272,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 
 				if (i>=VST_EVENTS_MAX) break; 
 
-				VstEvent* event;
+				VstEvent* vstevent;
 				jobject jevent = env->GetObjectArrayElement(jevents, i);
 
 				jint typ = env->GetIntField(jevent, EventFieldType);
@@ -303,27 +303,27 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 					mevent->reserved1 = env->GetByteField(jevent, MidiEventFieldReserved1);
 					mevent->reserved2 = env->GetByteField(jevent, MidiEventFieldReserved2);
 
-					event = (VstEvent*)mevent;
+					vstevent = (VstEvent*)mevent;
 				}
 				else {
-					event = &(vstEventToHost[i]);
+					vstevent = &(vstEventToHost[i]);
 
-					event->type = typ;
-					event->byteSize = env->GetIntField(jevent, EventFieldByteSize);
-					event->deltaFrames = env->GetIntField(jevent, EventFieldDeltaFrames);
-					event->flags = env->GetIntField(jevent, EventFieldFlags);
+					vstevent->type = typ;
+					vstevent->byteSize = env->GetIntField(jevent, EventFieldByteSize);
+					vstevent->deltaFrames = env->GetIntField(jevent, EventFieldDeltaFrames);
+					vstevent->flags = env->GetIntField(jevent, EventFieldFlags);
 
 					jbyteArray jdata = (jbyteArray)env->GetObjectField(jevent, EventFieldData);
 					jbyte* elmts = env->GetByteArrayElements(jdata, NULL);
 					for (int j=0; j<env->GetArrayLength(jdata); j++) {
 						if (j>=16) break; //16 Bytes Data
-						event->data[j] = elmts[j];
+						vstevent->data[j] = elmts[j];
 					}
 					env->ReleaseByteArrayElements(jdata, elmts, 0);
 					env->DeleteLocalRef(jdata);
 				}
 
-				evts->events[i] = event;
+				evts->events[i] = vstevent;
 			}
 
 			checkAndThrowException(env);			

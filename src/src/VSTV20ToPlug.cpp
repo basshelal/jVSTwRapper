@@ -154,7 +154,7 @@ bool VSTV20ToPlug::getProgramNameIndexed (VstInt32 category, VstInt32 index, cha
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return true;
 }
@@ -171,7 +171,7 @@ bool VSTV20ToPlug::getProductString (char* text) {
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return true;
 }
@@ -188,7 +188,7 @@ bool VSTV20ToPlug::getVendorString (char* text) {
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return true;
 }
@@ -270,7 +270,7 @@ bool VSTV20ToPlug::string2parameter (VstInt32 index, char *text) {
 
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, (jint)index, arg);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }
@@ -282,7 +282,7 @@ bool VSTV20ToPlug::setBypass (bool onOff) {
 	
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, onOff);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }
@@ -316,7 +316,7 @@ bool VSTV20ToPlug::getEffectName (char* name)   {
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (name, jstr);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return true;
 }
@@ -328,7 +328,7 @@ bool VSTV20ToPlug::canParameterBeAutomated(VstInt32 index) {
 	
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, (jint)index);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }
@@ -340,7 +340,7 @@ bool VSTV20ToPlug::copyProgram(VstInt32 destination) {
 	
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, (jint)destination);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }
@@ -422,7 +422,7 @@ bool VSTV20ToPlug::getInputProperties (VstInt32 index, VstPinProperties *props) 
 		strncpy(props->shortLabel,str,6);
 	}
 
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return true;
 }
@@ -433,7 +433,6 @@ bool VSTV20ToPlug::getOutputProperties (VstInt32 index, VstPinProperties * props
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getOutputProperties(I)Ljvst/wrapper/valueobjects/VSTPinProperties;"); return false;}
 	
 	jobject obj = this->JEnv->CallObjectMethod(this->JavaPlugObj, mid, (jint)index);
-	
 	if (obj==NULL) return false;
 
 	jfieldID fid;
@@ -465,7 +464,7 @@ bool VSTV20ToPlug::getOutputProperties (VstInt32 index, VstPinProperties * props
 		strncpy(props->shortLabel,str,6);
 	}
 
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return true;
 }
@@ -481,7 +480,7 @@ bool VSTV20ToPlug::getErrorText (char* text) {
 	const char* jstr = this->JEnv->GetStringUTFChars(ret, NULL);
 	strcpy (text, jstr);
 
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return true;
 }
@@ -504,7 +503,8 @@ bool VSTV20ToPlug::getParameterProperties (VstInt32 index, VstParameterPropertie
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getParameterProperties(I)Ljvst/wrapper/valueobjects/VSTParameterProperties;"); return false;}
 	
 	jobject obj = this->JEnv->CallObjectMethod(this->JavaPlugObj, mid, (jint)index);
-	
+	//null returned --> method not supported by plugin
+	if (obj==NULL) return false;
 
 	jfieldID fid;
 	jstring jstr;
@@ -585,7 +585,7 @@ bool VSTV20ToPlug::getParameterProperties (VstInt32 index, VstParameterPropertie
 		strncpy(p->categoryLabel,str,24);
 	}
 
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return true;
 }
@@ -630,7 +630,7 @@ bool VSTV20ToPlug::keysRequired () {
 	
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }
@@ -799,7 +799,7 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed, *varIo->numSamplesOutputProcessed);    
 	  ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, this->VarIoObject);
 
-	  this->checkException();
+	  if (this->checkException()) return false;
 	  this->JEnv->DeleteLocalRef(jinputs);
 	  this->JEnv->DeleteLocalRef(joutputs);
 
@@ -846,7 +846,7 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
       ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, NULL);
 	}
 
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret==JNI_TRUE;
 }
@@ -998,7 +998,7 @@ bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, Vs
 	this->JEnv->DeleteLocalRef(jInProps);
 	this->JEnv->DeleteLocalRef(jOutProps);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 }

@@ -71,7 +71,7 @@ bool VSTV24ToPlug::setProcessPrecision (VstInt32 precision) {
 	
 	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, precision);
 	
-	this->checkException();
+	if (this->checkException()) return false;
 
 	return ret!=0;
 } 
