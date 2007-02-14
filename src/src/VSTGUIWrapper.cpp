@@ -378,10 +378,36 @@ void VSTGUIWrapper::close () {
 int VSTGUIWrapper::initJavaSide(jclass guiClass) {
 	this->ensureJavaThreadAttachment();
 
+
+//TEST AREA
+//This piece of code causes the awt to load. 
+//And for some reason causes the host Amadeus II (Carbon) to hang
+//However, several other Carbon and Coco hosts work flawlessly with a loaded AWT !?!?
+/*
+	log("BEFORE TEST AREA!!!");
+
+	jclass tkclass = this->JEnv->FindClass("java/awt/Toolkit");
+	if (tkclass == NULL) {
+		log("** ERROR: could not load TOOLKIT class");
+	}
+	
+	jmethodID tkmid = this->JEnv->GetStaticMethodID(tkclass, "getDefaultToolkit", "()Ljava/awt/Toolkit;");
+	if (tkmid == NULL) {
+		log("** ERROR: CANNOT find TOOLKIT method");
+	}
+	
+	this->JEnv->CallStaticObjectMethod(tkclass, tkmid);
+
+	log("AFTER TEST AREA!!!");
+*/
+//TEST AREA
+
+
+
 	if (guiClass==NULL) return -1;
 	this->JavaPlugGUIClass = guiClass;
 
-
+	log("WITHIN gui initjavaside");
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "<init>", "()V");
 	if (mid == NULL) {
 		log("** ERROR: cannot find GUIs default contructor");
@@ -391,6 +417,7 @@ int VSTGUIWrapper::initJavaSide(jclass guiClass) {
 
 	if (this->checkException()) return -1;
 
+	log("creating instance of GUI class");
 	this->JavaPlugGUIObj = JEnv->NewObject(this->JavaPlugGUIClass, mid);
 	if (this->JavaPlugGUIObj == NULL) {
 		log("** ERROR: cannot create Java Plugin GUI Object");
@@ -405,6 +432,7 @@ int VSTGUIWrapper::initJavaSide(jclass guiClass) {
 
 	if (this->checkException()) return -1;
 
+	log("calling GUI .init()");
 	//Java GUI Obj .init(effect e) aufrufen
 	mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "init", "(Ljvst/wrapper/VSTPluginAdapter;)V");
 	if (mid == NULL) {
@@ -413,6 +441,8 @@ int VSTGUIWrapper::initJavaSide(jclass guiClass) {
 		return -1;
 	}
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid, this->JavaPlugObj);
+
+	log("GUI initJavaSide OK!");
 
 	if (this->checkException()) return -1;
 	else return 0;

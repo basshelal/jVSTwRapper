@@ -96,7 +96,7 @@ class VSTV10ToPlug : public AudioEffectX {
 
 		
 		//UTILITY
-		int initJavaSide(jclass plug, bool hasGUI);
+		int initJavaSide(jclass plug);
 		void setNumParams(VstInt32 num);
 #ifndef MACX
 		DWORD ToHostThread;

@@ -398,6 +398,7 @@ void* startJava(void *nix) {
 	//IMPORTANT: clear possible pending exceptions...
 	if (checkException(env)) goto leave;
 
+
 	//USE THE VSTiClassLoaderManager here!!!
 	//load this ClassLoader with the bootstrap ClassLoader
 	jclass manager = env->FindClass("jvst/wrapper/system/VSTiClassLoaderManager");
@@ -418,6 +419,12 @@ void* startJava(void *nix) {
 	jstring plug = env->NewStringUTF(cfg->PluginClass);
 	jstring cp = env->NewStringUTF(class_path);
 	jclass clazz = (jclass)env->CallStaticObjectMethod(manager, loadcl_mid, dllloc, plug, cp);
+	if(clazz == NULL) {
+		log("** ERROR: Could not load Plugin Class");
+		checkException(env);
+		goto leave;
+	}
+	
 	if (checkException(env)) goto leave;
 
 
@@ -445,10 +452,18 @@ void* startJava(void *nix) {
 		checkException(env); //print statck trace...
 		goto leave;
 	}
+	
+	//calling Java side constructors
+	log("calling effects java construtor!");
+	if (WrapperInstance->initJavaSide(clazz)) goto leave;
+
+	if (checkException(env)) goto leave;
+
+
 
 	//test if we can load the GUI class
 	if (cfg->PluginUIClass!=NULL) {
-		log("loding gui class");
+		log("classloding gui class");
 		log(cfg->PluginUIClass);
 
 		//load gui using our own ClassLoader...
@@ -462,17 +477,18 @@ void* startJava(void *nix) {
 		}
 		else hasGUI = true;
 	}
-	
-	//calling Java side constructors
-	log("calling effects java construtor!");
-	if (WrapperInstance->initJavaSide(clazz, hasGUI)) goto leave;
 
 	if (checkException(env)) goto leave;
 
-
-	//calling java guis init!
-	if((WrapperInstance->getEditor() != NULL) && hasGUI) {
+	log("calling java guis init!");
+	if(hasGUI) {
+		//init gui wrapper
+		WrapperInstance->setEditor(new VSTGUIWrapper(WrapperInstance));
 		if (((VSTGUIWrapper*)WrapperInstance->getEditor())->initJavaSide(guiClass)) goto leave;
+	}
+	else {
+		WrapperInstance->setEditor(NULL);
+		log("Plugin is NOT using a custom UI!");
 	}
 
 	if (checkException(env)) goto leave;

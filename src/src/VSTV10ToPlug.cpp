@@ -591,7 +591,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 
 
 //---------------------------------------------------------------------------
-int VSTV10ToPlug::initJavaSide(jclass effectClass, bool hasGUI) {
+int VSTV10ToPlug::initJavaSide(jclass effectClass) {
 	this->ensureJavaThreadAttachment();
 
 
@@ -650,17 +650,8 @@ int VSTV10ToPlug::initJavaSide(jclass effectClass, bool hasGUI) {
 	this->getAeffect()->numParams = num;
 	this->numParams = num;	
 
-	if (this->checkException()) return -1;
 
-    
-	//init gui wrapper
-	if (hasGUI) this->editor = new VSTGUIWrapper (this);
-	else {
-		this->editor = NULL;
-		log("Plugin is NOT using a custom UI!");
-	}
-
-
+	log("Plugin initJavaSide ok!");
 	if (this->checkException()) return -1;
 	else return 0;
 }

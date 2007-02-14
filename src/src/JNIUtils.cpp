@@ -140,7 +140,8 @@ int log(char* data) {
 			MessageBoxA(0, data, "jVSTwRapper", 0);
 #else
 //Uses Carbon Alert window. But the window displayed doesnt receive any input. 
-//this blocks the whole application here... so its commented out by now. Maybe someone knows a solution?
+//this blocks the whole application here... so its commented out by now. 
+//Maybe someone knows a solution?
 /*
 			DialogRef alertref = NULL;
 			CFStringRef msg = CFStringCreateWithCString(NULL, data, kCFStringEncodingASCII);
