@@ -151,7 +151,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	FILE *out_stream = freopen(log_location, "a", stdout);
 	if (out_stream!=NULL) log("redirecting stdout stream OK");
 #else
-	log("***** ACHTUNG: DEBUG=true ****");
+	log("\n**** ACHTUNG: DEBUG=true ****");
 #endif
 	log("\n***** START *****");
 	log(log_location);

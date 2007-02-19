@@ -76,7 +76,7 @@ ConfigFileReader::ConfigFileReader() {
 	this->SystemClassPath = NULL;
 	this->IsLoggingEnabled = 0;
 	this->AttachToNativePluginWindow = 1;
-	this->CloseNativePluginWindow = 1;
+	this->CloseNativePluginWindow = 0;
 	this->CustomJVMLocation = NULL;
 	this->RequestedJVMVersion = NULL;
 
