@@ -70,9 +70,6 @@
 	
 	//cocoa init stuff
 	#include "VSTGUIWrapperMAC.h"
-	
-	//*** TODO: Set these defines accordingly before relaesing any files! ***
-	//#define DEBUG
 #endif
 
 
@@ -144,15 +141,14 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	strcpy(log_location, DllPath);
 	strcat(log_location, LogFileName);
 
-#ifndef DEBUG
+
 	//redirecting system streams...
 	FILE *err_stream = freopen(log_location, "a", stderr);
 	if (err_stream!=NULL) log("\nredirecting stderr stream OK");
 	//FILE *out_stream = freopen(log_location, "a", stdout);		//this caused an error in melodyne
-	//if (out_stream!=NULL) log("redirecting stdout stream OK");	//we dont need it anyways!
-#else
-	log("\n**** ACHTUNG: DEBUG=true ****");
-#endif
+	//if (out_stream!=NULL) log("redirecting stdout stream OK");	//we dont need it anyways! because
+																	//log() writes to stderr
+
 	log("\n***** START *****");
 	log("log_location=%s", log_location);
 
