@@ -417,9 +417,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessJEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to .process() THREAD");
 
-		char temp[100];
-		sprintf(temp, "Process ThreadID=%i", this->ProcessThreadID);
-		log(temp);
+		log("Process ThreadID=%i", this->ProcessThreadID);
 	}
 
 //#ifdef MACX		//hey gerard, why did you do this? I added it just for safety... 
@@ -511,9 +509,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessReplacingJEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to .processReplacing() THREAD");
 
-		char temp[100];
-		sprintf(temp, "ProcessReplacing ThreadID=%i", this->ProcessReplacingThreadID);
-		log(temp);
+		log("ProcessReplacing ThreadID=%i", this->ProcessReplacingThreadID);
 	}
 	
 	if(this->JavaFloatClass == NULL) {
@@ -674,9 +670,7 @@ void VSTV10ToPlug::ensureJavaThreadAttachment() {
 		jint stat = this->Jvm->AttachCurrentThread((void**)&this->JEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to native THREAD in VSTV10ToPlug Wrapper!");
 
-		char temp[100];
-		sprintf(temp, "New wrapper ThreadID=%i", this->ThreadID);
-		log(temp);
+		log("New wrapper ThreadID=%i", this->ThreadID);
 	}
 	
 	//ultra important, if a pending exception isnt cleared, all following calls will fail...

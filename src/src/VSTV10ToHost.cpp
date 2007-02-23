@@ -161,9 +161,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_canMono(JNIE
  */
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_canProcessReplacing(JNIEnv *env, jobject obj, jboolean state) {
 	bool test = state != 0 ? true : false;
-	char dump[100];
-	sprintf(dump, "canProcessReplacing=%i", test);
-	log(dump);
+	log("canProcessReplacing=%i", test);
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->canProcessReplacing(state != 0 ? true : false);
 }

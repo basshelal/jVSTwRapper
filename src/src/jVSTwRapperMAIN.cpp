@@ -148,22 +148,23 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	//redirecting system streams...
 	FILE *err_stream = freopen(log_location, "a", stderr);
 	if (err_stream!=NULL) log("\nredirecting stderr stream OK");
-	FILE *out_stream = freopen(log_location, "a", stdout);
-	if (out_stream!=NULL) log("redirecting stdout stream OK");
+	//FILE *out_stream = freopen(log_location, "a", stdout);		//this caused an error in melodyne
+	//if (out_stream!=NULL) log("redirecting stdout stream OK");	//we dont need it anyways!
 #else
 	log("\n**** ACHTUNG: DEBUG=true ****");
 #endif
 	log("\n***** START *****");
-	log(log_location);
-	
+	log("log_location=%s", log_location);
+
+	ConfigFileReader *cfg = new ConfigFileReader();
+	IsLogEnabled = cfg->IsLoggingEnabled;
+
 	// Get VST Version
 	if (!pAudioMaster(0, audioMasterVersion, 0, 0, 0, 0)) return 0;  // old version
 	log("Get VST Version OK!");
 
 	WrapperInstance = NULL;
 
-	ConfigFileReader *cfg = new ConfigFileReader();
-	
 #ifndef MACX
 	//see if there is a custom JVM we want to load (from the .ini file)!
 	char* jvmLibLocation;
@@ -172,14 +173,11 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	if (jvmLibLocation==NULL) {
 		//no custom jvm specified, see if there is a request for a specific version in the .ini
 		if (cfg->RequestedJVMVersion!=NULL) {
-			log("Looking for a JVM version");
-			log(cfg->RequestedJVMVersion);
+			log("Looking for a JVM version=%s", cfg->RequestedJVMVersion);
 			jvmLibLocation = readJVMLibLocation(cfg->RequestedJVMVersion);
-			if(jvmLibLocation!=NULL) {
-				log("desired JVM version found in registry at");
-				log(jvmLibLocation);
-			}
-			else log("Could not find desired JVM version, seems not to be installed. Falling back to default JVM.");
+
+			if (jvmLibLocation!=NULL) log("desired JVM version found in registry at %s", jvmLibLocation);
+			else log("Could not find desired JVM version, seems not to be installed. Falling back to latest JVM installed on this system.");
 		}
 		
 		if (jvmLibLocation==NULL) {
@@ -193,16 +191,12 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 				//try loading jvm.dll from PATH
 				jvmLibLocation = "jvm.dll";
 			}
-			else {
-				log("found jvm.lib in registry at");
-				log(jvmLibLocation);
-			}
+			else log("found jvm.lib in registry at %s", jvmLibLocation);
 		}
 	}
 	else {
-		log("Loading custom JVM !!! at");
 		jvmLibLocation = replace(jvmLibLocation, "{WrapperPath}", DllPath);
-		log(jvmLibLocation);
+		log("Loading custom JVM !!! at %s", jvmLibLocation);
 	}
 	
 	
@@ -267,11 +261,9 @@ void* startJava(void *nix) {
 	result = -1;
 	
 	ConfigFileReader *cfg = new ConfigFileReader();
-	IsLogEnabled = cfg->IsLoggingEnabled;
+	//IsLogEnabled = cfg->IsLoggingEnabled; //moved this piece of code to the very beginning (makes more sense...)
 	
-	log("DllPath (implicitly added to the classpath)");
-	log(DllPath);
-	
+	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
 	strcpy(class_path, DllPath);
 #ifdef MACX
 	strcat(class_path, ":\0");
@@ -284,10 +276,9 @@ void* startJava(void *nix) {
 	strcpy(java_path, "-Djava.class.path=");
 	strcat(java_path, replace(cfg->SystemClassPath, "{WrapperPath}", DllPath));
 
-	log("SystemPath");
-	log(java_path);
-	log("VSTiClassLoader Path");
-	log(class_path);
+	log("SystemPath=%s", java_path);
+	log("VSTiClassLoader Path=%s", class_path);
+	
 
 	options[0].optionString = java_path;
 	
@@ -299,32 +290,27 @@ void* startJava(void *nix) {
 	int optionNum = 0;	
 	if (cfg->JVMOption1!=NULL) {
 		optionNum++;
-		log("Using additional JVM option");
-		log(cfg->JVMOption1);
+		log("Using additional JVM option=%s", cfg->JVMOption1);
 		options[optionNum].optionString=cfg->JVMOption1;
 	}
 	if (cfg->JVMOption2!=NULL) {
 		optionNum++;
-		log("Using additional JVM option");
-		log(cfg->JVMOption2);
+		log("Using additional JVM option=%s", cfg->JVMOption2);
 		options[optionNum].optionString=cfg->JVMOption2;
 	}
 	if (cfg->JVMOption3!=NULL) {
 		optionNum++;
-		log("Using additional JVM option");
-		log(cfg->JVMOption3);
+		log("Using additional JVM option=%s", cfg->JVMOption3);
 		options[optionNum].optionString=cfg->JVMOption3;
 	}
 	if (cfg->JVMOption4!=NULL) {
 		optionNum++;
-		log("Using additional JVM option");
-		log(cfg->JVMOption4);
+		log("Using additional JVM option=%s", cfg->JVMOption4);
 		options[optionNum].optionString=cfg->JVMOption4;
 	}
 	if (cfg->JVMOption5!=NULL) {
 		optionNum++;
-		log("Using additional JVM option");
-		log(cfg->JVMOption5);
+		log("Using additional JVM option=%s", cfg->JVMOption5);
 		options[optionNum].optionString=cfg->JVMOption5;
 	}
 
@@ -463,8 +449,7 @@ void* startJava(void *nix) {
 
 	//test if we can load the GUI class
 	if (cfg->PluginUIClass!=NULL) {
-		log("classloding gui class");
-		log(cfg->PluginUIClass);
+		log("classloding gui class %s", cfg->PluginUIClass);
 
 		//load gui using our own ClassLoader...
 		jstring gui = env->NewStringUTF(cfg->PluginUIClass);
@@ -557,17 +542,17 @@ void calculatePaths() {
 	
 	int len = strlen(lastSlash);
 	strcpy(DllLocation, imagename);
-	printf("DllLocation=%s\n", DllLocation);
+	log("DllLocation=%s\n", DllLocation);
 	
 	//config file name
 	strcpy(ConfigFileName, lastSlash);
 	strncpy(ConfigFileName + len , ".ini\0", 5);
-	printf("ConfigFileName=%s\n", ConfigFileName);
+	log("ConfigFileName=%s\n", ConfigFileName);
 	
 	//log file name
 	strcpy(LogFileName, lastSlash);
 	strncpy(LogFileName + len, "_log.txt\0", 9);
-	printf("LogFileName=%s\n", LogFileName);
+	log("LogFileName=%s\n", LogFileName);
 
 	//DllPath
 	len = lastSlash - imagename - 1;
@@ -579,7 +564,7 @@ void calculatePaths() {
 	strncpy(DllPath, imagename, len);
 	DllPath[len]='\0';
 	strcat(DllPath,"/Resources/\0");
-	printf("DllPath=%s\n", DllPath);
+	log("DllPath=%s\n", DllPath);
 #endif
 	
 }

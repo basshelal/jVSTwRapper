@@ -65,9 +65,8 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 	jvalue result;
 	char temp[70];
 
-	sprintf(temp, "Invoking JNU_CallJavaMethod method=%s descriptor=%s", name, descriptor);
-	log(temp);
-
+	log("Invoking JNU_CallJavaMethod method=%s descriptor=%s", name, descriptor);
+	
 	if (mid) {
 		const char *p = descriptor;
 		//skip over argument types to find out the 
@@ -121,14 +120,22 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 	return result;
 }
 
+
 //------------------------------------------------------------------------
-int log(char* data) {
+int log(char* data, ...) {
     int retval = -1;
 	int isWarningOrError = 1;    
+	char message[9999];
+
 
 	if (data==NULL) return retval;
 
-	isWarningOrError = (*data == '*') && (*(data+1)=='*');
+	va_list marker;
+	va_start (marker, data);
+	vsprintf (message, data, marker);
+	message[9998]='\0'; //cut string at the end, if its longer...
+
+	isWarningOrError = (*message == '*') && (*(message+1)=='*');
 
 	//show MessageBox on Error or warning!
 	//restrict it to 5 messages per session.
@@ -136,15 +143,16 @@ int log(char* data) {
 	if (isWarningOrError) {
 		MessageBoxCount++;	
 		if (MessageBoxCount<5) {
+
 #ifndef MACX
-			MessageBoxA(0, data, "jVSTwRapper", 0);
+			MessageBoxA(0, message, "jVSTwRapper", 0);
 #else
 //Uses Carbon Alert window. But the window displayed doesnt receive any input. 
 //this blocks the whole application here... so its commented out by now. 
 //Maybe someone knows a solution?
 /*
 			DialogRef alertref = NULL;
-			CFStringRef msg = CFStringCreateWithCString(NULL, data, kCFStringEncodingASCII);
+			CFStringRef msg = CFStringCreateWithCString(NULL, message, kCFStringEncodingASCII);
 			
 			AlertStdCFStringAlertParamRec param;
 			param.version=kStdCFStringAlertVersionOne;
@@ -167,7 +175,7 @@ int log(char* data) {
 
 	if (IsLogEnabled || isWarningOrError) {
 		fprintf(stderr, "\n");
-		fprintf(stderr, data);
+		fprintf(stderr, message);
 		fflush(stderr);
 		retval = 0;
 	} else retval = 0;

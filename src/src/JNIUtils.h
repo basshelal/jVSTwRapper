@@ -51,7 +51,7 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 							const char *descriptor, 
 							...);
 
-int log(char* c);
+int log(char* c, ...);
 char *trim (char *string);
 char *replace(char *string, char *oldpiece, char *newpiece);
 bool checkException(JNIEnv *env);

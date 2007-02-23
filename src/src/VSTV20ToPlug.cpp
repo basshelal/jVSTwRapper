@@ -657,9 +657,7 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessEventsJEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to .processEvents() THREAD");
 
-		char temp[100];
-		sprintf(temp, "ProcessEvents ThreadID=%i", this->ProcessEventsThreadID);
-		log(temp);
+		log("ProcessEvents ThreadID=%i", this->ProcessEventsThreadID);
 	}
 
 	if (this->isProcessEventsCacheInitialised==false) this->initProcessEventsCache();

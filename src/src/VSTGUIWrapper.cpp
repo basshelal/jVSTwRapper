@@ -464,9 +464,7 @@ void  VSTGUIWrapper::ensureJavaThreadAttachment() {
 		long stat = this->Jvm->AttachCurrentThread((void**)&this->JEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to THREAD in GUI Wrapper!");
 
-		char temp[100];
-		sprintf(temp, "New GUI wrapper ThreadID=%i", this->ThreadID);
-		log(temp);
+		log("New GUI wrapper ThreadID=%i", this->ThreadID);
 	}
   	this->checkException(); //if theres a pending exception, print stack trace & clear it!
 }
