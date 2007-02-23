@@ -63,7 +63,7 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 							...) {
 	va_list args;
 	jvalue result;
-	char temp[70];
+
 
 	log("Invoking JNU_CallJavaMethod method=%s descriptor=%s", name, descriptor);
 	
