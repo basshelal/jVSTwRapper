@@ -136,7 +136,7 @@ public class RotaryKnob extends JComponent {
 				if (dragType == DRAGTYPE_SIMPLE) {
 					float f = dragIncrement
 							* (float) ((me.getX() + me.getY()) - dragpos);
-					setValue(startVal + f);
+					setValue(startVal - f);
 				} else if (dragType == DRAGTYPE_ROUND) {
 					// Measure relative the middle of the button!
 					int xpos = middle - me.getX();
