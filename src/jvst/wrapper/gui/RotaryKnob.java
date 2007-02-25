@@ -32,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -41,11 +42,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Arc2D;
 
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
@@ -129,7 +132,9 @@ public class RotaryKnob extends JComponent {
 				}
 			}
 		});
-
+		
+	
+		
 		// Let the user control the knob with the mouse
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent me) {
@@ -147,9 +152,7 @@ public class RotaryKnob extends JComponent {
 
 					lastAng = ang;
 				}
-			}
-
-			public void mouseMoved(MouseEvent me) {
+				
 			}
 		});
 
@@ -217,6 +220,9 @@ public class RotaryKnob extends JComponent {
 		if (val > 1)
 			val = 1;
 		this.val = val;
+		
+		this.setToolTipText(Float.toString(this.val));
+		
 		ang = START_ANG - (float) LENGTH_ANG * val;
 		repaint();
 		fireChangeEvent();
