@@ -143,32 +143,16 @@ int log(char* data, ...) {
 	if (isWarningOrError) {
 		MessageBoxCount++;	
 		if (MessageBoxCount<5) {
-
 #ifndef MACX
 			MessageBoxA(0, message, "jVSTwRapper", 0);
 #else
-//Uses Carbon Alert window. But the window displayed doesnt receive any input. 
-//this blocks the whole application here... so its commented out by now. 
-//Maybe someone knows a solution?
-/*
-			DialogRef alertref = NULL;
 			CFStringRef msg = CFStringCreateWithCString(NULL, message, kCFStringEncodingASCII);
-			
-			AlertStdCFStringAlertParamRec param;
-			param.version=kStdCFStringAlertVersionOne;
-			param.movable=true;
-			param.helpButton=false;
-			param.defaultText=(CFStringRef)kAlertDefaultOKText;
-			param.cancelText=NULL;
-			param.otherText=NULL;
-			param.defaultButton=kAlertStdAlertOKButton;
-			param.cancelButton=NULL;
-			param.position=kWindowDefaultPosition;
-			param.flags=0;
-			
-			CreateStandardAlert (kAlertCautionAlert, CFSTR("jVSTwRapper"), msg, &param, &alertref);
-			RunStandardAlert (alertref, NULL, &buttonPressed);
-*/
+			CFOptionFlags response;
+			CFUserNotificationDisplayAlert(0,
+				kCFUserNotificationCautionAlertLevel,
+				NULL, NULL, NULL,
+				CFSTR("jVSTwRapper"), msg,
+				NULL, NULL, NULL, &response);
 #endif
 		}
 	}
