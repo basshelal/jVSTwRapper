@@ -273,7 +273,6 @@ public class JayDLay extends VSTPluginAdapter {
   }
 
   public String getProgramNameIndexed(int category, int index) {
-    log("getprogrammbnameindexed");
     String text = "";
     if (index < this.programs.length) text = this.programs[index].getName();
     if ("Init".equals(text)) text = text + " " + index;
