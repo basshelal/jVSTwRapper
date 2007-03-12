@@ -752,6 +752,11 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 	this->ensureJavaThreadAttachment();
 
+	//TODO:
+	//This code seems to contain some severe errors!
+	//If anybody debugs this method here and fixes it, please send it to me
+	//I just didnt fix it mself since this method is used very rarely in plugins...
+
 
 	if (this->isVarIoCacheInitialised==false) this->initVarIoCache();
 
@@ -792,9 +797,9 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 	  this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldInputs, jinputs);
 	  this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldOutputs, joutputs);
 	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput, varIo->numSamplesInput);
-	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed, *varIo->numSamplesInputProcessed);
+	  //this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed, *varIo->numSamplesInputProcessed);
 	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput, varIo->numSamplesOutput);
-	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed, *varIo->numSamplesOutputProcessed);    
+	  //this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed, *varIo->numSamplesOutputProcessed);    
 	  ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, this->VarIoObject);
 
 	  if (this->checkException()) return false;

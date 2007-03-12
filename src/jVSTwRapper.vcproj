@@ -49,7 +49,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" /D &quot;_CRT_SECURE_NO_DEPRECATE&quot;"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\@DATA\private\jvst\jvst_native\src\src\public.sdk\vst2.x&quot;;C:\Programme\Java\jdk1.5.0_06\include\win32;C:\Programme\Java\jdk1.5.0_06\include"
+				AdditionalIncludeDirectories="&quot;C:\@DATA\private\jvst\jvst_native\src\src\public.sdk\vst2.x&quot;;C:\Programme\Java\jdk1.6.0\include\win32;C:\Programme\Java\jdk1.6.0\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;JVSTWRAPPER_EXPORTS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -80,7 +80,7 @@
 				AdditionalDependencies="jawt.lib jvm.lib"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\Programme\Java\jdk1.5.0_06\lib"
+				AdditionalLibraryDirectories="C:\Programme\Java\jdk1.6.0\lib"
 				ModuleDefinitionFile=".\src\jVSTwRapper.def"
 				DelayLoadDLLs="jawt.dll"
 				GenerateDebugInformation="true"
@@ -151,7 +151,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;C:\@DATA\private\jvst\jvst_native\src\src\public.sdk\vst2.x&quot;;C:\Programme\Java\jdk1.5.0_06\include\win32;C:\Programme\Java\jdk1.5.0_06\include"
+				AdditionalIncludeDirectories="&quot;C:\@DATA\private\jvst\jvst_native\src\src\public.sdk\vst2.x&quot;;C:\Programme\Java\jdk1.6.0\include\win32;C:\Programme\Java\jdk1.6.0\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;JVSTWRAPPER_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -181,7 +181,7 @@
 				AdditionalDependencies="jawt.lib jvm.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="C:\Programme\Java\jdk1.5.0_06\lib"
+				AdditionalLibraryDirectories="C:\Programme\Java\jdk1.6.0\lib"
 				ModuleDefinitionFile=".\src\jVSTwRapper.def"
 				DelayLoadDLLs="jawt.dll"
 				ProgramDatabaseFile=".\Release/jVSTwRapper.pdb"
@@ -355,6 +355,10 @@
 			>
 			<File
 				RelativePath=".\src\conf\jVSTwRapper.ini"
+				>
+			</File>
+			<File
+				RelativePath=".\src\conf\libjvstwrapper.jnilib.ini"
 				>
 			</File>
 		</Filter>

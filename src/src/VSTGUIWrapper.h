@@ -68,8 +68,9 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		void ensureJavaThreadAttachment();
 
 #ifndef MACX
-		DWORD ThreadID;
-		
+		void detachWindow();
+		void undecorateJavaWindow();
+		DWORD ThreadID;	
 #else
 		pthread_t ThreadID;
 #endif

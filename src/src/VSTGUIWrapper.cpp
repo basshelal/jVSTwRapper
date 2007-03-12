@@ -62,11 +62,12 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 
 	this->ThreadID = 0;	
 #ifndef MACX 
-	this->JavaWindowHandle = 0; //TODO DM FIX: we also need a win handle on OSX
+	this->JavaWindowHandle = 0;
 #endif
 	this->Jvm = ((VSTV10ToPlug*)effect)->Jvm;
 	this->JEnv = ((VSTV10ToPlug*)effect)->JEnv;
-	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;	
+	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;
+
 #ifndef MACX
 	ConfigFileReader *cfg = new ConfigFileReader();
 	if(cfg!=NULL) {
@@ -81,35 +82,28 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 //-----------------------------------------------------------------------------
 bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	if(this->AttachWindow) {
-	   //Set Size
-	   this->ensureJavaThreadAttachment();
-       //Get Width
-	   jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "getWidth", "()I");
-	   this->checkException();
-	   if (mid == NULL) log("** ERROR: cannot find GUI instance-method getWidth()I");
-	
-	   jint width=this->JEnv->CallIntMethod(this->JavaPlugGUIObj, mid);
+		this->ensureJavaThreadAttachment();
 
-	   this->checkException();
-       //Get Height
-	   mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "getHeight", "()I");
-	   this->checkException();
-	   if (mid == NULL) log("** ERROR: cannot find GUI instance-method getHeight()I");
-	
-	   jint height=this->JEnv->CallIntMethod(this->JavaPlugGUIObj, mid);
+		jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "getWidth", "()I");
+		if (mid == NULL) log("** ERROR: cannot find GUI instance-method getWidth()I");
+		jint width=this->JEnv->CallIntMethod(this->JavaPlugGUIObj, mid);
+		this->checkException();
 
-	   this->checkException();
+		mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "getHeight", "()I");
+		if (mid == NULL) log("** ERROR: cannot find GUI instance-method getHeight()I");
+		jint height=this->JEnv->CallIntMethod(this->JavaPlugGUIObj, mid);
+		this->checkException();
 
-	   rect.left   = 0;
-       rect.top    = 0;
-	   rect.right  = (short)width;
-       rect.bottom = (short)height;
+		rect.left   = 0;
+		rect.top    = 0;
+		rect.right  = (short)width;
+		rect.bottom = (short)height;
 	} 
 	else {
-       rect.left   = 0;
-       rect.top    = 0;
-	   rect.right  = 0;
-       rect.bottom = 0;
+		rect.left   = 0;
+		rect.top    = 0;
+		rect.right  = 0;
+		rect.bottom = 0;
 	}
 	*ppErect = &rect;
 	return true;
@@ -144,9 +138,9 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {	
 	switch (message) {
 		case WM_ERASEBKGND : {		
-			CFrame* frame=(CFrame*)GetWindowLong(hwnd,GWL_USERDATA);
-			HWND javaHandle=((VSTGUIWrapper*)frame->getEditor())->JavaWindowHandle;
-			RedrawWindow(javaHandle,NULL,NULL,RDW_NOERASE);
+			CFrame* frame = (CFrame*)GetWindowLong(hwnd, GWL_USERDATA);
+			HWND javaHandle = ((VSTGUIWrapper*)frame->getEditor())->JavaWindowHandle;
+			RedrawWindow(javaHandle, NULL, NULL, RDW_NOERASE);
 			return 1;
 		}	
 	}
@@ -159,57 +153,49 @@ bool VSTGUIWrapper::open (void *ptr) {
     this->ensureJavaThreadAttachment();
 
 #ifndef MACX
-    ConfigFileReader *cfg = new ConfigFileReader();
+	ConfigFileReader *cfg = new ConfigFileReader();
 	JAWT awt;	
 	jboolean result;
 	bool isAttached = false;
-	
+
 	if (this->AttachWindow) {  
-	   this->AttachWindow=false;
-	   jfieldID libraryOk = this->JEnv->GetStaticFieldID(this->JavaPlugGUIClass, "libraryOk", "Z");	
-	   this->checkException();
+		this->AttachWindow=false; //if something goes wrong, dont try again
+		jfieldID libraryOk = this->JEnv->GetStaticFieldID(this->JavaPlugGUIClass, "libraryOk", "Z");	
+		this->checkException();
 	   
-	   if (libraryOk != NULL) {
-		   jboolean lOk = this->JEnv->GetStaticBooleanField(this->JavaPlugGUIClass,libraryOk);
-		   this->checkException();
+		if (libraryOk != NULL) {
+			jboolean lOk = this->JEnv->GetStaticBooleanField(this->JavaPlugGUIClass,libraryOk);
+			this->checkException();
 		   
-		   if(lOk==JNI_TRUE) {  
+			if(lOk==JNI_TRUE) {  
 				// Get the AWT
 				awt.version = JAWT_VERSION_1_3;
 				result = JAWT_GetAWT(this->JEnv, &awt);
+				
 				if(result != JNI_FALSE) { 
-				  //Inform the class
-				  jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
-   			      jboolean val=JNI_TRUE;
-				  this->checkException();
-                  
-				  if (attachField != NULL) 
-					this->JEnv->SetBooleanField(this->JavaPlugGUIObj,attachField,val);
-				  
-				  this->checkException();    
-				  isAttached=true;
-				  this->AttachWindow=true;
+					//Inform the class
+					jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
+					if (attachField != NULL) this->JEnv->SetBooleanField(this->JavaPlugGUIObj, attachField, JNI_TRUE);
+					this->checkException();
+					
+					isAttached=true;
+					this->AttachWindow=true;
 				}
-		   }
-	   }
+			}
+		}
 	}	
-	if ((!isAttached)&&(cfg->CloseNativePluginWindow==1)) {
+
+	if ((!isAttached) && (cfg->CloseNativePluginWindow==1)) {
 		DestroyWindow(GetParent((HWND)ptr));	
 	} 
 	if (cfg) delete cfg;
 
+
 	if(isAttached) {
         // Call Undecorate
-        jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "undecorate", "()V");
-	    if (mid == NULL) log("** ERROR: cannot find GUI instance-method undecorate()V");
-	
-   	    this->checkException();
+		this->undecorateJavaWindow();
 
-  	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
-
-	    this->checkException();
-
-	   //Try to attach the Window
+		//Try to attach the Window
 		log("Attach Winow");
 		JAWT_DrawingSurface* ds;
 		JAWT_DrawingSurfaceInfo* dsi;
@@ -219,107 +205,82 @@ bool VSTGUIWrapper::open (void *ptr) {
   	    // Get the drawing surface
 		ds = awt.GetDrawingSurface(this->JEnv, this->JavaPlugGUIObj);
 		if(ds != NULL){
-          // Lock the drawing surface
-		  lock = ds->Lock(ds);
-		  if((lock & JAWT_LOCK_ERROR) == 0) {
-   		    // Get the drawing surface info
-			dsi = ds->GetDrawingSurfaceInfo(ds);
+			// Lock the drawing surface
+			lock = ds->Lock(ds);
+			if((lock & JAWT_LOCK_ERROR) == 0) {
+   				// Get the drawing surface info
+				dsi = ds->GetDrawingSurfaceInfo(ds);
 			
-			if(dsi!=NULL) {
-   			  // Get the platform-specific drawing info
-			  dsi_win = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
+				if(dsi!=NULL) {
+					// Get the platform-specific drawing info
+					dsi_win = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
 
-			  //Create Frame to embedd the java Frame
-			  ERect* thissize;
-			  this->getRect(&thissize);
-			  CRect size (0, 0, thissize->right, thissize->bottom);
-			  
-			  if (frame!=NULL) delete frame;
-			  frame = new CFrame (size, ptr, this);
-			  HWND frhwnd=(HWND)frame->getSystemWindow();
-			  
-			  //Get Java Window-Handle
-			  this->JavaWindowHandle=dsi_win->hwnd;
-			  //Set Parent Window
-              SetParent((HWND)JavaWindowHandle,(HWND)frhwnd);
-			  //Set Windows Styles
-			  long style;
-			  style=(LONG)GetWindowLong(((HWND)frhwnd),GWL_STYLE);
-			  SetWindowLong((HWND)frhwnd,GWL_STYLE,style|WS_CLIPCHILDREN);
+					//Create Frame to embedd the java Frame
+					ERect* thissize;
+					this->getRect(&thissize);
+					CRect size (0, 0, thissize->right, thissize->bottom);
 
-			  style=(LONG)GetWindowLong(((HWND)ptr),GWL_STYLE);
-			  SetWindowLong((HWND)ptr,GWL_STYLE,style|WS_CLIPCHILDREN);
-			  
-			  style=GetWindowLong((HWND)JavaWindowHandle,GWL_STYLE);
-			  SetWindowLong(dsi_win->hwnd,GWL_STYLE,style|WS_CHILD);
+					if (frame!=NULL) delete frame;
+					frame = new CFrame (size, ptr, this);
+					HWND frhwnd=(HWND)frame->getSystemWindow();
 
-			  //Set new Paint-Method	
-			  oldWndProcEdit = (WNDPROC)SetWindowLong ((HWND)frhwnd, GWL_WNDPROC, (long)WindowProcEdit);
-			  
-			  // Free the drawing surface info
-              ds->FreeDrawingSurfaceInfo(dsi);
-			}
+					//Get Java Window-Handle
+					this->JavaWindowHandle=dsi_win->hwnd;
+					//Set Parent Window
+					SetParent((HWND)JavaWindowHandle, (HWND)frhwnd);
+					
+					//Set Windows Styles
+					long style;
+					style=(LONG)GetWindowLong(((HWND)frhwnd), GWL_STYLE);
+					SetWindowLong((HWND)frhwnd, GWL_STYLE, style | WS_CLIPCHILDREN);
+
+					style=(LONG)GetWindowLong(((HWND)ptr), GWL_STYLE);
+					SetWindowLong((HWND)ptr, GWL_STYLE, style | WS_CLIPCHILDREN);
+
+					style=GetWindowLong((HWND)JavaWindowHandle, GWL_STYLE);
+					SetWindowLong(dsi_win->hwnd, GWL_STYLE, style | WS_CHILD);
+
+					//Set new Paint-Method	
+					oldWndProcEdit = (WNDPROC)SetWindowLong ((HWND)frhwnd, GWL_WNDPROC, (long)WindowProcEdit);
+
+					// Free the drawing surface info
+					ds->FreeDrawingSurfaceInfo(dsi);
+				}
  
-            // Unlock the drawing surface
-			ds->Unlock(ds);
-		  }
- 		  // Free the drawing surface
-		  awt.FreeDrawingSurface(ds);
+				// Unlock the drawing surface
+				ds->Unlock(ds);
+			}
+			// Free the drawing surface
+			awt.FreeDrawingSurface(ds);
 		} //Drawng Surface Ok!
 	} //Attaching    
 #endif		
+
+
 	// Call Open
     jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
-	
-	this->checkException();
-    // Call open
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 
 #ifndef MACX
-	//Check exceptions in open
+	//Check exceptions in open, if exception, then unattach immediately
 	if(this->JEnv->ExceptionCheck()==JNI_TRUE) {
 		//If a Exception occured close the gui again
 		log("Exception in Open!");
-		//Clear Exception
-		this->JEnv->ExceptionClear();
+		this->checkException();
 
         //Close Gui
 		jmethodID midClose = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	    if (midClose == NULL) log("** ERROR: cannot find GUI instance-method close()V");
-	
 	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midClose);
+		this->checkException();
 
-        //Clear Exception
-		this->JEnv->ExceptionClear();
+		log("* WARNING: Exception occured in GUI open() --> disabling native window attachment");
+		this->AttachWindow=false; //dont attach again!
+		this->detachWindow(); //detach window	
 
-		this->AttachWindow=false;
-  	    //Inform the class
-	    jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
-   	    jboolean val=JNI_FALSE;
-	    this->checkException();
-        if (attachField != NULL) 
-	    this->JEnv->SetBooleanField(this->JavaPlugGUIObj,attachField,val);
-	    this->checkException();                
-        
-		// Detach the Window
-	    if (this->JavaWindowHandle!=NULL) {
-			SetParent(this->JavaWindowHandle,NULL);
-			this->JavaWindowHandle=NULL;
-		}
-		if(frame!=NULL) {
-			delete frame;
-		    frame=NULL;
-		}	
-		// Call Undecorate to redecorate the window
-        jmethodID midUndeco = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "undecorate", "()V");
-	    if (midUndeco == NULL) log("** ERROR: cannot find GUI instance-method undecorate()V");
-	
-   	    this->checkException();
+		this->undecorateJavaWindow(); //call undecorate (this now redecorates the window)
 
-  	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midUndeco);
-
-	    this->checkException();
 		//Call open again
  	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 	}
@@ -332,39 +293,20 @@ bool VSTGUIWrapper::open (void *ptr) {
 //-----------------------------------------------------------------------------
 void VSTGUIWrapper::close () {
 	this->ensureJavaThreadAttachment();
-
-	//hier swing gui close aufrufen...
-	//frame.hide();
     
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
 	
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
-
-	this->checkException();
+	bool error = this->checkException();
 
 #ifndef MACX
-	//Inform the class
-	if(this->AttachWindow) {
-	  jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
-   	  jboolean val=JNI_FALSE;
-	  this->checkException();
-
-      if (attachField != NULL) 
-	  val=this->JEnv->GetBooleanField(this->JavaPlugGUIObj,attachField);
-	  this->checkException();                
-	  
-	  // Detach the Window
-      if(val==JNI_TRUE) {   
-		if(this->JavaWindowHandle!=NULL) {
-			SetParent(this->JavaWindowHandle,NULL);
-			this->JavaWindowHandle=NULL;
-		}
-		if(frame!=NULL) {
-			delete frame;
-		    frame=NULL;
-		}	   
-	  }
+	this->detachWindow(); //detach from hosts native window
+	
+	if (error) {
+		this->AttachWindow=false; //error in close --> dont attach to window again!
+		log("* WARNING: Exception occured in GUI close() --> disabling native window attachment");
+		this->undecorateJavaWindow(); //redecorate the unattached window
 	}
 #endif
 }
@@ -459,7 +401,6 @@ void  VSTGUIWrapper::ensureJavaThreadAttachment() {
 		if (!pthread_equal(pthread_self(),this->ThreadID)){
 			this->ThreadID = pthread_self();
 #endif	
-	
 
 		long stat = this->Jvm->AttachCurrentThread((void**)&this->JEnv, NULL);
 		if (stat<0) log("** ERROR: attaching to THREAD in GUI Wrapper!");
@@ -469,7 +410,37 @@ void  VSTGUIWrapper::ensureJavaThreadAttachment() {
   	this->checkException(); //if theres a pending exception, print stack trace & clear it!
 }
 
-
 bool VSTGUIWrapper::checkException() {
 	return ::checkException(this->JEnv);	
 }
+
+#ifndef MACX
+void VSTGUIWrapper::detachWindow() {
+	log("detaching java window from native win");
+
+	// Detach the Window
+	if(this->JavaWindowHandle!=NULL) {
+		SetParent(this->JavaWindowHandle,NULL);
+		this->JavaWindowHandle=NULL;
+	}
+	if(frame!=NULL) {
+		delete frame;
+		frame=NULL;
+	}
+
+	//Inform the class
+	jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
+	if (attachField != NULL) this->JEnv->SetBooleanField(this->JavaPlugGUIObj, attachField, JNI_FALSE);
+	this->checkException();
+}
+
+void VSTGUIWrapper::undecorateJavaWindow() {
+	log("undecorate / redecorating Java window");
+	// Call Undecorate
+    jmethodID midUndeco = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "undecorate", "()V");
+    if (midUndeco == NULL) log("** ERROR: cannot find GUI instance-method undecorate()V");
+    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midUndeco);
+    this->checkException();
+}
+#endif
+
