@@ -71,7 +71,7 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					22,
 					300,
-					84,
+					84.5835,
 				);
 				PBXFileTableDataSourceColumnsKey = (
 					PBXExecutablesDataSource_ActiveFlagID,
@@ -175,12 +175,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 190999615;
-			PBXWorkspaceStateSaveDate = 190999615;
+			PBXPerProjectTemplateStateSaveDate = 195769230;
+			PBXWorkspaceStateSaveDate = 195769230;
 		};
 		perUserProjectItems = {
-			C3C3AEE00B626B5F00C0F71B = C3C3AEE00B626B5F00C0F71B /* PBXTextBookmark */;
-			C3D6578E0B622754003888FC = C3D6578E0B622754003888FC /* PBXTextBookmark */;
+			C379ED250BA09920006B8B05 /* PBXTextBookmark */ = C379ED250BA09920006B8B05 /* PBXTextBookmark */;
+			C379ED260BA09920006B8B05 /* PBXTextBookmark */ = C379ED260BA09920006B8B05 /* PBXTextBookmark */;
+			C39B81D40BAB3EC200158CB2 /* PBXTextBookmark */ = C39B81D40BAB3EC200158CB2 /* PBXTextBookmark */;
+			C39B81D50BAB3EC200158CB2 /* PBXTextBookmark */ = C39B81D50BAB3EC200158CB2 /* PBXTextBookmark */;
 		};
 		sourceControlManager = C3EA1A900B3D904400B4C69F /* Source Control */;
 		userBuildSettings = {
@@ -194,15 +196,14 @@
 			sepNavWindowFrame = "{{84, 120}, {750, 558}}";
 		};
 	};
-	C3C3AE9D0B6244AC00C0F71B /* PkgInfo */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {742, 613}}";
-			sepNavSelRange = "{0, 8}";
-			sepNavVisRect = "{{0, 0}, {742, 613}}";
-			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
-		};
+	C379ED0C0BA094AC006B8B05 /* minihost */ = {
+		isa = PBXFileReference;
+		explicitFileType = "compiled.mach-o.executable";
+		name = minihost;
+		path = /Volumes/data/Users/martindl/bin/minihost;
+		sourceTree = "<absolute>";
 	};
-	C3C3AEE00B626B5F00C0F71B /* PBXTextBookmark */ = {
+	C379ED250BA09920006B8B05 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
 		name = DestroyJavaVM;
@@ -211,6 +212,44 @@
 		rType = 0;
 		vrLen = 0;
 		vrLoc = 0;
+	};
+	C379ED260BA09920006B8B05 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
+		name = "jVSTwRapperMAIN.cpp: 363";
+		rLen = 0;
+		rLoc = 10855;
+		rType = 0;
+		vrLen = 2020;
+		vrLoc = 10647;
+	};
+	C39B81D40BAB3EC200158CB2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
+		name = DestroyJavaVM;
+		rLen = 13;
+		rLoc = 3455;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	C39B81D50BAB3EC200158CB2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
+		name = "jVSTwRapperMAIN.cpp: 363";
+		rLen = 0;
+		rLoc = 10855;
+		rType = 0;
+		vrLen = 1994;
+		vrLoc = 10647;
+	};
+	C3C3AE9D0B6244AC00C0F71B /* PkgInfo */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {742, 613}}";
+			sepNavSelRange = "{0, 8}";
+			sepNavVisRect = "{{0, 0}, {742, 613}}";
+			sepNavWindowFrame = "{{15, -1}, {787, 742}}";
+		};
 	};
 	C3C70FDF0B45823100DA1076 /* jvstwrapper */ = {
 		activeExec = 0;
@@ -230,16 +269,6 @@
 			sepNavVisRect = "{{0, 215}, {596, 499}}";
 			sepNavWindowFrame = "{{43, 3}, {606, 742}}";
 		};
-	};
-	C3D6578E0B622754003888FC /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
 	};
 	C3E30FDC0B4048010015E591 /* minihost */ = {
 		isa = PBXExecutable;
@@ -273,7 +302,7 @@
 		);
 		executableSystemSymbolLevel = 0;
 		executableUserSymbolLevel = 0;
-		launchableReference = C3E30FDD0B4048010015E591 /* minihost */;
+		launchableReference = C379ED0C0BA094AC006B8B05 /* minihost */;
 		libgmallocEnabled = 0;
 		name = minihost;
 		savedGlobals = {
@@ -362,18 +391,11 @@
 			$xer = 1;
 		};
 	};
-	C3E30FDD0B4048010015E591 /* minihost */ = {
-		isa = PBXFileReference;
-		explicitFileType = "compiled.mach-o.executable";
-		name = minihost;
-		path = /Users/martindl/bin/minihost;
-		sourceTree = "<absolute>";
-	};
 	C3E310630B405D130015E591 /* libjvstwrapper.jnilib.ini */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {626, 1624}}";
+			sepNavIntBoundsRect = "{{0, 0}, {626, 1666}}";
 			sepNavSelRange = "{3644, 66}";
-			sepNavVisRect = "{{0, 1011}, {565, 613}}";
+			sepNavVisRect = "{{0, 929}, {571, 613}}";
 			sepNavWindowFrame = "{{15, 4}, {610, 742}}";
 		};
 	};
@@ -393,7 +415,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {710, 2660}}";
 			sepNavSelRange = "{1655, 0}";
-			sepNavVisRect = "{{0, 454}, {596, 587}}";
+			sepNavVisRect = "{{0, 173}, {602, 587}}";
 			sepNavWindowFrame = "{{38, 4}, {641, 716}}";
 		};
 	};
@@ -407,10 +429,10 @@
 	};
 	C3EA1B6A0B3D97AE00B4C69F /* JNIUtils.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {860, 7532}}";
-			sepNavSelRange = "{1723, 0}";
-			sepNavVisRect = "{{0, 398}, {711, 612}}";
-			sepNavWindowFrame = "{{184, 4}, {756, 741}}";
+			sepNavIntBoundsRect = "{{0, 0}, {860, 7434}}";
+			sepNavSelRange = "{3935, 0}";
+			sepNavVisRect = "{{0, 1615}, {728, 869}}";
+			sepNavWindowFrame = "{{53, 4}, {767, 998}}";
 		};
 	};
 	C3EA1B6B0B3D97AE00B4C69F /* JNIUtils.h */ = {
@@ -423,10 +445,10 @@
 	};
 	C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {938, 9380}}";
-			sepNavSelRange = "{2258, 6}";
-			sepNavVisRect = "{{0, 803}, {560, 452}}";
-			sepNavWindowFrame = "{{97, 5}, {685, 741}}";
+			sepNavIntBoundsRect = "{{0, 0}, {938, 9338}}";
+			sepNavSelRange = "{10855, 0}";
+			sepNavVisRect = "{{0, 4942}, {650, 867}}";
+			sepNavWindowFrame = "{{2, 4}, {689, 996}}";
 		};
 	};
 	C3EA1B6E0B3D97AE00B4C69F /* jVSTwRapperMAIN.h */ = {
