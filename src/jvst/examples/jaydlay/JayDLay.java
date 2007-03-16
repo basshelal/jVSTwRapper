@@ -62,11 +62,12 @@ public class JayDLay extends VSTPluginAdapter {
 
     //communicate with the host
     this.setNumInputs(1);// mono input
-    this.setNumOutputs(2);// stereo output
+    this.setNumOutputs(1);// mono output
     //this.hasVu(false); //deprecated as of vst2.4
     this.canProcessReplacing(true);//mandatory for vst 2.4!
     this.setUniqueID(9876543);//random unique number registered at steinberg (4 byte)
 
+    this.canMono(true); 
 
     log("Construktor JayDLay() INVOKED!");
   }
@@ -82,10 +83,13 @@ public class JayDLay extends VSTPluginAdapter {
 
 
   public int canDo(String feature) {
-	  //the host asks us here what we are able to do
-    int ret = JayDLay.CANDO_DONT_KNOW;
+	//the host asks us here what we are able to do
+    int ret = JayDLay.CANDO_NO;
 
-    if (feature.equals(JayDLay.CANDO_PLUG_1_IN_2_OUT)) ret = JayDLay.CANDO_YES;
+    //if (feature.equals(JayDLay.CANDO_PLUG_1_IN_2_OUT)) ret = JayDLay.CANDO_YES;
+    if (feature.equals(JayDLay.CANDO_PLUG_1_IN_1_OUT)) ret = JayDLay.CANDO_YES;
+    if (feature.equals(JayDLay.CANDO_PLUG_PLUG_AS_CHANNEL_INSERT)) ret = JayDLay.CANDO_YES;
+    if (feature.equals(JayDLay.CANDO_PLUG_PLUG_AS_SEND)) ret = JayDLay.CANDO_YES;
 
     log("canDo: " + feature + " = " + ret);
     return ret;
@@ -112,7 +116,7 @@ public class JayDLay extends VSTPluginAdapter {
     return ret;
   }
 
-  public String getVendorString() { return "Daniel Martin / http://jvstwrapper.sourceforge.net/"; }
+  public String getVendorString() { return "http://jvstwrapper.sourceforge.net/"; }
 
   public int getPlugCategory() {
     log("getPlugCategory");
@@ -284,7 +288,7 @@ public class JayDLay extends VSTPluginAdapter {
   public void processReplacing(float[][] inputs, float[][] outputs, int sampleFrames) {
     float[] in = inputs[0];
     float[] out1 = outputs[0];
-    float[] out2 = outputs[1];
+    //float[] out2 = outputs[1];
 
     for (int i = 0; i < sampleFrames; i++) {
       float x = in[i];
@@ -294,7 +298,7 @@ public class JayDLay extends VSTPluginAdapter {
       if (this.cursor >= this.delay) this.cursor = 0;
 
       out1[i] = y; //IMPORTANT!!! Here is the difference between process() [accumulation]
-      out2[i] = y; //and processReplacing() [replacement]
+      //out2[i] = y; //and processReplacing() [replacement]
     }
   }
 
@@ -305,7 +309,7 @@ public class JayDLay extends VSTPluginAdapter {
   public void process(float[][] inputs, float[][] outputs, int sampleFrames) {
     float[] in = inputs[0];
     float[] out1 = outputs[0];
-    float[] out2 = outputs[1];
+    //float[] out2 = outputs[1];
 
     for (int i = 0; i < sampleFrames; i++) {
       float x = in[i];
@@ -315,7 +319,7 @@ public class JayDLay extends VSTPluginAdapter {
       if (this.cursor >= this.delay) this.cursor = 0;
 
       out1[i] += y; //IMPORTANT!!! Here is the difference between process() [accumulation]
-      out2[i] += y; //and processReplacing() [replacement]
+      //out2[i] += y; //and processReplacing() [replacement]
     }
   }
 
