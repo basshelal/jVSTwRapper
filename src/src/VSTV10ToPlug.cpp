@@ -138,6 +138,8 @@ VstInt32 VSTV10ToPlug::getProgram () {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::setProgramName (char *name) {
+	if (name==NULL) return;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setProgramName", "(Ljava/lang/String;)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setProgramName(Ljava/lang/String;)V");
@@ -151,6 +153,8 @@ void VSTV10ToPlug::setProgramName (char *name) {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::getProgramName (char *name) {
+	if (name==NULL) return;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getProgramName", "()Ljava/lang/String;");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getProgramName(Ljava/lang/String;)V");
@@ -205,6 +209,8 @@ float VSTV10ToPlug::getParameter (VstInt32 index)   {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::getParameterName(VstInt32 index, char *label) {
+	if (label==NULL) return;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getParameterName", "(I)Ljava/lang/String;");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterName(I)Ljava/lang/String;");
@@ -220,6 +226,8 @@ void VSTV10ToPlug::getParameterName(VstInt32 index, char *label) {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::getParameterDisplay (VstInt32 index, char *text) {
+	if (text==NULL) return;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getParameterDisplay", "(I)Ljava/lang/String;");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterDisplay(I)Ljava/lang/String;");
@@ -235,6 +243,8 @@ void VSTV10ToPlug::getParameterDisplay (VstInt32 index, char *text) {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::getParameterLabel (VstInt32 index, char *label) {
+	if (label==NULL) return;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getParameterLabel", "(I)Ljava/lang/String;");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getParameterLabel(I)Ljava/lang/String;");
@@ -272,6 +282,10 @@ void VSTV10ToPlug::resume () {
 	this->JEnv->CallVoidMethod(this->JavaPlugObj, mid);
 
 	this->checkException();
+
+	//call to overwritten method, this is done in all steinberg sample plugs, 
+	//so we do it too...
+	AudioEffectX::resume();
 }	
 
 //------------------------------------------------------------------------
@@ -360,6 +374,8 @@ VstInt32 VSTV10ToPlug::getChunk(void** data, bool isPreset) {
 
 //------------------------------------------------------------------------
 VstInt32 VSTV10ToPlug::setChunk(void* data, VstInt32 byteSize, bool isPreset) {
+	if (data==NULL) return 0;
+
 	this->ensureJavaThreadAttachment();
 	jint ret = -1;
 
@@ -420,9 +436,8 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		log("Process ThreadID=%i", this->ProcessThreadID);
 	}
 
-//#ifdef MACX		//hey gerard, why did you do this? I added it just for safety... 
+
 	if (this->ProcessJEnv == NULL)this->ProcessJEnv = this->JEnv;	
-//#endif
 		
 	if(this->JavaFloatClass == NULL) {
 		this->JavaFloatClass = this->ProcessJEnv->FindClass("[F");

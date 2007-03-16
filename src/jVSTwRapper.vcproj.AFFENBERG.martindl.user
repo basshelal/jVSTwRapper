@@ -9,9 +9,9 @@
 			Name="Debug|Win32"
 			>
 			<DebugSettings
-				Command=""
+				Command="C:\@DATA\private\jvst\minihost\win\Debug\minihost.exe"
 				WorkingDirectory=""
-				CommandArguments=""
+				CommandArguments="C:\@DATA\private\jvst\jvst_native\src\Debug\jVSTwRapper.dll"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -22,7 +22,7 @@
 				SQLDebugging=""
 				Environment=""
 				EnvironmentMerge="true"
-				DebuggerFlavor=""
+				DebuggerFlavor="0"
 				MPIRunCommand=""
 				MPIRunArguments=""
 				MPIRunWorkingDirectory=""

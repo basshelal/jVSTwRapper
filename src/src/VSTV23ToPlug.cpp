@@ -72,6 +72,8 @@ VstInt32 VSTV23ToPlug::setTotalSampleToProcess (VstInt32 value) {
 
 //-----------------------------------------------------------------------------------------
 VstInt32 VSTV23ToPlug::getNextShellPlugin (char* name) { 
+	if (name==NULL) return 0;
+
 	this->ensureJavaThreadAttachment();
 
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getNextShellPlugin", "(Ljava/lang/String;)I");

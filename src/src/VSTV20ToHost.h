@@ -208,14 +208,6 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getParameter
 
 /*
  * Class:     jvst_wrapper_communication_VSTV20ToHost
- * Method:    getSpeakerArrangement
- * Signature: (Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;)Z
- */
-JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getSpeakerArrangement
-  (JNIEnv *, jobject, jobject, jobject);
-
-/*
- * Class:     jvst_wrapper_communication_VSTV20ToHost
  * Method:    hasExternalBuffer
  * Signature: (Z)V
  */

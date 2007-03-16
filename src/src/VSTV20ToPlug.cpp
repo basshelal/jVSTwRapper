@@ -144,6 +144,8 @@ VSTV20ToPlug::~VSTV20ToPlug () {
 
 //-----------------------------------------------------------------------------------------
 bool VSTV20ToPlug::getProgramNameIndexed (VstInt32 category, VstInt32 index, char* text) {
+	if (text==NULL) return false;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getProgramNameIndexed", "(II)Ljava/lang/String;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getProgramNameIndexed(II)Ljava/lang/String;"); return false;}
@@ -161,6 +163,8 @@ bool VSTV20ToPlug::getProgramNameIndexed (VstInt32 category, VstInt32 index, cha
 
 //------------------------------------------------------------------------
 bool VSTV20ToPlug::getProductString (char* text) {
+	if (text==NULL) return false;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getProductString", "()Ljava/lang/String;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getProductString()Ljava/lang/String;"); return false;}
@@ -178,6 +182,8 @@ bool VSTV20ToPlug::getProductString (char* text) {
 
 //------------------------------------------------------------------------
 bool VSTV20ToPlug::getVendorString (char* text) {
+	if (text==NULL) return false;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getVendorString", "()Ljava/lang/String;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getVendorString()Ljava/lang/String;"); return false;}
@@ -247,6 +253,8 @@ VstPlugCategory VSTV20ToPlug::getPlugCategory() {
 }
 
 VstInt32 VSTV20ToPlug::canDo (char* text) {
+	if (text==NULL) return 0; //dont know
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "canDo", "(Ljava/lang/String;)I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method canDo(Ljava/lang/String;)I");
@@ -306,6 +314,8 @@ VstInt32 VSTV20ToPlug::getVendorVersion() {
 
 
 bool VSTV20ToPlug::getEffectName (char* name)   {
+	if (name==NULL) return false;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getEffectName", "()Ljava/lang/String;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getEffectName()Ljava/lang/String;"); return false;}
@@ -382,13 +392,14 @@ VstInt32 VSTV20ToPlug::getNumCategories() {
 }
 
 bool VSTV20ToPlug::getInputProperties (VstInt32 index, VstPinProperties *props) {
+	if (props==NULL) return false;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getInputProperties", "(I)Ljvst/wrapper/valueobjects/VSTPinProperties;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getInputProperties(I)Ljvst/wrapper/valueobjects/VSTPinProperties;"); return false;}
 	
 	jobject obj = this->JEnv->CallObjectMethod(this->JavaPlugObj, mid, (jint)index);
 	if (obj == NULL) {
-		//log("** ERROR: getInputProperties() not implemented by PLUGIN! please contact Plugin writer."); 
 		return false;
 	}
 
@@ -428,6 +439,8 @@ bool VSTV20ToPlug::getInputProperties (VstInt32 index, VstPinProperties *props) 
 }
 
 bool VSTV20ToPlug::getOutputProperties (VstInt32 index, VstPinProperties * props) {	
+	if (props==NULL) return false;
+	
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getOutputProperties", "(I)Ljvst/wrapper/valueobjects/VSTPinProperties;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getOutputProperties(I)Ljvst/wrapper/valueobjects/VSTPinProperties;"); return false;}
@@ -470,6 +483,8 @@ bool VSTV20ToPlug::getOutputProperties (VstInt32 index, VstPinProperties * props
 }
 
 bool VSTV20ToPlug::getErrorText (char* text) {
+	if (text==NULL) return false;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getErrorText", "()Ljava/lang/String;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getErrorText()Ljava/lang/String;"); return false;}
@@ -498,6 +513,8 @@ VstInt32 VSTV20ToPlug::getGetTailSize () {
 }
 
 bool VSTV20ToPlug::getParameterProperties (VstInt32 index, VstParameterProperties *p) {
+	if (p==NULL) return false;
+
 	this->ensureJavaThreadAttachment();
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getParameterProperties", "(I)Ljvst/wrapper/valueobjects/VSTParameterProperties;");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getParameterProperties(I)Ljvst/wrapper/valueobjects/VSTParameterProperties;"); return false;}
@@ -584,6 +601,16 @@ bool VSTV20ToPlug::getParameterProperties (VstInt32 index, VstParameterPropertie
 		str = this->JEnv->GetStringUTFChars(jstr, 0);
 		strncpy(p->categoryLabel,str,24);
 	}
+	
+	fid = this->JEnv->GetFieldID(cls, "future", "[C");
+	if (fid == NULL) {log("** ERROR: cannot find param props field-id future"); return false;}
+	jcharArray jin = (jcharArray)this->JEnv->GetObjectField(obj, fid);
+	jchar* jval = this->JEnv->GetCharArrayElements(jin, NULL);
+	for (int j=0; j<this->JEnv->GetArrayLength(jin) && j<16; j++) 
+		p->future[j] = jval[j];
+	this->JEnv->ReleaseCharArrayElements(jin, jval, 0);
+	this->JEnv->DeleteLocalRef(jin);
+
 
 	if (this->checkException()) return false;
 
@@ -700,7 +727,7 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 			
 			//hack! convert array
 			jbyte* b = new jbyte[4];
-			for (int k=0; k<4; k++) b[k]=me->midiData[k]; //-127 //???
+			for (int k=0; k<4; k++) b[k]=me->midiData[k]; 
 			
 			jbyteArray barr = this->ProcessEventsJEnv->NewByteArray(4);
 			this->ProcessEventsJEnv->SetByteArrayRegion(barr, 0, 3, b);
@@ -723,7 +750,7 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 			
 			//hack! convert array
 			jbyte* b = new jbyte[16];
-			for (int k=0; i<16; k++) b[k]=e->data[k]; //-127 //???
+			for (int k=0; i<16; k++) b[k]=e->data[k]; 
 			
 			jbyteArray barr = this->ProcessEventsJEnv->NewByteArray(16);
 			this->ProcessEventsJEnv->SetByteArrayRegion(barr, 0, 15, b);
@@ -757,6 +784,8 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 	//If anybody debugs this method here and fixes it, please send it to me
 	//I just didnt fix it mself since this method is used very rarely in plugins...
 
+	if (varIo==NULL) 
+		return false;
 
 	if (this->isVarIoCacheInitialised==false) this->initVarIoCache();
 
@@ -769,85 +798,80 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 	jobjectArray  joutputs;
 	jboolean ret;
 
-  	if(varIo!=NULL) {  // Real data to process
+	jinputs = this->JEnv->NewObjectArray(this->getAeffect()->numInputs, this->JavaFloatClass, NULL);
+	joutputs = this->JEnv->NewObjectArray(this->getAeffect()->numOutputs, this->JavaFloatClass, NULL);
+	if (jinputs == NULL) log("** ERROR: out of memory! vario jinputs");
+	if (joutputs == NULL) log("** ERROR: out of memory! vario joutputs");
 
-	  jinputs = this->JEnv->NewObjectArray(this->getAeffect()->numInputs, this->JavaFloatClass, NULL);
-	  joutputs = this->JEnv->NewObjectArray(this->getAeffect()->numOutputs, this->JavaFloatClass, NULL);
-	  if (jinputs == NULL) log("** ERROR: out of memory! vario jinputs");
-	  if (joutputs == NULL) log("** ERROR: out of memory! vario joutputs");
-
-	  for (int i=0; i<this->getAeffect()->numInputs; i++) {
+	for (int i=0; i<this->getAeffect()->numInputs; i++) {
 		float* in = varIo->inputs[i];
 		jfloatArray farr = this->JEnv->NewFloatArray(varIo->numSamplesInput);
-		
-		this->JEnv->SetFloatArrayRegion(farr, 0, varIo->numSamplesInput, in);
-        this->JEnv->SetObjectArrayElement(jinputs, i, farr);
-        this->JEnv->DeleteLocalRef(farr);
-	  }
 
-	  for (int i=0; i<this->getAeffect()->numOutputs; i++) {
+		this->JEnv->SetFloatArrayRegion(farr, 0, varIo->numSamplesInput, in);
+		this->JEnv->SetObjectArrayElement(jinputs, i, farr);
+		this->JEnv->DeleteLocalRef(farr);
+	}
+
+	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = varIo->outputs[i];
 		jfloatArray farr = this->JEnv->NewFloatArray(varIo->numSamplesOutput);
-	
+
 		this->JEnv->SetFloatArrayRegion(farr, 0, varIo->numSamplesOutput, out);
 		this->JEnv->SetObjectArrayElement(joutputs, i, farr);
 		this->JEnv->DeleteLocalRef(farr);
-	  }
-      //set vario object props
-	  this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldInputs, jinputs);
-	  this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldOutputs, joutputs);
-	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput, varIo->numSamplesInput);
-	  //this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed, *varIo->numSamplesInputProcessed);
-	  this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput, varIo->numSamplesOutput);
-	  //this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed, *varIo->numSamplesOutputProcessed);    
-	  ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, this->VarIoObject);
+	}
+	//set vario object props
+	this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldInputs, jinputs);
+	this->JEnv->SetObjectField(this->VarIoObject, this->VarIoFieldOutputs, joutputs);
+	this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput, varIo->numSamplesInput);
+	this->JEnv->SetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput, varIo->numSamplesOutput);
 
-	  if (this->checkException()) return false;
-	  this->JEnv->DeleteLocalRef(jinputs);
-	  this->JEnv->DeleteLocalRef(joutputs);
+	ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, this->VarIoObject);
 
-	  //copy values back to varIo struct
-	  jinputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldInputs);
-	  joutputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldOutputs);
-	  for (int i=0; i<this->getAeffect()->numInputs; i++) {
+	if (this->checkException()) return false;
+	this->JEnv->DeleteLocalRef(jinputs);
+	this->JEnv->DeleteLocalRef(joutputs);
+
+	//copy values back to varIo struct
+	jinputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldInputs);
+	joutputs = (jobjectArray)this->JEnv->GetObjectField(this->VarIoObject, this->VarIoFieldOutputs);
+	for (int i=0; i<this->getAeffect()->numInputs; i++) {
 		float* in = varIo->inputs[i];
 		jfloatArray jin;
 		jfloat *jval;
 
 		jin = (jfloatArray)this->JEnv->GetObjectArrayElement(jinputs, i);
 		jval = this->JEnv->GetFloatArrayElements(jin, NULL);
-		
+
 		memcpy(in, jval, varIo->numSamplesInput * sizeof(float));
-		
+
 		this->JEnv->ReleaseFloatArrayElements(jin, jval, 0);
 		this->JEnv->DeleteLocalRef(jin);
-	  }
-	  for (int i=0; i<this->getAeffect()->numOutputs; i++) {
+	}
+	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = varIo->outputs[i];
 		jfloatArray jout;
 		jfloat *jval;
 
 		jout = (jfloatArray)this->JEnv->GetObjectArrayElement(joutputs, i);
 		jval = this->JEnv->GetFloatArrayElements(jout, NULL);
-		
+
 		memcpy(out, jval, varIo->numSamplesOutput * sizeof(float));
-		
+
 		this->JEnv->ReleaseFloatArrayElements(jout, jval, 0);
 		this->JEnv->DeleteLocalRef(jout);
-	  }
-	  VstInt32 x = 0;
-	  varIo->numSamplesInput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput);
-	  x = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed);
-	  varIo->numSamplesInputProcessed = &x;
-	  varIo->numSamplesOutput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput);
-	  x = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed);
-	  varIo->numSamplesOutputProcessed = &x;
-	
-	  this->JEnv->DeleteLocalRef(jinputs);
-	  this->JEnv->DeleteLocalRef(joutputs);
-	} else {  // varIo==NULL
-      ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->ProcessVarIoMethodID, NULL);
 	}
+	VstInt32 x = 0;
+	varIo->numSamplesInput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInput);
+	x = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesInputProcessed);
+	varIo->numSamplesInputProcessed = &x;
+	varIo->numSamplesOutput = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutput);
+	VstInt32 xx = this->JEnv->GetIntField(this->VarIoObject, this->VarIoFieldNumSamplesOutputProcessed);
+	varIo->numSamplesOutputProcessed = &xx;
+
+	this->JEnv->DeleteLocalRef(jinputs);
+	this->JEnv->DeleteLocalRef(joutputs);
+
 
 	if (this->checkException()) return false;
 
@@ -901,11 +925,13 @@ void VSTV20ToPlug::setBlockSizeAndSampleRate (VstInt32 bs, float sr) {
 
 bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, VstSpeakerArrangement *pluginOutput) {
 	//return true; -->OK!
-
+	
+	if (pluginInput==NULL || pluginOutput==NULL) 
+		return false;
+	
 	this->ensureJavaThreadAttachment();
 
 	if (this->isSpeakerCacheInitialised==false) this->initSpeakerCache();
-
 	
 	this->JEnv->SetIntField(this->jSpeakerArrInObject, this->typeField, pluginInput->type);
 	this->JEnv->SetIntField(this->jSpeakerArrOutObject, this->typeField, pluginOutput->type);
@@ -937,10 +963,9 @@ bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, Vs
 		
 		//hack! convert array
 		jbyte* c = new jbyte[28];
-		for (int j=0; j<28; j++) c[j]=pluginInput->speakers[i].future[j]; // - 127 ???
+		for (int j=0; j<28; j++) c[j]=pluginInput->speakers[i].future[j]; 
 
 		jbyteArray farr = this->JEnv->NewByteArray(28);
-		//this->JEnv->SetByteArrayRegion(farr, 0, 28, (jbyte*)&pluginInput->speakers[i].future[0]);
 		this->JEnv->SetByteArrayRegion(farr, 0, 28, c);
 		this->JEnv->SetObjectField(jSpeakerPropsObject, this->futureField, farr);
 		this->JEnv->DeleteLocalRef(farr);
@@ -977,10 +1002,9 @@ bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, Vs
 		
 		//hack! convert array
 		jbyte* c = new jbyte[28];
-		for (int j=0; j<28; j++) c[j]=pluginOutput->speakers[i].future[j]; // - 127 ???
+		for (int j=0; j<28; j++) c[j]=pluginOutput->speakers[i].future[j];
 
 		jbyteArray farr = this->JEnv->NewByteArray(28);
-		//this->JEnv->SetByteArrayRegion(farr, 0, 28, (jbyte*)&pluginOutput->speakers[i].future[0]);
 		this->JEnv->SetByteArrayRegion(farr, 0, 28, c);
 		this->JEnv->SetObjectField(jSpeakerPropsObject, this->futureField, farr);
 		this->JEnv->DeleteLocalRef(farr);
@@ -1005,6 +1029,117 @@ bool VSTV20ToPlug::setSpeakerArrangement (VstSpeakerArrangement* pluginInput, Vs
 
 	return ret!=0;
 }
+
+
+bool VSTV20ToPlug::getSpeakerArrangement (VstSpeakerArrangement** pluginInput, VstSpeakerArrangement** pluginOutput) {
+	this->ensureJavaThreadAttachment();
+
+	if (this->isSpeakerCacheInitialised==false) this->initSpeakerCache();
+
+	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, this->GetSpeakerArrMethod, this->jSpeakerArrInObject, this->jSpeakerArrOutObject);
+	if (ret==JNI_FALSE) {
+		*pluginInput = 0; 
+		*pluginOutput = 0;
+		return false;
+	}
+
+
+	//alloc
+	VstSpeakerArrangement *input = new VstSpeakerArrangement;
+	VstSpeakerArrangement *output= new VstSpeakerArrangement;
+
+	input->type = this->JEnv->GetIntField(this->jSpeakerArrInObject, this->typeField);
+	output->type = this->JEnv->GetIntField(this->jSpeakerArrOutObject, this->typeField);
+	input->numChannels = this->JEnv->GetIntField(this->jSpeakerArrInObject, this->numChannelsField);
+	output->numChannels = this->JEnv->GetIntField(this->jSpeakerArrOutObject, this->numChannelsField);
+	
+
+	jobjectArray jinputs = (jobjectArray)this->JEnv->GetObjectField(this->jSpeakerArrInObject, this->speakersField);
+	jobjectArray joutputs = (jobjectArray)this->JEnv->GetObjectField(this->jSpeakerArrOutObject, this->speakersField);
+	if (jinputs==NULL || joutputs==NULL) {
+		*pluginInput = 0;
+		*pluginOutput = 0;
+		return false;
+	}
+
+	for (int i=0; i<this->JEnv->GetArrayLength(jinputs) && i<8; i++) {
+		jobject jSpeakerPropsObject = (jobject)this->JEnv->GetObjectArrayElement(jinputs, i);
+		if (jSpeakerPropsObject == NULL) {
+			log("** ERROR: cannot create VSTSpeakerProperties Object!");
+			break;
+		}
+		
+		VstSpeakerProperties props;
+		props.azimuth = this->JEnv->GetFloatField(jSpeakerPropsObject, this->azimuthField);
+		props.elevation = this->JEnv->GetFloatField(jSpeakerPropsObject, this->elevationField);
+		props.radius = this->JEnv->GetFloatField(jSpeakerPropsObject, this->radiusField);
+		props.reserved = this->JEnv->GetFloatField(jSpeakerPropsObject, this->reservedField);		
+		props.type = this->JEnv->GetIntField(jSpeakerPropsObject, this->propsTypeField);
+	
+		jstring str = (jstring)this->JEnv->GetObjectField(jSpeakerPropsObject, this->nameField);
+		if (str==NULL) break;
+		const char* jstr = this->JEnv->GetStringUTFChars(str, NULL);
+		strcpy (props.name, jstr);
+		if(this->checkException()) break;
+
+		jcharArray jin = (jcharArray)this->JEnv->GetObjectField(jSpeakerPropsObject, this->futureField);
+		jchar* jval = this->JEnv->GetCharArrayElements(jin, NULL);
+		for (int j=0; j<this->JEnv->GetArrayLength(jin) && j<28; j++) 
+			props.future[j] = jval[j];
+		this->JEnv->ReleaseCharArrayElements(jin, jval, 0);
+		this->JEnv->DeleteLocalRef(jin);
+
+		input->speakers[i] = props;
+	}
+
+	for (int i=0; i<this->JEnv->GetArrayLength(joutputs) && i<8; i++) {
+		jobject jSpeakerPropsObject = (jobject)this->JEnv->GetObjectArrayElement(joutputs, i);
+		if (jSpeakerPropsObject == NULL) {
+			log("** ERROR: cannot create VSTSpeakerProperties Object!");
+			break;
+		}
+		
+		VstSpeakerProperties props;
+		props.azimuth = this->JEnv->GetFloatField(jSpeakerPropsObject, this->azimuthField);
+		props.elevation = this->JEnv->GetFloatField(jSpeakerPropsObject, this->elevationField);
+		props.radius = this->JEnv->GetFloatField(jSpeakerPropsObject, this->radiusField);
+		props.reserved = this->JEnv->GetFloatField(jSpeakerPropsObject, this->reservedField);		
+		props.type = this->JEnv->GetIntField(jSpeakerPropsObject, this->propsTypeField);
+	
+		jstring str = (jstring)this->JEnv->GetObjectField(jSpeakerPropsObject, this->nameField);
+		if (str==NULL) break;
+		const char* jstr = this->JEnv->GetStringUTFChars(str, NULL);
+		strcpy (props.name, jstr);
+		if(this->checkException()) break;
+
+		jcharArray jin = (jcharArray)this->JEnv->GetObjectField(jSpeakerPropsObject, this->futureField);
+		jchar* jval = this->JEnv->GetCharArrayElements(jin, NULL);
+		for (int j=0; j<this->JEnv->GetArrayLength(jin) && j<28; j++) 
+			props.future[j] = jval[j];
+		this->JEnv->ReleaseCharArrayElements(jin, jval, 0);
+		this->JEnv->DeleteLocalRef(jin);
+
+		output->speakers[i] = props;
+	}
+
+	this->JEnv->DeleteLocalRef(jinputs);
+	this->JEnv->DeleteLocalRef(joutputs);
+	
+	if (this->checkException()) {
+		*pluginInput = 0;
+		*pluginOutput = 0;
+		return false;
+	}
+	
+	pluginInput = &input;
+	pluginOutput = &output;
+
+	return ret==JNI_TRUE;
+}
+
+
+
+
 
 
 //TODO: maybe implement that later, so that swing ui can be positioned by native app...
@@ -1275,7 +1410,11 @@ void VSTV20ToPlug::initSpeakerCache() {
 		log("** ERROR: cannot find instance-method setSpeakerArrangement(Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;)Z");
 		return;
 	}
-
+	this->GetSpeakerArrMethod = this->JEnv->GetMethodID(this->JavaPlugClass, "getSpeakerArrangement", "(Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;)Z");
+	if (this->SetSpeakerArrMethod == NULL) {
+		log("** ERROR: cannot find instance-method getSpeakerArrangement(Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;)Z");
+		return;
+	}
 
 	 
 	this->typeField = this->JEnv->GetFieldID(this->jSpeakerArrClass, "type", "I");
@@ -1324,9 +1463,9 @@ void VSTV20ToPlug::initSpeakerCache() {
 		log("** ERROR: cannot find field-id type (I)");
 		return;
 	}
-	this->futureField = this->JEnv->GetFieldID(this->jSpeakerPropsClass, "future", "[B");
+	this->futureField = this->JEnv->GetFieldID(this->jSpeakerPropsClass, "future", "[C");
 	if (this->futureField == NULL) {
-		log("** ERROR: cannot find field-id future ([B)");
+		log("** ERROR: cannot find field-id future ([C)");
 		return;
 	}
 
@@ -1335,4 +1474,3 @@ void VSTV20ToPlug::initSpeakerCache() {
 
 	this->checkException();
 }
-

@@ -108,31 +108,6 @@ jfieldID MidiEventFieldReserved1 = NULL;
 jfieldID MidiEventFieldReserved2 = NULL;
 
 
-//Speakers
-void initSpeakerCache(JNIEnv* env);
-bool isSpeakerCacheInitialised = false;
-
-jclass jSpeakerArrClass = NULL;		
-jclass jSpeakerPropsClass = NULL;
-
-jmethodID SpeakerPropsConstructor = NULL;
-
-jobject jSpeakerArrInObject = NULL;
-jobject jSpeakerArrOutObject = NULL;
-
-jfieldID typeField = NULL;
-jfieldID numChannelsField = NULL;
-jfieldID speakersField = NULL;
-	
-jfieldID azimuthField = NULL;
-jfieldID elevationField = NULL;
-jfieldID radiusField = NULL;
-jfieldID reservedField = NULL;
-jfieldID nameField = NULL;
-jfieldID propsTypeField = NULL;
-jfieldID futureField = NULL;
-
-
 #define VST_EVENTS_MAX 256
 
 struct BigVstEvents
@@ -217,25 +192,29 @@ JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeIn
 
 		VstTimeInfo* ti = WrapperInstance->getTimeInfo(filt);
 
-		env->SetDoubleField(TimeInfoObject, TimeInfoFieldSamplePos, ti->samplePos);
-		env->SetDoubleField(TimeInfoObject, TimeInfoFieldSampleRate, ti->sampleRate);
-		env->SetDoubleField(TimeInfoObject, TimeInfoFieldNanoSeconds, ti->nanoSeconds);
-		env->SetDoubleField(TimeInfoObject, TimeInfoFieldPPQPos, ti->ppqPos);
-		env->SetDoubleField(TimeInfoObject, TimeInfoFieldTempo, ti->tempo);
-		env->SetDoubleField(TimeInfoObject, TimeInfoFieldBarStartPos, ti->barStartPos);
-		env->SetDoubleField(TimeInfoObject, TimeInfoFieldCycleStartPos, ti->cycleStartPos);
-		env->SetDoubleField(TimeInfoObject, TimeInfoFieldCycleEndPos, ti->cycleEndPos);
-		
-		env->SetIntField(TimeInfoObject, TimeInfoFieldTimeSigNumerator, ti->timeSigNumerator);
-		env->SetIntField(TimeInfoObject, TimeInfoFieldTimeSigDenominator, ti->timeSigDenominator);
-		env->SetIntField(TimeInfoObject, TimeInfoFieldSmpteFrameRate, ti->smpteFrameRate);
-		env->SetIntField(TimeInfoObject, TimeInfoFieldSmpteOffset, ti->smpteOffset);
-		env->SetIntField(TimeInfoObject, TimeInfoFieldSamplesToNextClock, ti->samplesToNextClock);
-		env->SetIntField(TimeInfoObject, TimeInfoFieldFlags, ti->flags);
+		//if getTimeInfo NOT support by host, then NULL is returned!
+		if (ti!=NULL) {
+			env->SetDoubleField(TimeInfoObject, TimeInfoFieldSamplePos, ti->samplePos);
+			env->SetDoubleField(TimeInfoObject, TimeInfoFieldSampleRate, ti->sampleRate);
+			env->SetDoubleField(TimeInfoObject, TimeInfoFieldNanoSeconds, ti->nanoSeconds);
+			env->SetDoubleField(TimeInfoObject, TimeInfoFieldPPQPos, ti->ppqPos);
+			env->SetDoubleField(TimeInfoObject, TimeInfoFieldTempo, ti->tempo);
+			env->SetDoubleField(TimeInfoObject, TimeInfoFieldBarStartPos, ti->barStartPos);
+			env->SetDoubleField(TimeInfoObject, TimeInfoFieldCycleStartPos, ti->cycleStartPos);
+			env->SetDoubleField(TimeInfoObject, TimeInfoFieldCycleEndPos, ti->cycleEndPos);
+			
+			env->SetIntField(TimeInfoObject, TimeInfoFieldTimeSigNumerator, ti->timeSigNumerator);
+			env->SetIntField(TimeInfoObject, TimeInfoFieldTimeSigDenominator, ti->timeSigDenominator);
+			env->SetIntField(TimeInfoObject, TimeInfoFieldSmpteFrameRate, ti->smpteFrameRate);
+			env->SetIntField(TimeInfoObject, TimeInfoFieldSmpteOffset, ti->smpteOffset);
+			env->SetIntField(TimeInfoObject, TimeInfoFieldSamplesToNextClock, ti->samplesToNextClock);
+			env->SetIntField(TimeInfoObject, TimeInfoFieldFlags, ti->flags);
 
-        checkAndThrowException(env);
+			checkAndThrowException(env);
 
-		return TimeInfoObject;
+			return TimeInfoObject;
+		}
+		else return NULL;
 	}
 	else return NULL;
 }
@@ -251,85 +230,87 @@ JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeIn
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstEventsToHost
 	(JNIEnv* env, jobject obj, jobject events) {
 	 
-     VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
-		if (WrapperInstance!=NULL) {
+	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
+	if (WrapperInstance!=NULL && events!=NULL) {
+		
+        BigVstEvents vstEventsToHost;
+        VstMidiEvent vstMidiEventsToHost[VST_EVENTS_MAX];  
+        VstEvent vstEventToHost[VST_EVENTS_MAX];        
+
+		if (IsEventsCacheInitialised==false) InitEventsCache(env);
+
+
+		VstEvents* evts = (VstEvents*)&vstEventsToHost;
+		evts->numEvents = env->GetIntField(events, EventsFieldNumEvents);
+		evts->reserved = env->GetIntField(events, EventsFieldReserved);
+
+		jobjectArray jevents = (jobjectArray)env->GetObjectField(events, EventsFieldEvents);
+		if (jevents==NULL) return 0;
+
+		for (int i=0; i < env->GetArrayLength(jevents); i++) {
 			
-            BigVstEvents vstEventsToHost;
-            VstMidiEvent vstMidiEventsToHost[VST_EVENTS_MAX];  
-            VstEvent vstEventToHost[VST_EVENTS_MAX];        
+			//CAUTION: I only VST_EVENTS_MAX events will be transmited to Host
 
-			if (IsEventsCacheInitialised==false) InitEventsCache(env);
+			if (i>=VST_EVENTS_MAX) break; 
 
+			VstEvent* vstevent;
+			jobject jevent = env->GetObjectArrayElement(jevents, i);
 
-			VstEvents* evts = (VstEvents*)&vstEventsToHost;
-			evts->numEvents = env->GetIntField(events, EventsFieldNumEvents);
-			evts->reserved = env->GetIntField(events, EventsFieldReserved);
+			jint typ = env->GetIntField(jevent, EventFieldType);
 
-			jobjectArray jevents = (jobjectArray)env->GetObjectField(events, EventsFieldEvents);
-			for (int i=0; i < env->GetArrayLength(jevents); i++) {
+			if (typ==kVstMidiType) {					
+				VstMidiEvent* mevent = &(vstMidiEventsToHost[i]);
 				
-				//CAUTION: I only VST_EVENTS_MAX events will be transmited to Host
+				mevent->type = typ;
+				mevent->byteSize = env->GetIntField(jevent, EventFieldByteSize);
+				mevent->deltaFrames = env->GetIntField(jevent, EventFieldDeltaFrames);
+				mevent->flags = env->GetIntField(jevent, EventFieldFlags);
 
-				if (i>=VST_EVENTS_MAX) break; 
-
-				VstEvent* vstevent;
-				jobject jevent = env->GetObjectArrayElement(jevents, i);
-
-				jint typ = env->GetIntField(jevent, EventFieldType);
-
-				if (typ==kVstMidiType) {					
-					VstMidiEvent* mevent = &(vstMidiEventsToHost[i]);
-					
-					mevent->type = typ;
-					mevent->byteSize = env->GetIntField(jevent, EventFieldByteSize);
-					mevent->deltaFrames = env->GetIntField(jevent, EventFieldDeltaFrames);
-					mevent->flags = env->GetIntField(jevent, EventFieldFlags);
-
-					jbyteArray jdata = (jbyteArray)env->GetObjectField(jevent, EventFieldData);
-					jbyte* elmts = env->GetByteArrayElements(jdata, NULL);
-					for (int j=0; j<env->GetArrayLength(jdata); j++) {
-						if (j>=3) break; // 3 Bytes of midi data
-						mevent->midiData[j] = elmts[j];
-					}
-					mevent->midiData[3] = 0; //reserved
-					env->ReleaseByteArrayElements(jdata, elmts, 0);
-					env->DeleteLocalRef(jdata);
-					
-					mevent->noteLength = env->GetIntField(jevent, MidiEventFieldNoteLength);
-					mevent->noteOffset = env->GetIntField(jevent, MidiEventFieldNoteOffset);
-
-					mevent->detune = env->GetByteField(jevent, MidiEventFieldDetune);
-					mevent->noteOffVelocity = env->GetByteField(jevent, MidiEventFieldNoteOffVelocity);
-					mevent->reserved1 = env->GetByteField(jevent, MidiEventFieldReserved1);
-					mevent->reserved2 = env->GetByteField(jevent, MidiEventFieldReserved2);
-
-					vstevent = (VstEvent*)mevent;
+				jbyteArray jdata = (jbyteArray)env->GetObjectField(jevent, EventFieldData);
+				jbyte* elmts = env->GetByteArrayElements(jdata, NULL);
+				for (int j=0; j<env->GetArrayLength(jdata); j++) {
+					if (j>=3) break; // 3 Bytes of midi data
+					mevent->midiData[j] = elmts[j];
 				}
-				else {
-					vstevent = &(vstEventToHost[i]);
+				mevent->midiData[3] = 0; //reserved
+				env->ReleaseByteArrayElements(jdata, elmts, 0);
+				env->DeleteLocalRef(jdata);
+				
+				mevent->noteLength = env->GetIntField(jevent, MidiEventFieldNoteLength);
+				mevent->noteOffset = env->GetIntField(jevent, MidiEventFieldNoteOffset);
 
-					vstevent->type = typ;
-					vstevent->byteSize = env->GetIntField(jevent, EventFieldByteSize);
-					vstevent->deltaFrames = env->GetIntField(jevent, EventFieldDeltaFrames);
-					vstevent->flags = env->GetIntField(jevent, EventFieldFlags);
+				mevent->detune = env->GetByteField(jevent, MidiEventFieldDetune);
+				mevent->noteOffVelocity = env->GetByteField(jevent, MidiEventFieldNoteOffVelocity);
+				mevent->reserved1 = env->GetByteField(jevent, MidiEventFieldReserved1);
+				mevent->reserved2 = env->GetByteField(jevent, MidiEventFieldReserved2);
 
-					jbyteArray jdata = (jbyteArray)env->GetObjectField(jevent, EventFieldData);
-					jbyte* elmts = env->GetByteArrayElements(jdata, NULL);
-					for (int j=0; j<env->GetArrayLength(jdata); j++) {
-						if (j>=16) break; //16 Bytes Data
-						vstevent->data[j] = elmts[j];
-					}
-					env->ReleaseByteArrayElements(jdata, elmts, 0);
-					env->DeleteLocalRef(jdata);
+				vstevent = (VstEvent*)mevent;
+			}
+			else {
+				vstevent = &(vstEventToHost[i]);
+
+				vstevent->type = typ;
+				vstevent->byteSize = env->GetIntField(jevent, EventFieldByteSize);
+				vstevent->deltaFrames = env->GetIntField(jevent, EventFieldDeltaFrames);
+				vstevent->flags = env->GetIntField(jevent, EventFieldFlags);
+
+				jbyteArray jdata = (jbyteArray)env->GetObjectField(jevent, EventFieldData);
+				jbyte* elmts = env->GetByteArrayElements(jdata, NULL);
+				for (int j=0; j<env->GetArrayLength(jdata); j++) {
+					if (j>=16) break; //16 Bytes Data
+					vstevent->data[j] = elmts[j];
 				}
-
-				evts->events[i] = vstevent;
+				env->ReleaseByteArrayElements(jdata, elmts, 0);
+				env->DeleteLocalRef(jdata);
 			}
 
-			checkAndThrowException(env);			
-			return WrapperInstance->sendVstEventsToHost(evts);
+			evts->events[i] = vstevent;
 		}
-		else return 0;
+
+		checkAndThrowException(env);			
+		return WrapperInstance->sendVstEventsToHost(evts);
+	}
+	else return 0;
  }
 
 
@@ -526,114 +507,6 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getParameter
     VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) return WrapperInstance->getParameterQuantization();
 	else return 0L;
-}
-
-/*
- * Class:     jvst_wrapper_communication_VSTV20ToHost
- * Method:    getSpeakerArrangement
- * Signature: (Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;Ljvst/wrapper/valueobjects/VSTSpeakerArrangement;)Z
- */
-JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getSpeakerArrangement
-		(JNIEnv* env, jobject obj, jobject jinput, jobject joutput) {
-
-    VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
-	if (WrapperInstance!=NULL) {
-		if (isSpeakerCacheInitialised==false) initSpeakerCache(env);
-
-
-		VstSpeakerArrangement* input;
-		VstSpeakerArrangement* output;
-
-		jboolean ret = WrapperInstance->getSpeakerArrangement(&input, &output);
-
-
-		env->SetIntField(jinput, typeField, input->type);
-		env->SetIntField(joutput, typeField, output->type);
-		env->SetIntField(jinput, numChannelsField, input->numChannels);
-		env->SetIntField(joutput, numChannelsField, output->numChannels);
-		
-
-		jobjectArray jInProps = env->NewObjectArray(input->numChannels, jSpeakerPropsClass, NULL);
-
-		for (int i=0; i<input->numChannels; i++) {
-			jobject jSpeakerPropsObject = env->NewObject(jSpeakerPropsClass, SpeakerPropsConstructor);
-			if (jSpeakerPropsObject == NULL) {
-				log("** ERROR: cannot create VSTSpeakerProperties Object!");
-				break;
-			}
-
-			env->SetFloatField(jSpeakerPropsObject, azimuthField, input->speakers[i].azimuth);
-			env->SetFloatField(jSpeakerPropsObject, elevationField, input->speakers[i].elevation);
-			env->SetFloatField(jSpeakerPropsObject, radiusField, input->speakers[i].radius);
-			env->SetFloatField(jSpeakerPropsObject, reservedField, input->speakers[i].reserved);		
-			env->SetIntField(jSpeakerPropsObject, propsTypeField, input->speakers[i].type);
-
-			jstring jstr = env->NewStringUTF(input->speakers[i].name);
-			env->SetObjectField(jSpeakerPropsObject, nameField, jstr);
-			
-			//hack! convert array
-			jbyte* c = new jbyte[28];
-			for (int j=0; j<28; j++) c[j]=input->speakers[i].future[j]; // - 127 ???
-			
-			jbyteArray farr = env->NewByteArray(28);
-			env->SetByteArrayRegion(farr, 0, 28, c);
-			env->SetObjectField(jSpeakerPropsObject, futureField, farr);
-			env->DeleteLocalRef(farr);
-
-
-			env->SetObjectArrayElement(jInProps, i, jSpeakerPropsObject);
-
-			env->DeleteLocalRef(jSpeakerPropsObject);
-			delete [] c;
-		}
-
-
-		jobjectArray jOutProps = env->NewObjectArray(output->numChannels, jSpeakerPropsClass, NULL);
-
-		for (int i=0; i<output->numChannels; i++) {
-			jobject jSpeakerPropsObject = env->NewObject(jSpeakerPropsClass, SpeakerPropsConstructor);
-			if (jSpeakerPropsObject == NULL) {
-				log("** ERROR: cannot create VSTSpeakerProperties Object!");
-				break;
-			}
-
-			env->SetFloatField(jSpeakerPropsObject, azimuthField, output->speakers[i].azimuth);
-			env->SetFloatField(jSpeakerPropsObject, elevationField, output->speakers[i].elevation);
-			env->SetFloatField(jSpeakerPropsObject, radiusField, output->speakers[i].radius);
-			env->SetFloatField(jSpeakerPropsObject, reservedField, output->speakers[i].reserved);		
-			env->SetIntField(jSpeakerPropsObject, propsTypeField, output->speakers[i].type);
-
-			jstring jstr = env->NewStringUTF(output->speakers[i].name);
-			env->SetObjectField(jSpeakerPropsObject, nameField, jstr);
-			
-			//hack! convert array
-			jbyte* c = new jbyte[28];
-			for (int j=0; j<28; j++) c[j]=output->speakers[i].future[j]; // - 127 ???
-			
-			jbyteArray farr = env->NewByteArray(28);
-			env->SetByteArrayRegion(farr, 0, 28, c);
-			env->SetObjectField(jSpeakerPropsObject, futureField, farr);
-			env->DeleteLocalRef(farr);
-
-
-			env->SetObjectArrayElement(jOutProps, i, jSpeakerPropsObject);
-
-			env->DeleteLocalRef(jSpeakerPropsObject);
-			delete[] c;
-		}
-
-		env->SetObjectField(jinput, speakersField, jInProps);
-		env->SetObjectField(joutput, speakersField, jOutProps);
-
-
-		env->DeleteLocalRef(jInProps);
-		env->DeleteLocalRef(jOutProps);
-		
-		checkAndThrowException(env);
-
-		return ret;
-	}
-	else return 0;
 }
 
 /*
@@ -953,103 +826,4 @@ void InitEventsCache(JNIEnv* env) {
 	}
 
 	IsEventsCacheInitialised = true;
-}
-
-
-
-void initSpeakerCache(JNIEnv* env) {
-	
-	jSpeakerArrClass = env->FindClass("jvst/wrapper/valueobjects/VSTSpeakerArrangement");
-	if (jSpeakerArrClass == NULL) {
-		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTSpeakerArrangement");
-		return;
-	}
-		
-	//Call JAVA Konstruktor
-	jmethodID mid = env->GetMethodID(jSpeakerArrClass, "<init>", "()V");
-	if (mid == NULL) {
-		log("** ERROR: cannot find default contructor for VSTSpeakerArrangement!");
-		return;
-	}
-	jSpeakerArrInObject = env->NewObject(jSpeakerArrClass, mid);
-	if (jSpeakerArrInObject == NULL) {
-		log("** ERROR: cannot create VSTSpeakerArrangement Object!");
-		return;
-	}
-	jSpeakerArrInObject = env->NewGlobalRef(jSpeakerArrInObject);
-
-	jSpeakerArrOutObject = env->NewObject(jSpeakerArrClass, mid);
-	if (jSpeakerArrOutObject == NULL) {
-		log("** ERROR: cannot create VSTSpeakerArrangement Object!");
-		return;
-	}
-	jSpeakerArrOutObject = env->NewGlobalRef(jSpeakerArrOutObject);
-
-
-	jSpeakerPropsClass = env->FindClass("jvst/wrapper/valueobjects/VSTSpeakerProperties");
-	if (jSpeakerPropsClass == NULL) {
-		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTSpeakerProperties");
-		return;
-	}	
-	SpeakerPropsConstructor = env->GetMethodID(jSpeakerPropsClass, "<init>", "()V");
-	if (SpeakerPropsConstructor == NULL) {
-		log("** ERROR: cannot find default contructor for VSTSpeakerProperties!");
-		return;
-	}
-
-
-
-	typeField = env->GetFieldID(jSpeakerArrClass, "type", "I");
-	if (typeField == NULL) {
-		log("** ERROR: cannot find field-id type (I)");
-		return;
-	}
-	numChannelsField = env->GetFieldID(jSpeakerArrClass, "numChannels", "I");
-	if (numChannelsField == NULL) {
-		log("** ERROR: cannot find field-id numChannels (I)");
-		return;
-	}
-	speakersField = env->GetFieldID(jSpeakerArrClass, "speakers", "[Ljvst/wrapper/valueobjects/VSTSpeakerProperties");
-	if (speakersField == NULL) {
-		log("** ERROR: cannot find field-id speakersField ([Ljvst/wrapper/valueobjects/VSTSpeakerProperties)");
-		return;
-	}
-	
-	azimuthField = env->GetFieldID(jSpeakerPropsClass, "azimuth", "F");
-	if (azimuthField == NULL) {
-		log("** ERROR: cannot find field-id azimuth (F)");
-		return;
-	}
-	elevationField = env->GetFieldID(jSpeakerPropsClass, "elevation", "F");
-	if (elevationField == NULL) {
-		log("** ERROR: cannot find field-id elevation (F)");
-		return;
-	}
-	radiusField = env->GetFieldID(jSpeakerPropsClass, "radius", "F");
-	if (radiusField == NULL) {
-		log("** ERROR: cannot find field-id radius (F)");
-		return;
-	}
-	reservedField = env->GetFieldID(jSpeakerPropsClass, "reserved", "F");
-	if (reservedField == NULL) {
-		log("** ERROR: cannot find field-id reserved (F)");
-		return;
-	}
-	nameField = env->GetFieldID(jSpeakerPropsClass, "name", "Ljava/lang/String;");
-	if (nameField == NULL) {
-		log("** ERROR: cannot find field-id name (Ljava/lang/String;)");
-		return;
-	}
-	propsTypeField = env->GetFieldID(jSpeakerPropsClass, "type", "I");
-	if (typeField == NULL) {
-		log("** ERROR: cannot find field-id type (I)");
-		return;
-	}
-	futureField = env->GetFieldID(jSpeakerPropsClass, "future", "[B");
-	if (futureField == NULL) {
-		log("** ERROR: cannot find field-id future ([B)");
-		return;
-	}
-	
-	isSpeakerCacheInitialised = true;
 }

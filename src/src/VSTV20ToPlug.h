@@ -94,6 +94,8 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 		virtual void setBlockSizeAndSampleRate (VstInt32 blockSize, float sampleRate);
 
 		virtual bool setSpeakerArrangement (VstSpeakerArrangement* pluginInput, VstSpeakerArrangement *pluginOutput);
+		virtual bool getSpeakerArrangement (VstSpeakerArrangement** pluginInput, VstSpeakerArrangement** pluginOutput);
+		
 		//we have our own UI handling
 		//virtual bool setViewPosition (long x, long y);
 
@@ -162,6 +164,7 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 
 		jmethodID SpeakerPropsConstructor;
 		jmethodID SetSpeakerArrMethod;
+		jmethodID GetSpeakerArrMethod;
 
 		jobject jSpeakerArrInObject;
 		jobject jSpeakerArrOutObject;
