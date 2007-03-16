@@ -171,7 +171,6 @@ public abstract class VSTV20ToHost extends VSTV10ToHost {
   //1 : Full single float precision is maintained in automation.
   //other : The integer value that represents +1.0.
 
-  public native boolean getSpeakerArrangement(VSTSpeakerArrangement inputs, VSTSpeakerArrangement outputs);
   
   /**@deprecated
    * deprecated as of vst sdk version 2.4

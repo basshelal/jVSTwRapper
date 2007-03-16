@@ -167,7 +167,9 @@ public abstract class VSTPluginAdapter extends VSTV24ToHost implements VSTV24ToP
   public boolean setSpeakerArrangement (VSTSpeakerArrangement pluginInput, VSTSpeakerArrangement pluginOutput) {
     return false;
   }
-
+  public boolean getSpeakerArrangement (VSTSpeakerArrangement pluginInput, VSTSpeakerArrangement pluginOutput) {
+	return false;
+  }
 
   //provide defaults for vst 2.1 OPTIONAL methods
   //********************************

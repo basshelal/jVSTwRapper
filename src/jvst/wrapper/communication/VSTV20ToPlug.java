@@ -180,5 +180,9 @@ public interface VSTV20ToPlug extends VSTV10ToPlug {
    * please see the original vst documenation for details
    */
   public void setBlockSizeAndSampleRate(int blockSize, float sampleRate);
+  
   public boolean setSpeakerArrangement (VSTSpeakerArrangement pluginInput, VSTSpeakerArrangement pluginOutput);
+  public boolean getSpeakerArrangement (VSTSpeakerArrangement inputs, VSTSpeakerArrangement outputs);
+  
+  
 }
