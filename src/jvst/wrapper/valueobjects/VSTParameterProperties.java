@@ -41,13 +41,13 @@ public class VSTParameterProperties {
   private float stepFloat;
   private float smallStepFloat;
   private float largeStepFloat;
-  private String label;
+  private String label = "";
   private int flags;			// see constants
   private int minInteger;
   private int maxInteger;
   private int stepInteger;
   private int largeStepInteger;
-  private String shortLabel;		// recommended: 6 + delimiter
+  private String shortLabel = "";		// recommended: 6 + delimiter
 
   // the following are for remote controller display purposes.
   // note that the kVstParameterSupportsDisplayIndex flag must be set.
@@ -66,9 +66,9 @@ public class VSTParameterProperties {
   private int category;		// 0: no category, else group index + 1
   private int numParametersInCategory;
   private int reserved;
-  private String categoryLabel;	// for instance, "Osc 1"
+  private String categoryLabel = "";	// for instance, "Osc 1"
 
-  private String future;
+  private char future[] = new char[16];
 
 
 
@@ -79,7 +79,7 @@ public class VSTParameterProperties {
   public VSTParameterProperties(
     float stepfl, float smallstepfl, float largestepfl, String lab, int fl, int minInt,
     int maxInt, int stepInt, int largeStepInt, String shortLab, int displayIdx, int cat,
-    int numParamsInCat, int res, String catLabel, String fut) {
+    int numParamsInCat, int res, String catLabel, char[] fut) {
 
     this.stepFloat = stepfl;
     this.smallStepFloat = smallstepfl;
@@ -219,11 +219,11 @@ public class VSTParameterProperties {
     this.categoryLabel = categoryLabel;
   }
 
-  public String getFuture() {
+  public char[] getFuture() {
     return this.future;
   }
 
-  public void setFuture(String future) {
+  public void setFuture(char[] future) {
     this.future = future;
   }
 

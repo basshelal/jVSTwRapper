@@ -103,9 +103,9 @@ public class VSTSpeakerProperties {
   private float elevation;	// rad		-PI/2...PI/2	10.f for LFE channel
   private float radius;		// meter			0.f for LFE channel
   private float reserved;	// 0.
-  private String name;	        // for new setups, new names should be given (L/R/C... won't do)
+  private String name = "";	        // for new setups, new names should be given (L/R/C... won't do)
   private int  type;		// speaker type
-  private byte future[] = new byte[28];
+  private char future[] = new char[28];
 
 
   public VSTSpeakerProperties() {
@@ -159,11 +159,11 @@ public class VSTSpeakerProperties {
     this.type = type;
   }
 
-  public byte[] getFuture() {
+  public char[] getFuture() {
     return this.future;
   }
 
-  public void setFuture(byte[] future) {
+  public void setFuture(char[] future) {
     this.future = future;
   }
 }

@@ -34,10 +34,10 @@ public class VSTPinProperties {
   public static final int VST_PIN_USE_SPEAKER = 4;
 
 
-  private String Label;
+  private String Label = "";
   private int Flags;         // see pin properties flags
   private int ArrangementType;
-  private String ShortLabel; // recommended: 6 + delimiter
+  private String ShortLabel = ""; // recommended: 6 + delimiter
 
 
   public VSTPinProperties() {

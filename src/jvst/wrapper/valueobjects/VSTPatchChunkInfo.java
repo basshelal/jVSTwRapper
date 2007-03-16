@@ -33,6 +33,6 @@ public class VSTPatchChunkInfo {
   private int pluginUniqueID;// UniqueID of the plugin
   private int pluginVersion; // Plugin Version
   private int numElements;   // Number of Programs (Bank) or Parameters (Program)
-  private String future;     //[48];
+  private char[] future = new char[48];     //[48];
 
 }
