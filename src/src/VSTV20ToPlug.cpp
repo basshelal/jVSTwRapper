@@ -666,13 +666,13 @@ bool VSTV20ToPlug::keysRequired () {
 VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 
 		
-#ifndef MACX
+#ifdef WIN32
 		DWORD threadID;
 		threadID = GetCurrentThreadId();
 		if (this->ProcessEventsThreadID != threadID) {
-			this->ProcessEventsThreadID = threadID;
-			
-#else
+			this->ProcessEventsThreadID = threadID;	
+#endif
+#ifdef MACX
 			pthread_t threadID;
 			threadID = pthread_self();		
 			if (!pthread_equal(threadID,this->ProcessEventsThreadID)){

@@ -49,10 +49,11 @@
 #endif
 
 
-#ifndef MACX
+#ifdef WIN32
 	#include <windows.h>
 	#include "jawt_md.h"
-#else
+#endif
+#ifdef MACX
 	#include <pthread.h>
 #endif
 
@@ -61,20 +62,21 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 	: AEffGUIEditor (effect) {
 
 	this->ThreadID = 0;	
-#ifndef MACX 
+#ifdef WIN32 
 	this->JavaWindowHandle = 0;
 #endif
 	this->Jvm = ((VSTV10ToPlug*)effect)->Jvm;
 	this->JEnv = ((VSTV10ToPlug*)effect)->JEnv;
 	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;
 
-#ifndef MACX
+#ifdef WIN32
 	ConfigFileReader *cfg = new ConfigFileReader();
 	if(cfg!=NULL) {
 	  this->AttachWindow=(cfg->AttachToNativePluginWindow==1);
 	  delete cfg;
 	}
-#else
+#endif
+#ifdef MACX
 	this->AttachWindow=0;
 #endif
 }
@@ -132,7 +134,7 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 
 //-----------------------------------------------------------------------------
 
-#ifndef MACX
+#ifdef WIN32
 static WNDPROC oldWndProcEdit;
 LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {	
@@ -152,7 +154,7 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 bool VSTGUIWrapper::open (void *ptr) {
     this->ensureJavaThreadAttachment();
 
-#ifndef MACX
+#ifdef WIN32
 	ConfigFileReader *cfg = new ConfigFileReader();
 	JAWT awt;	
 	jboolean result;
@@ -262,7 +264,8 @@ bool VSTGUIWrapper::open (void *ptr) {
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 
-#ifndef MACX
+
+#ifdef WIN32
 	//Check exceptions in open, if exception, then unattach immediately
 	if(this->JEnv->ExceptionCheck()==JNI_TRUE) {
 		//If a Exception occured close the gui again
@@ -300,7 +303,7 @@ void VSTGUIWrapper::close () {
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 	bool error = this->checkException();
 
-#ifndef MACX
+#ifdef WIN32
 	this->detachWindow(); //detach from hosts native window
 	
 	if (error) {
@@ -394,10 +397,11 @@ int VSTGUIWrapper::initJavaSide(jclass guiClass) {
 //-----------------------------------------------------------------------------
 void  VSTGUIWrapper::ensureJavaThreadAttachment() {
 	
-#ifndef MACX	
+#ifdef WIN32	
 	if (this->ThreadID != GetCurrentThreadId()) {
 		this->ThreadID = GetCurrentThreadId();
-#else
+#endif
+#ifdef MACX
 		if (!pthread_equal(pthread_self(),this->ThreadID)){
 			this->ThreadID = pthread_self();
 #endif	
@@ -414,7 +418,7 @@ bool VSTGUIWrapper::checkException() {
 	return ::checkException(this->JEnv);	
 }
 
-#ifndef MACX
+#ifdef WIN32
 void VSTGUIWrapper::detachWindow() {
 	log("detaching java window from native win");
 

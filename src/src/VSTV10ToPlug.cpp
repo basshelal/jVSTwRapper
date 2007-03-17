@@ -171,10 +171,11 @@ void VSTV10ToPlug::getProgramName (char *name) {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
-    //Workaround for energyXT: Don't call setParameter from setParameterAutomated
-#ifndef MACX
+//Workaround for energyXT: Don't call setParameter from setParameterAutomated
+#ifdef WIN32
 	if(this->ToHostThread!=GetCurrentThreadId()) {		
-#else
+#endif
+#ifdef MACX
 	if(this->ToHostThread!=pthread_self()) {
 #endif
 
@@ -418,12 +419,13 @@ void VSTV10ToPlug::setSampleRate(float sampleRt) {
 //------------------------------------------------------------------------
 void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFrames) {
 	
-#ifndef MACX
+#ifdef WIN32
 		DWORD threadID;
 		threadID = GetCurrentThreadId();
 		if (this->ProcessThreadID != threadID) {
 			this->ProcessThreadID = threadID;			
-#else
+#endif
+#ifdef MACX
 		pthread_t threadID;
 		threadID = pthread_self();		
 		if (!pthread_equal(threadID,this->ProcessThreadID)){
@@ -506,14 +508,13 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 //---------------------------------------------------------------------------
 void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames) {
 	
-	
-#ifndef MACX
+#ifdef WIN32
 	DWORD threadID;
 	threadID = GetCurrentThreadId();
 	if (this->ProcessReplacingThreadID != threadID) {
-		this->ProcessReplacingThreadID = threadID;
-		
-#else
+		this->ProcessReplacingThreadID = threadID;	
+#endif
+#ifdef MACX
 		pthread_t threadID;
 		threadID = pthread_self();
 		if (!pthread_equal(threadID,this->ProcessReplacingThreadID)){
@@ -670,13 +671,13 @@ int VSTV10ToPlug::initJavaSide(jclass effectClass) {
 //-----------------------------------------------------------------------------
 void VSTV10ToPlug::ensureJavaThreadAttachment() {
 	
-#ifndef MACX
+#ifdef WIN32
 	DWORD threadID;
 	threadID = GetCurrentThreadId();
 	if (this->ThreadID != threadID) {
 		this->ThreadID = threadID;
-		
-#else
+#endif
+#ifdef MACX
 	pthread_t threadID;
 	threadID = pthread_self();
 	if (!pthread_equal(threadID,this->ThreadID)){

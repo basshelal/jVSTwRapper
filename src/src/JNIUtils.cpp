@@ -143,9 +143,11 @@ int log(char* data, ...) {
 	if (isWarningOrError) {
 		MessageBoxCount++;	
 		if (MessageBoxCount<5) {
-#ifndef MACX
+
+#ifdef WIN32
 			MessageBoxA(0, message, "jVSTwRapper", 0);
-#else
+#endif
+#ifdef MACX
 			CFStringRef msg = CFStringCreateWithCString(NULL, message, kCFStringEncodingASCII);
 			CFOptionFlags response;
 			CFUserNotificationDisplayAlert(0,
@@ -317,7 +319,7 @@ bool checkAndThrowException(JNIEnv *env) {
 //----------------------------------------------------------
 //registry + dynamic lib loading stuff for windows...
 
-#ifndef MACX
+#ifdef WIN32
 
 #define JVM_REG_18 "Software\\JavaSoft\\Java Runtime Environment\\1.8"
 #define JVM_REG_17 "Software\\JavaSoft\\Java Runtime Environment\\1.7"
@@ -438,8 +440,8 @@ int initJVMFunctionPointers(char *vmlibpath) {
 	
 	return 0;
 }
-
-#else
+#endif
+#ifdef MACX
 //**************************************************************************************************
 // Mac feature for requesting a specific JVM
 
@@ -527,5 +529,5 @@ int checkJVMVersionRequest(char* requestedJVMVersion) {
 	
 	return retval;
 }
-
 #endif
+

@@ -98,9 +98,10 @@ class VSTV10ToPlug : public AudioEffectX {
 		//UTILITY
 		int initJavaSide(jclass plug);
 		void setNumParams(VstInt32 num);
-#ifndef MACX
+#ifdef WIN32
 		DWORD ToHostThread;
-#else
+#endif
+#ifdef MACX
 		pthread_t ToHostThread;
 #endif
 
@@ -121,11 +122,12 @@ class VSTV10ToPlug : public AudioEffectX {
 		JNIEnv *ProcessReplacingJEnv;
 		
 
-#ifndef MACX
+#ifdef WIN32
 		DWORD ProcessThreadID;
 		DWORD ProcessReplacingThreadID;
 		DWORD ThreadID;
-#else
+#endif
+#ifdef MACX
 		pthread_t ProcessThreadID;
 		pthread_t ProcessReplacingThreadID;
 		pthread_t ThreadID;

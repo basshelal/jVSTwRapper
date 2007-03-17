@@ -56,7 +56,7 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		//Utility
 		int initJavaSide(jclass gui);	
 
-#ifndef MACX
+#ifdef WIN32
 		HWND JavaWindowHandle;
 #endif
 
@@ -67,11 +67,12 @@ class VSTGUIWrapper : public AEffGUIEditor {
 	private:
 		void ensureJavaThreadAttachment();
 
-#ifndef MACX
+#ifdef WIN32
 		void detachWindow();
 		void undecorateJavaWindow();
 		DWORD ThreadID;	
-#else
+#endif
+#ifdef MACX
 		pthread_t ThreadID;
 #endif
 

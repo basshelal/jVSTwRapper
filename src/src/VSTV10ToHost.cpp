@@ -257,10 +257,11 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setParameter
 	log("setParameterAutomated");
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	
-#ifndef MACX
+#ifdef WIN32
 	//Workaround for energyXT: Save Thread for setParameterAutomated
 	WrapperInstance->ToHostThread=GetCurrentThreadId();
-#else
+#endif
+#ifdef MACX
 	WrapperInstance->ToHostThread=pthread_self();
 #endif
 	

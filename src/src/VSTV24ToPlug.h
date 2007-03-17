@@ -77,9 +77,10 @@ class VSTV24ToPlug : public VSTV23ToPlug {
 		jmethodID ProcessDoubleReplacingMethodID;
 		JNIEnv *ProcessDoubleReplacingJEnv;
 		
-#ifndef MACX
+#ifdef WIN32
 		DWORD ProcessDoubleReplacingThreadID;
-#else
+#endif
+#ifdef MACX
 		pthread_t ProcessDoubleReplacingThreadID;
 #endif
 };

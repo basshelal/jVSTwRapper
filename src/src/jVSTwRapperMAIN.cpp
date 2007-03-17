@@ -50,12 +50,13 @@
 #include "ConfigFileReader.h"
 #endif
 
-#ifndef MACX
+#ifdef WIN32
 	#include <windows.h>
 
 	extern jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *); 
 	extern jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *);
-#else
+#endif
+#ifdef MACX
 	#include <Carbon/Carbon.h>
 	#include <sys/stat.h>
 	#include <sys/resource.h>
@@ -95,7 +96,8 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster);
 	void* startJava(void *nix); 
 
 	int checkJVMVersionRequest(char* requestedJVMVersion);
-#else
+#endif
+#ifdef WIN32
 	int startJava(void *nix);
 #endif
 
@@ -117,12 +119,12 @@ extern "C" {
 #endif
 
 VST_EXPORT AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+
 //------------------------------------------------------------------------
-#ifndef MACX
-//disabled because vc++ 2005 does strict ansi c++ checks now (no other return type than int allowed for main!)
-//nope, second try //old win main entry function
+#ifdef WIN32
 VST_EXPORT AEffect *MAIN (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
-#else	
+#endif
+#ifdef MACX
 VST_EXPORT AEffect *main_macho (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
 #endif
 } // extern "C"
@@ -161,7 +163,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 
 	WrapperInstance = NULL;
 
-#ifndef MACX
+#ifdef WIN32
 	//see if there is a custom JVM we want to load (from the .ini file)!
 	char* jvmLibLocation;
 	jvmLibLocation = cfg->CustomJVMLocation;
@@ -206,9 +208,8 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 		log("**ERROR in startJava()");
 		return NULL;
 	}
-
-
-#else
+#endif
+#ifdef MACX
 	//mac doesnt need all this custom jvm loading mess
 	//it comes with a preinstalled jvm ;-), but we need to start he jvm in a separate thread
 	
@@ -228,7 +229,6 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 		log("**ERROR in startJavaThread()");
 		return NULL;
 	}
-	
 #endif
 
 	if (cfg) delete cfg;
@@ -237,9 +237,10 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 }
 
 //------------------------------------------------------------------------
-#ifndef MACX
+#ifdef WIN32
 int startJava(void *nix) {
-#else
+#endif
+#ifdef MACX
 void* startJava(void *nix) {
 #endif
 	//Create JVM
@@ -263,7 +264,8 @@ void* startJava(void *nix) {
 	strcpy(class_path, DllPath);
 #ifdef MACX
 	strcat(class_path, ":\0");
-#else
+#endif
+#ifdef WIN32
 	strcat(class_path, ";\0");
 #endif
 	strcat(class_path, replace(cfg->JVMClassPath, "{WrapperPath}", DllPath));
@@ -312,9 +314,10 @@ void* startJava(void *nix) {
 
 
 	optionNum++;
-#ifndef MACX
+#ifdef WIN32
 	vm_args.version = JNI_VERSION_1_2;
-#else
+#endif
+#ifdef MACX
 	vm_args.version = JNI_VERSION_1_4; //we want at least 1.4 on the mac!
 #endif
 	vm_args.options = options;
@@ -328,9 +331,10 @@ void* startJava(void *nix) {
 	bool hasGUI = false;
 	jclass guiClass = NULL;
 
-#ifndef MACX
+#ifdef WIN32
 	res = PTR_GetCreatedJavaVMs(&vmBuffer, 1, &nVMs);
-#else
+#endif
+#ifdef MACX
 	res = JNI_GetCreatedJavaVMs(&vmBuffer, 1, &nVMs);
 #endif
 	if (res < 0) {
@@ -362,9 +366,10 @@ void* startJava(void *nix) {
 	else {
 		log("before JNI_CreateJavaVM");
 		/* Create the Java VM */
-#ifndef MACX
+#ifdef WIN32
 	res = PTR_CreateJavaVM(&jvm, (void**)&env, &vm_args);
-#else
+#endif
+#ifdef MACX
 	res = JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
 #endif		
 		log("AFTER JNI_CreateJavaVM");
@@ -482,7 +487,8 @@ leave:
 	//TODO: ASK Gerard why we need this ???
 	CFRunLoopStop((CFRunLoopRef)runLoop);
 	return NULL; //NULL //man, this makes the whole result var unecessary...
-#else
+#endif
+#ifdef WIN32
 	return result;
 #endif
 }
@@ -496,8 +502,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 
 //------------------------------------------------------------------------
 void calculatePaths() {
-
-#ifndef MACX
+#ifdef WIN32
 	//calculating paths
 	char* lastSlash = strrchr(DllLocation, '\\');
 	
@@ -517,9 +522,8 @@ void calculatePaths() {
 	len = lastSlash - DllLocation;
 	strncpy(DllPath, DllLocation, len);
 	DllPath[len]='\0';
-	
-#else
-
+#endif
+#ifdef MACX
 	const mach_header* header = &_mh_bundle_header;
 	const char* imagename = 0;
 	int cnt = _dyld_image_count();
@@ -566,8 +570,7 @@ void calculatePaths() {
 }
 
 
-#ifndef MACX
-
+#ifdef WIN32
 //------------------------------------------------------------------------
 // WINAPI Dll Entry
 //------------------------------------------------------------------------
@@ -579,11 +582,10 @@ BOOL WINAPI DllMain (HINSTANCE hInst, DWORD dwReason, LPVOID lpvReserved) {
 	GetModuleFileName(hInst, DllLocation, 512);
 	return 1;
 }
+#endif
 
 
-
-#else
-
+#ifdef MACX
 void sourceCallBack (  void *info  ) {}
 
 int startJavaThread(){
@@ -661,6 +663,5 @@ int startJavaThread(){
 
 	return 0;
 }
-
 #endif
 

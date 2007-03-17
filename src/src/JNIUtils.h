@@ -58,12 +58,13 @@ bool checkException(JNIEnv *env);
 bool checkAndThrowException(JNIEnv *env);
 
 
-#ifndef MACX
+#ifdef WIN32
 	//stuff to load the jvm.dll dynamically
 	//this removes the need to add the path to jvm.dll to the PATH variable
 	int initJVMFunctionPointers(char *vmlibpath);
 	char* readJVMLibLocation(char* requestedJVM);
-#else
+#endif
+#ifdef MACX
 	int checkJVMVersionRequest(char* requestedJVMVersion);
 #endif
 

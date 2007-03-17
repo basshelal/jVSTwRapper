@@ -107,13 +107,13 @@ VstInt32 VSTV24ToPlug::getNumMidiOutputChannels() {
 //-----------------------------------------------------------------------------------------
 void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, VstInt32 sampleFrames) {
     
-#ifndef MACX
+#ifdef WIN32
 	DWORD threadID;
 	threadID = GetCurrentThreadId();
 	if (this->ProcessDoubleReplacingThreadID != threadID) {
 		this->ProcessDoubleReplacingThreadID = threadID;
-		
-#else
+#endif
+#ifdef MACX
 		pthread_t threadID;
 		threadID = pthread_self();
 		if (!pthread_equal(threadID,this->ProcessDoubleReplacingThreadID)){
