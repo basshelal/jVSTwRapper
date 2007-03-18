@@ -349,7 +349,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mv $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/MacOS/libjvstwrapper  $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/MacOS/libjvstwrapper.jnilib\n\nmv $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/Resources/PkgInfo  $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/PkgInfo\n\n/Developer/Tools/SetFile -a B $BUILT_PRODUCTS_DIR/jvstwrapper.vst";
+			shellScript = "mv $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/MacOS/libjvstwrapper  $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/MacOS/libjvstwrapper.jnilib\n\nmv $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/Resources/PkgInfo  $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/PkgInfo\n\n/Developer/Tools/SetFile -a B $BUILT_PRODUCTS_DIR/jvstwrapper.vst\n\nsips -i $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/Resources/jvstwrapper.icns\nditto $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Contents/Resources/jvstwrapper.icns $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Icon\n/Developer/Tools/SetFile -a V $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Icon\necho \"file rename $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Icon $BUILT_PRODUCTS_DIR/jvstwrapper.vst/Icon\\r\" | tclsh\n/Developer/Tools/SetFile -a C $BUILT_PRODUCTS_DIR/jvstwrapper.vst/";
 		};
 /* End PBXShellScriptBuildPhase section */
 

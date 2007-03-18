@@ -175,14 +175,16 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 195769230;
-			PBXWorkspaceStateSaveDate = 195769230;
+			PBXPerProjectTemplateStateSaveDate = 195918269;
+			PBXWorkspaceStateSaveDate = 195918269;
 		};
 		perUserProjectItems = {
-			C379ED250BA09920006B8B05 /* PBXTextBookmark */ = C379ED250BA09920006B8B05 /* PBXTextBookmark */;
-			C379ED260BA09920006B8B05 /* PBXTextBookmark */ = C379ED260BA09920006B8B05 /* PBXTextBookmark */;
-			C39B81D40BAB3EC200158CB2 /* PBXTextBookmark */ = C39B81D40BAB3EC200158CB2 /* PBXTextBookmark */;
-			C39B81D50BAB3EC200158CB2 /* PBXTextBookmark */ = C39B81D50BAB3EC200158CB2 /* PBXTextBookmark */;
+			C38059F80BAD77C400D58D84 /* PBXTextBookmark */ = C38059F80BAD77C400D58D84 /* PBXTextBookmark */;
+			C38059F90BAD77C400D58D84 /* PBXTextBookmark */ = C38059F90BAD77C400D58D84 /* PBXTextBookmark */;
+			C38059FA0BAD77C400D58D84 /* PBXTextBookmark */ = C38059FA0BAD77C400D58D84 /* PBXTextBookmark */;
+			C3E109400BAD7A7300715E0E /* PBXTextBookmark */ = C3E109400BAD7A7300715E0E /* PBXTextBookmark */;
+			C3E109430BAD7A7300715E0E /* PBXTextBookmark */ = C3E109430BAD7A7300715E0E /* PBXTextBookmark */;
+			C3E109440BAD7A7300715E0E /* PBXTextBookmark */ = C3E109440BAD7A7300715E0E /* PBXTextBookmark */;
 		};
 		sourceControlManager = C3EA1A900B3D904400B4C69F /* Source Control */;
 		userBuildSettings = {
@@ -203,7 +205,7 @@
 		path = /Volumes/data/Users/martindl/bin/minihost;
 		sourceTree = "<absolute>";
 	};
-	C379ED250BA09920006B8B05 /* PBXTextBookmark */ = {
+	C38059F80BAD77C400D58D84 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
 		name = DestroyJavaVM;
@@ -213,35 +215,25 @@
 		vrLen = 0;
 		vrLoc = 0;
 	};
-	C379ED260BA09920006B8B05 /* PBXTextBookmark */ = {
+	C38059F90BAD77C400D58D84 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3C7112F0B45B4D800DA1076 /* VSTGUIWrapperMAC.mm */;
+		name = "void awttest(JNIEnv *env)";
+		rLen = 26;
+		rLoc = 361;
+		rType = 0;
+		vrLen = 1442;
+		vrLoc = 160;
+	};
+	C38059FA0BAD77C400D58D84 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
-		name = "jVSTwRapperMAIN.cpp: 363";
+		name = "jVSTwRapperMAIN.cpp: 463";
 		rLen = 0;
-		rLoc = 10855;
+		rLoc = 13560;
 		rType = 0;
-		vrLen = 2020;
-		vrLoc = 10647;
-	};
-	C39B81D40BAB3EC200158CB2 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
-		name = DestroyJavaVM;
-		rLen = 13;
-		rLoc = 3455;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
-	C39B81D50BAB3EC200158CB2 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
-		name = "jVSTwRapperMAIN.cpp: 363";
-		rLen = 0;
-		rLoc = 10855;
-		rType = 0;
-		vrLen = 1994;
-		vrLoc = 10647;
+		vrLen = 2068;
+		vrLoc = 12035;
 	};
 	C3C3AE9D0B6244AC00C0F71B /* PkgInfo */ = {
 		uiCtxt = {
@@ -256,19 +248,49 @@
 	};
 	C3C7112E0B45B4D800DA1076 /* VSTGUIWrapperMAC.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {561, 613}}";
+			sepNavIntBoundsRect = "{{0, 0}, {567, 613}}";
 			sepNavSelRange = "{244, 0}";
-			sepNavVisRect = "{{0, 0}, {561, 613}}";
+			sepNavVisRect = "{{0, 0}, {567, 613}}";
 			sepNavWindowFrame = "{{16, 4}, {606, 742}}";
 		};
 	};
 	C3C7112F0B45B4D800DA1076 /* VSTGUIWrapperMAC.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {596, 714}}";
-			sepNavSelRange = "{159, 0}";
-			sepNavVisRect = "{{0, 215}, {596, 499}}";
-			sepNavWindowFrame = "{{43, 3}, {606, 742}}";
+			sepNavIntBoundsRect = "{{0, 0}, {656, 994}}";
+			sepNavSelRange = "{361, 26}";
+			sepNavVisRect = "{{0, 98}, {656, 869}}";
+			sepNavWindowFrame = "{{80, 4}, {695, 998}}";
 		};
+	};
+	C3E109400BAD7A7300715E0E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */;
+		name = DestroyJavaVM;
+		rLen = 13;
+		rLoc = 3455;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	C3E109430BAD7A7300715E0E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */;
+		name = "jVSTwRapperMAIN.cpp: 407";
+		rLen = 0;
+		rLoc = 11619;
+		rType = 0;
+		vrLen = 1922;
+		vrLoc = 10977;
+	};
+	C3E109440BAD7A7300715E0E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C3C7112F0B45B4D800DA1076 /* VSTGUIWrapperMAC.mm */;
+		name = "void awttest(JNIEnv *env)";
+		rLen = 26;
+		rLoc = 361;
+		rType = 0;
+		vrLen = 1442;
+		vrLoc = 160;
 	};
 	C3E30FDC0B4048010015E591 /* minihost */ = {
 		isa = PBXExecutable;
@@ -438,16 +460,16 @@
 	C3EA1B6B0B3D97AE00B4C69F /* JNIUtils.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {650, 994}}";
-			sepNavSelRange = "{2190, 0}";
-			sepNavVisRect = "{{0, 368}, {640, 612}}";
+			sepNavSelRange = "{1780, 22}";
+			sepNavVisRect = "{{0, 368}, {646, 612}}";
 			sepNavWindowFrame = "{{1, 5}, {685, 741}}";
 		};
 	};
 	C3EA1B6D0B3D97AE00B4C69F /* jVSTwRapperMAIN.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {938, 9338}}";
-			sepNavSelRange = "{10855, 0}";
-			sepNavVisRect = "{{0, 4942}, {650, 867}}";
+			sepNavIntBoundsRect = "{{0, 0}, {938, 9702}}";
+			sepNavSelRange = "{11619, 0}";
+			sepNavVisRect = "{{0, 5281}, {650, 867}}";
 			sepNavWindowFrame = "{{2, 4}, {689, 996}}";
 		};
 	};
@@ -586,10 +608,10 @@
 	};
 	C3EA1B900B3D97AF00B4C69F /* VSTGUIWrapper.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {686, 6258}}";
-			sepNavSelRange = "{3732, 0}";
-			sepNavVisRect = "{{0, 1424}, {577, 613}}";
-			sepNavWindowFrame = "{{0, 4}, {622, 742}}";
+			sepNavIntBoundsRect = "{{0, 0}, {728, 5908}}";
+			sepNavSelRange = "{9718, 0}";
+			sepNavVisRect = "{{0, 4375}, {659, 869}}";
+			sepNavWindowFrame = "{{165, 4}, {698, 998}}";
 		};
 	};
 	C3EA1B910B3D97AF00B4C69F /* VSTGUIWrapper.h */ = {
@@ -610,7 +632,7 @@
 	};
 	C3EA1B940B3D97AF00B4C69F /* VSTV10ToPlug.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {866, 9856}}";
+			sepNavIntBoundsRect = "{{0, 0}, {866, 9870}}";
 			sepNavSelRange = "{3455, 13}";
 			sepNavVisRect = "{{0, 0}, {0, 0}}";
 			sepNavWindowFrame = "{{88, 132}, {750, 558}}";
