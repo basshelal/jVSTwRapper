@@ -79,10 +79,12 @@
 extern int IsLogEnabled;
 
 //------------------------------------------------------------------------
-VSTV24ToPlug* WrapperInstance;
+VSTV24ToPlug* WrapperInstance = NULL;
+JavaVM *GlobalJVM = NULL;
 
 //------------------------------------------------------------------------
 void calculatePaths();
+int loadPlugin();
 AEffect* jvst_main(audioMasterCallback pAudioMaster);
 
 
@@ -148,7 +150,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	FILE *err_stream = freopen(log_location, "a", stderr);
 	if (err_stream!=NULL) log("\nredirecting stderr stream OK");
 	//FILE *out_stream = freopen(log_location, "a", stdout);		//this caused an error in melodyne
-	//if (out_stream!=NULL) log("redirecting stdout stream OK");	//we dont need it anyways! because
+	//if (out_stream!=NULL) log("redirecting stdout stream OK");	//we dont need it anyways! 
 																	//log() writes to stderr
 
 	log("\n***** START *****");
@@ -231,6 +233,14 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	}
 #endif
 
+	//load plugin
+	log("starting to load the java plugin");
+	if (loadPlugin() != 0) {
+		log("** ERROR loading java plugin, see log for details");
+		return NULL;
+	}
+	
+
 	if (cfg) delete cfg;
 	log("ALLES OK!"); 
 	return WrapperInstance->getAeffect();
@@ -252,32 +262,16 @@ void* startJava(void *nix) {
 	JavaVMInitArgs vm_args;
 	JavaVMOption options[6]; //assume the max number of options...
 	char java_path[1024]; //we need to add jVSTsYstem_bin.jar to the ClassPath of the Bootstrap ClassLoader!
-	char class_path[1024];
 
 	
 	result = -1;
 	
 	ConfigFileReader *cfg = new ConfigFileReader();
-	//IsLogEnabled = cfg->IsLoggingEnabled; //moved this piece of code to the very beginning (makes more sense...)
-	
-	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
-	strcpy(class_path, DllPath);
-#ifdef MACX
-	strcat(class_path, ":\0");
-#endif
-#ifdef WIN32
-	strcat(class_path, ";\0");
-#endif
-	strcat(class_path, replace(cfg->JVMClassPath, "{WrapperPath}", DllPath));
-
 
 	strcpy(java_path, "-Djava.class.path=");
 	strcat(java_path, replace(cfg->SystemClassPath, "{WrapperPath}", DllPath));
 
 	log("SystemPath=%s", java_path);
-	log("VSTiClassLoader Path=%s", class_path);
-	
-
 	options[0].optionString = java_path;
 	
 	//If the mac still causes problems even when not using a java swing gui
@@ -328,8 +322,6 @@ void* startJava(void *nix) {
 	JavaVM *vmBuffer;
 	jsize nVMs;
 
-	bool hasGUI = false;
-	jclass guiClass = NULL;
 
 #ifdef WIN32
 	res = PTR_GetCreatedJavaVMs(&vmBuffer, 1, &nVMs);
@@ -380,8 +372,60 @@ void* startJava(void *nix) {
 		}
 		if (checkException(env)) goto leave;
 	}
-	//***********************************************
+	
+	if (checkException(env)) goto leave;
 
+
+	GlobalJVM = jvm;
+	delete cfg;
+	result = 0; //everythign is fine when we came to this point
+
+leave:
+#ifdef MACX
+	//TODO: ASK Gerard why we need this ???
+	CFRunLoopStop((CFRunLoopRef)runLoop);
+	return NULL; //NULL //man, this makes the whole result var unecessary...
+#endif
+#ifdef WIN32
+	return result;
+#endif
+}
+
+
+int loadPlugin() { 
+	int result = -1;
+	bool hasGUI = false;
+	jclass guiClass = NULL;
+	ConfigFileReader *cfg = new ConfigFileReader();
+	char class_path[1024];
+
+	JNIEnv *env=NULL;
+	
+	//try to get an jni env from the loaded jvm
+	//on the mac, we might not be attached to the thread (the jvm was started)
+	//in another one. Attache to current thread
+	//this doesnt do any harm so we do it on windows as well
+	//(although not needed here...)
+	int res = GlobalJVM->AttachCurrentThread((void**)&env, NULL);
+	if (res < 0) {
+		log ("** ERROR: Attaching JVM to native thread!");
+		return -1;
+	}
+
+
+	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
+	strcpy(class_path, DllPath);
+#ifdef MACX
+	strcat(class_path, ":\0");
+#endif
+#ifdef WIN32
+	strcat(class_path, ";\0");
+#endif
+	strcat(class_path, replace(cfg->JVMClassPath, "{WrapperPath}", DllPath));
+
+	log("VSTiClassLoader Path=%s", class_path);
+	
+	
 	//IMPORTANT: clear possible pending exceptions...
 	if (checkException(env)) goto leave;
 
@@ -432,7 +476,7 @@ void* startJava(void *nix) {
 
 	// Create the AudioEffect
 	log("before Wrapper Constructor");
-	WrapperInstance = new VSTV24ToPlug(audioMaster, 1, 1, jvm);
+	WrapperInstance = new VSTV24ToPlug(audioMaster, 1, 1, GlobalJVM);
 	if (!WrapperInstance) {
 		log("** ERROR: Error Creating VST Wrapper instance");
 		delete WrapperInstance;
@@ -476,22 +520,17 @@ void* startJava(void *nix) {
 		WrapperInstance->setEditor(NULL);
 		log("Plugin is NOT using a custom UI!");
 	}
-
-	if (checkException(env)) goto leave;
-
+	
 	delete cfg;
-	result = NULL; //everythign is fine when we came to this point
-
+	if (checkException(env)) goto leave;
+	
+	result=0;
+	
 leave:
-#ifdef MACX
-	//TODO: ASK Gerard why we need this ???
-	CFRunLoopStop((CFRunLoopRef)runLoop);
-	return NULL; //NULL //man, this makes the whole result var unecessary...
-#endif
-#ifdef WIN32
 	return result;
-#endif
 }
+
+
 
 //------------------------------------------------------------------------
 

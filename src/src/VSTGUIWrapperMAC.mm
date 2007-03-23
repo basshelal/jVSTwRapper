@@ -11,10 +11,40 @@
 #import <jawt_md.h>
 
 #import "VSTGUIWrapperMAC.h"
+#import "JNIUtils.h"
 
+#import <jni.h>
 
 /*
+@interface VSTGUIWrapperMAC : NSObject {
+
+}
+@end
+
 @implementation VSTGUIWrapperMAC
+
+	+ (void)awttest:(JNIEnv*) env {
+		log("BEFORE TEST AREA!!!");
+
+		jclass tkclass = env->FindClass("java/awt/Toolkit");
+		if (tkclass == NULL) {
+			log("** ERROR: could not load TOOLKIT class");
+		}
+		
+		jmethodID tkmid = env->GetStaticMethodID(tkclass, "getDefaultToolkit", "()Ljava/awt/Toolkit;");
+		if (tkmid == NULL) {
+			log("** ERROR: CANNOT find TOOLKIT method");
+		}
+		
+		env->CallStaticObjectMethod(tkclass, tkmid);
+
+		log("AFTER TEST AREA!!!");
+	}
+
+	- (void)loadAWT:(JNIEnv*) env {
+		[self performSelectorOnMainThread:@selector(awttest:) withObject:env waitUntilDone:YES];
+	}
+
 @end
 */
 
@@ -48,3 +78,5 @@ OSStatus testme123() {
 	printf("Hello from ObjC++!");
 	return noErr;
 }
+
+
