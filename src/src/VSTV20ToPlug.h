@@ -104,7 +104,7 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 #ifdef WIN32
 		DWORD ProcessEventsThreadID;
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 		pthread_t ProcessEventsThreadID;
 #endif
 		JNIEnv *ProcessEventsJEnv;

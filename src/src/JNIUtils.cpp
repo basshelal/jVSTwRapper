@@ -48,6 +48,9 @@
 	#include <Carbon/Carbon.h>
 	#include <sys/stat.h>
 #endif
+#ifdef linux
+	#include <dlfcn.h>
+#endif
 
 //------------------------------------------------------------------------
 int IsLogEnabled = 1;
@@ -155,6 +158,10 @@ int log(char* data, ...) {
 				NULL, NULL, NULL,
 				CFSTR("jVSTwRapper"), msg,
 				NULL, NULL, NULL, &response);
+#endif
+#ifdef linux
+			//if anybody knows a simple possibility to show a messagebox using Xlib, please let me know...
+			//For now, the linux version has to live with log file output only
 #endif
 		}
 	}
@@ -329,7 +336,6 @@ bool checkAndThrowException(JNIEnv *env) {
 #define JVM_REG_13 "Software\\JavaSoft\\Java Runtime Environment\\1.3"
 #define JVM_REG_12 "Software\\JavaSoft\\Java Runtime Environment\\1.2"
 
-
 char* readJVMLibLocation(char* requestedJVMVersion) {
 	DWORD	rc; 
 	HKEY	regKey;
@@ -399,8 +405,28 @@ char* readJVMLibLocation(char* requestedJVMVersion) {
 	if (rc==ERROR_SUCCESS) return strdup(javaLibLocation);
 	else return NULL;
 }
+#endif
+
+#ifdef linux
+//on linux, we check if there is a $JAVA_HOME 
+char* readJVMLibLocation(char* requestedJVMVersion) {
+	char *pPath = NULL;
+	char *libpath = NULL;
+	
+  	pPath = getenv("JAVA_HOME");
+  	
+  	if(pPath==NULL) return NULL;
+  	else {
+  		libpath = strdup(pPath);
+  		strcat(libpath,"/lib/i386/client/libjvm.so\0");
+  		return strdup(libpath);
+  	}
+}
+#endif
 
 
+
+#if defined(WIN32) || defined(linux)
 
 //globals
 jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *) = NULL; 
@@ -408,8 +434,14 @@ jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *) = NULL;
 
 
 int initJVMFunctionPointers(char *vmlibpath) {
+#ifdef WIN32
 	//load the library
 	HINSTANCE hVM = LoadLibrary(vmlibpath);
+#endif
+#ifdef linux
+	void* hVM = dlopen(vmlibpath, RTLD_NOW);
+#endif
+
     if (hVM == NULL) {
 		log("**ERROR: Could not locate jvm.dll. \n\
 			It seems that you dont have a properly installed Java Virtual Machine (JVM).\n\
@@ -427,20 +459,36 @@ int initJVMFunctionPointers(char *vmlibpath) {
 			Note the ';' at the beginning of the string. close all windows with ok, and you \n\
 			should be all set.\n\
 			If you still cant use the plugin, contact me at \n\ndaniel309@users.sourgeforge.net"); 
-
+#ifdef linux
+			log(dlerror());
+#endif
 		return -1;
 	}
-	
-	PTR_CreateJavaVM = (jint (JNICALL *)(JavaVM **, void **, void *))GetProcAddress(hVM, "JNI_CreateJavaVM");
-    PTR_GetCreatedJavaVMs = (jint (JNICALL *)(JavaVM **, jsize, jsize *))GetProcAddress(hVM, "JNI_GetCreatedJavaVMs");
+
+#ifdef WIN32
+	PTR_CreateJavaVM = (jint (JNICALL *)(JavaVM **, void **, void *)) GetProcAddress(hVM, "JNI_CreateJavaVM");
+    PTR_GetCreatedJavaVMs = (jint (JNICALL *)(JavaVM **, jsize, jsize *)) GetProcAddress(hVM, "JNI_GetCreatedJavaVMs");
+#endif
+#ifdef linux
+	PTR_CreateJavaVM = (jint (JNICALL *)(JavaVM **, void **, void *)) dlsym(hVM, "JNI_CreateJavaVM");
+   	PTR_GetCreatedJavaVMs = (jint (JNICALL *)(JavaVM **, jsize, jsize *)) dlsym(hVM,  "JNI_GetCreatedJavaVMs");
+#endif
+
 	if (PTR_CreateJavaVM==NULL || PTR_GetCreatedJavaVMs==NULL) {
 		log("**ERROR: Cant find jvm interface pointers!");
+#ifdef linux
+		log(dlerror());
+#endif
 		return -1;
 	}
 	
 	return 0;
 }
 #endif
+
+
+
+
 #ifdef MACX
 //**************************************************************************************************
 // Mac feature for requesting a specific JVM

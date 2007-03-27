@@ -64,6 +64,11 @@ bool checkAndThrowException(JNIEnv *env);
 	int initJVMFunctionPointers(char *vmlibpath);
 	char* readJVMLibLocation(char* requestedJVM);
 #endif
+#ifdef linux
+	//stuff to load the jvm.dll dynamically
+	int initJVMFunctionPointers(char *vmlibpath);
+	char* readJVMLibLocation(char* requestedJVM);
+#endif
 #ifdef MACX
 	int checkJVMVersionRequest(char* requestedJVMVersion);
 #endif

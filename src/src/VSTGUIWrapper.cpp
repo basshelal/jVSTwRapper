@@ -53,7 +53,7 @@
 	#include <windows.h>
 	#include "jawt_md.h"
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 	#include <pthread.h>
 #endif
 
@@ -376,7 +376,7 @@ void  VSTGUIWrapper::ensureJavaThreadAttachment() {
 	if (this->ThreadID != GetCurrentThreadId()) {
 		this->ThreadID = GetCurrentThreadId();
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 		if (!pthread_equal(pthread_self(),this->ThreadID)){
 			this->ThreadID = pthread_self();
 #endif	

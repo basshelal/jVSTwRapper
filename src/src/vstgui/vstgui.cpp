@@ -2,7 +2,7 @@
 // VST Plug-Ins SDK
 // VSTGUI: Graphical User Interface Framework for VST plugins : 
 //
-// Version 3.0       $Date: 2007/01/01 21:25:10 $ 
+// Version 3.0       $Date: 2007/03/27 18:27:42 $ 
 //
 // Added Motif/Windows vers.: Yvan Grabit              01.98
 // Added Mac version        : Charlie Steinberg        02.98
@@ -14,7 +14,7 @@
 //
 //-----------------------------------------------------------------------------
 // VSTGUI LICENSE
-// © 2004, Steinberg Media Technologies, All Rights Reserved
+// ï¿½ 2004, Steinberg Media Technologies, All Rights Reserved
 //-----------------------------------------------------------------------------
 // Redistribution and use in source and binary forms, with or without modification,
 // are permitted provided that the following conditions are met:
@@ -2183,6 +2183,10 @@ void CDrawContext::setFillColor (const CColor color)
 //-----------------------------------------------------------------------------
 void CDrawContext::setFont (CFont fontID, const long size, long style)
 {
+#ifdef linux
+	long gStandardFontSize[] = { 12, 18, 14, 12, 10, 9, 9, 12 };
+#endif
+
 	if (fontID < 0 || fontID >= kNumStandardFonts)
 		fontID = kSystemFont;
 

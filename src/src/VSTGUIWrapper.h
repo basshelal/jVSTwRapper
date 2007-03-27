@@ -35,12 +35,16 @@
 #ifndef __VSTGUIWrapper__
 #define __VSTGUIWrapper__
 
+
 #include <jni.h>
 
 #ifndef __vstgui__
 #include "vstgui/vstgui.h"
 #endif
 
+#ifdef linux
+	#include <pthread.h>
+#endif
 
 //-----------------------------------------------------------------------------
 class VSTGUIWrapper : public AEffGUIEditor {
@@ -72,7 +76,7 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		void undecorateJavaWindow();
 		DWORD ThreadID;	
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 		pthread_t ThreadID;
 #endif
 
@@ -87,7 +91,6 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		// Bitmap
 		//CBitmap *hBackground;
 };
-
 
 #endif
 

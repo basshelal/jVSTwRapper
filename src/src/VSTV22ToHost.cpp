@@ -54,3 +54,4 @@ extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 //Java -> Native
 //impls for VSTV22ToHost.java native calls
 //**********************************************
+

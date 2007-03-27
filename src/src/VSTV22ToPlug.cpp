@@ -57,3 +57,4 @@ VSTV22ToPlug::VSTV22ToPlug (audioMasterCallback audioMaster, int progs, int parm
 VSTV22ToPlug::~VSTV22ToPlug () {
 
 }
+

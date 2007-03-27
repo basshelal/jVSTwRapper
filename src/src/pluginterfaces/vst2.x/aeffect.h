@@ -1,13 +1,13 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4		$Date: 2007/01/01 21:25:10 $
+// Version 2.4		$Date: 2007/03/27 18:27:44 $
 //
 // Category     : VST 2.x Interfaces
 // Filename     : aeffect.h
 // Created by   : Steinberg Media Technologies
 // Description  : Definition of AEffect structure
 //
-// © 2006, Steinberg Media Technologies, All Rights Reserved
+// ï¿½ 2006, Steinberg Media Technologies, All Rights Reserved
 //-------------------------------------------------------------------------------------------------------
 
 #ifndef __aeffect__
@@ -36,7 +36,7 @@
 	#pragma -a8
 #elif defined(__GNUC__)
     #pragma pack(push,8)
-    #define VSTCALLBACK __cdecl
+    #define VSTCALLBACK //__cdecl //WARNING: this is a modification necessary for the original vst2.4 sdk files
 #elif defined(WIN32) || defined(__FLAT__) || defined CBUILDER
 	#pragma pack(push)
 	#pragma pack(8)
@@ -122,7 +122,7 @@ typedef VstInt32 VstIntPtr;			///< platform-dependent integer type, same size as
 struct AEffect;
 
 /// @cond ignore
-typedef	VstIntPtr (VSTCALLBACK *audioMasterCallback) (AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt);
+typedef VstIntPtr (VSTCALLBACK *audioMasterCallback) (AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt);
 typedef VstIntPtr (VSTCALLBACK *AEffectDispatcherProc) (AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt);
 typedef void (VSTCALLBACK *AEffectProcessProc) (AEffect* effect, float** inputs, float** outputs, VstInt32 sampleFrames);
 typedef void (VSTCALLBACK *AEffectProcessDoubleProc) (AEffect* effect, double** inputs, double** outputs, VstInt32 sampleFrames);

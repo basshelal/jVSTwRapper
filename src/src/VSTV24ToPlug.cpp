@@ -113,7 +113,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 	if (this->ProcessDoubleReplacingThreadID != threadID) {
 		this->ProcessDoubleReplacingThreadID = threadID;
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 		pthread_t threadID;
 		threadID = pthread_self();
 		if (!pthread_equal(threadID,this->ProcessDoubleReplacingThreadID)){
@@ -185,7 +185,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 		this->ProcessDoubleReplacingJEnv->DeleteLocalRef(jout);
 	}
 	
-	//ARRAYS mit deletelocalref wieder zerstören...
+	//ARRAYS mit deletelocalref wieder zerstï¿½ren...
 	this->ProcessDoubleReplacingJEnv->DeleteLocalRef(jinputs);
 	this->ProcessDoubleReplacingJEnv->DeleteLocalRef(joutputs);
 

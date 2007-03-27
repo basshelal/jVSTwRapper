@@ -152,7 +152,7 @@ VstInt32 VSTV21ToPlug::getMidiProgramName (VstInt32 channel, MidiProgramName* mi
 
 //-----------------------------------------------------------------------------------------
 VstInt32 VSTV21ToPlug::getCurrentMidiProgram (VstInt32 channel, MidiProgramName* midiProgramName) { 
-	if (midiProgramName==NULL) 0;
+	if (midiProgramName==NULL) return 0;
 
 	this->ensureJavaThreadAttachment();
 

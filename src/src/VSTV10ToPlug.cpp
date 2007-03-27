@@ -45,6 +45,7 @@
 #include "ConfigFileReader.h"
 #endif
 
+
 #include <stdio.h>
 #include <string.h>
 
@@ -175,7 +176,7 @@ void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
 #ifdef WIN32
 	if(this->ToHostThread!=GetCurrentThreadId()) {		
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 	if(this->ToHostThread!=pthread_self()) {
 #endif
 
@@ -425,7 +426,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		if (this->ProcessThreadID != threadID) {
 			this->ProcessThreadID = threadID;			
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 		pthread_t threadID;
 		threadID = pthread_self();		
 		if (!pthread_equal(threadID,this->ProcessThreadID)){
@@ -498,7 +499,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		this->ProcessJEnv->DeleteLocalRef(jout);
 	}
 	
-	//ARRAYS mit deletelocalref wieder zerstören...
+	//ARRAYS mit deletelocalref wieder zerstï¿½ren...
 	this->ProcessJEnv->DeleteLocalRef(jinputs);
 	this->ProcessJEnv->DeleteLocalRef(joutputs);
 
@@ -514,7 +515,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 	if (this->ProcessReplacingThreadID != threadID) {
 		this->ProcessReplacingThreadID = threadID;	
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 		pthread_t threadID;
 		threadID = pthread_self();
 		if (!pthread_equal(threadID,this->ProcessReplacingThreadID)){
@@ -586,7 +587,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		this->ProcessReplacingJEnv->DeleteLocalRef(jout);
 	}
 	
-	//ARRAYS mit deletelocalref wieder zerstören...
+	//ARRAYS mit deletelocalref wieder zerstï¿½ren...
 	this->ProcessReplacingJEnv->DeleteLocalRef(jinputs);
 	this->ProcessReplacingJEnv->DeleteLocalRef(joutputs);
 
@@ -677,7 +678,7 @@ void VSTV10ToPlug::ensureJavaThreadAttachment() {
 	if (this->ThreadID != threadID) {
 		this->ThreadID = threadID;
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 	pthread_t threadID;
 	threadID = pthread_self();
 	if (!pthread_equal(threadID,this->ThreadID)){

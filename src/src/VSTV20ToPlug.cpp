@@ -43,7 +43,7 @@
 #endif
 
 
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 #include <pthread.h>
 #endif
 
@@ -672,7 +672,7 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 		if (this->ProcessEventsThreadID != threadID) {
 			this->ProcessEventsThreadID = threadID;	
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 			pthread_t threadID;
 			threadID = pthread_self();		
 			if (!pthread_equal(threadID,this->ProcessEventsThreadID)){

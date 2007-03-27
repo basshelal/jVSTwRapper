@@ -44,8 +44,8 @@
 #include "VSTGUIWrapper.h"
 #endif
 
-#ifdef MACX
-#include "pthread.h"
+#if defined(MACX) || defined(linux)
+#include <pthread.h>
 #endif
 
 #include <jni.h>
@@ -101,7 +101,7 @@ class VSTV10ToPlug : public AudioEffectX {
 #ifdef WIN32
 		DWORD ToHostThread;
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 		pthread_t ToHostThread;
 #endif
 
@@ -127,7 +127,7 @@ class VSTV10ToPlug : public AudioEffectX {
 		DWORD ProcessReplacingThreadID;
 		DWORD ThreadID;
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 		pthread_t ProcessThreadID;
 		pthread_t ProcessReplacingThreadID;
 		pthread_t ThreadID;

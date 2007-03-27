@@ -33,7 +33,6 @@
 // 2003,2004 Daniel Martin, Gerard Roma
 //-------------------------------------------------------------------------------------------------------
 
-
 #ifndef __jVSTwRapperMAIN__
 #include "jVSTwRapperMAIN.h"
 #endif
@@ -50,12 +49,11 @@
 #include "ConfigFileReader.h"
 #endif
 
+
 #ifdef WIN32
 	#include <windows.h>
-
-	extern jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *); 
-	extern jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *);
 #endif
+
 #ifdef MACX
 	#include <Carbon/Carbon.h>
 	#include <sys/stat.h>
@@ -73,6 +71,39 @@
 	#include "VSTGUIWrapperMAC.h"
 #endif
 
+#ifdef linux
+	#include <dlfcn.h>
+	
+	#include "ConfigFileReader.cpp"
+	#include "JNIUtils.cpp"
+	#include "VSTV10ToHost.cpp"
+	#include "VSTV10ToPlug.cpp"
+	#include "VSTV20ToHost.cpp"
+	#include "VSTV20ToPlug.cpp"
+	#include "VSTV21ToHost.cpp"
+	#include "VSTV21ToPlug.cpp"
+	#include "VSTV22ToHost.cpp"
+	#include "VSTV22ToPlug.cpp"
+	#include "VSTV23ToHost.cpp"
+	#include "VSTV23ToPlug.cpp"
+	#include "VSTV24ToHost.cpp"
+	#include "VSTV24ToPlug.cpp"
+	
+	#include "VSTGUIWrapper.cpp"
+	
+	//vst sdk 2.4 files...
+	#include "public.sdk/vst2.x/audioeffect.cpp"
+	#include "public.sdk/vst2.x/audioeffectx.cpp"
+	
+	//vstgui
+	#include "vstgui/aeffguieditor.cpp"
+	#include "vstgui/vstgui.cpp"
+#endif
+
+#if defined(WIN32) || defined(linux)
+	extern jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *); 
+	extern jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *);
+#endif
 
 
 //------------------------------------------------------------------------
@@ -99,7 +130,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster);
 
 	int checkJVMVersionRequest(char* requestedJVMVersion);
 #endif
-#ifdef WIN32
+#if defined(WIN32) || defined(linux)
 	int startJava(void *nix);
 #endif
 
@@ -112,24 +143,40 @@ char LogFileName[100];
 audioMasterCallback audioMaster;
 
 
+#ifdef linux
+	//extern "C" AEffect* main_plugin (audioMasterCallback pAudioMaster) asm ("main");
+	AEffect* main_plugin (audioMasterCallback pAudioMaster) asm ("main");
+	#define main main_plugin
+		
+	//extern "C" AEffect *main (audioMasterCallback pAudioMaster) {
+	AEffect *main (audioMasterCallback pAudioMaster) {
+		return jvst_main(pAudioMaster);
+	}
+#endif
+
+
 //main entry points for different platforms
 extern "C" {
-#if defined (__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
-	#define VST_EXPORT	__attribute__ ((visibility ("default")))
-#else
-	#define VST_EXPORT
-#endif
-
-VST_EXPORT AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
-
-//------------------------------------------------------------------------
-#ifdef WIN32
-VST_EXPORT AEffect *MAIN (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
-#endif
-#ifdef MACX
-VST_EXPORT AEffect *main_macho (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
-#endif
+	#if defined (__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
+		#define VST_EXPORT	__attribute__ ((visibility ("default")))
+	#else
+		#define VST_EXPORT
+	#endif
+	
+	//vst2.4 generic entry point
+	VST_EXPORT AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+	
+	//alternative entry points
+	#ifdef WIN32
+		VST_EXPORT AEffect *MAIN (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+	#endif
+	#ifdef MACX
+		VST_EXPORT AEffect *main_macho (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+	#endif
 } // extern "C"
+
+
+
 
 
 
@@ -211,6 +258,42 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 		return NULL;
 	}
 #endif
+
+#ifdef linux
+	//see if there is a custom JVM we want to load (from the .ini file)!
+	char* jvmLibLocation;
+	jvmLibLocation = cfg->CustomJVMLocation;
+	
+	if (jvmLibLocation==NULL) {
+		log("Checking if there is a JAVA_HOME defined");
+		
+		jvmLibLocation = readJVMLibLocation(NULL);
+
+		if (jvmLibLocation==NULL) {
+			log("* WARNING: $JAVA_HOME not defined! Unable to load from $JAVA_HOME/jre/lib/i386/client/libjvm.so!\n using the one from $LD_LIBRARY_PATH!");
+			//try to load jvm from LD_LIBRARY_PATH
+			jvmLibLocation = "libjvm.so";
+		}
+		else log("found JAVA_HOME, libjvm.so=%s", jvmLibLocation);
+	}
+	else {
+		jvmLibLocation = replace(jvmLibLocation, "{WrapperPath}", DllPath);
+		log("Loading custom JVM !!! at %s", jvmLibLocation);
+	}
+	
+	
+	if (initJVMFunctionPointers(jvmLibLocation) != 0) {
+		log("** ERROR: cant init jvm interface pointers!");
+		return NULL;
+	}
+	
+	//start the jvm
+	if (startJava(NULL) != 0)  {
+		log("**ERROR in startJava()");
+		return NULL;
+	}
+#endif
+
 #ifdef MACX
 	//mac doesnt need all this custom jvm loading mess
 	//it comes with a preinstalled jvm ;-), but we need to start he jvm in a separate thread
@@ -247,8 +330,8 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 }
 
 //------------------------------------------------------------------------
-#ifdef WIN32
-int startJava(void *nix) {
+#if defined(WIN32) || defined(linux) 
+int startJava(void *nix) { 
 #endif
 #ifdef MACX
 void* startJava(void *nix) {
@@ -306,9 +389,9 @@ void* startJava(void *nix) {
 		options[optionNum].optionString=cfg->JVMOption5;
 	}
 
-
 	optionNum++;
-#ifdef WIN32
+
+#if defined(WIN32) || defined(linux)
 	vm_args.version = JNI_VERSION_1_2;
 #endif
 #ifdef MACX
@@ -323,7 +406,7 @@ void* startJava(void *nix) {
 	jsize nVMs;
 
 
-#ifdef WIN32
+#if defined(WIN32) || defined(linux)
 	res = PTR_GetCreatedJavaVMs(&vmBuffer, 1, &nVMs);
 #endif
 #ifdef MACX
@@ -358,7 +441,7 @@ void* startJava(void *nix) {
 	else {
 		log("before JNI_CreateJavaVM");
 		/* Create the Java VM */
-#ifdef WIN32
+#if defined(WIN32) || defined(linux)
 	res = PTR_CreateJavaVM(&jvm, (void**)&env, &vm_args);
 #endif
 #ifdef MACX
@@ -386,7 +469,7 @@ leave:
 	CFRunLoopStop((CFRunLoopRef)runLoop);
 	return NULL; //NULL //man, this makes the whole result var unecessary...
 #endif
-#ifdef WIN32
+#if defined(WIN32) || defined(linux)
 	return result;
 #endif
 }
@@ -403,7 +486,7 @@ int loadPlugin() {
 	
 	//try to get an jni env from the loaded jvm
 	//on the mac, we might not be attached to the thread (the jvm was started)
-	//in another one. Attache to current thread
+	//in another one. Attach to current thread
 	//this doesnt do any harm so we do it on windows as well
 	//(although not needed here...)
 	int res = GlobalJVM->AttachCurrentThread((void**)&env, NULL);
@@ -415,15 +498,28 @@ int loadPlugin() {
 
 	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
 	strcpy(class_path, DllPath);
-#ifdef MACX
+	
+#if defined(MACX) || defined(linux)
 	strcat(class_path, ":\0");
 #endif
 #ifdef WIN32
 	strcat(class_path, ";\0");
 #endif
+
 	strcat(class_path, replace(cfg->JVMClassPath, "{WrapperPath}", DllPath));
 
 	log("VSTiClassLoader Path=%s", class_path);
+	
+	
+	jclass manager = NULL;
+	jmethodID loadcl_mid = NULL;
+	jstring dllloc = NULL;
+	jstring plug = NULL;
+	jstring cp = NULL;
+	jclass clazz = NULL;
+	jmethodID init_mid = NULL;
+	jstring dll = NULL;
+	jboolean doLogging = JNI_TRUE;
 	
 	
 	//IMPORTANT: clear possible pending exceptions...
@@ -432,24 +528,24 @@ int loadPlugin() {
 
 	//USE THE VSTiClassLoaderManager here!!!
 	//load this ClassLoader with the bootstrap ClassLoader
-	jclass manager = env->FindClass("jvst/wrapper/system/VSTiClassLoaderManager");
+	manager = env->FindClass("jvst/wrapper/system/VSTiClassLoaderManager");
 	if (manager == NULL) {
 		log("** ERROR: cannot find jvst/wrapper/system/VSTiClassLoaderManager");
 		checkException(env); //print statck trace...
 		goto leave;
 	}
 
-	jmethodID loadcl_mid = env->GetStaticMethodID(manager, "loadVSTiClass", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class;");
+	loadcl_mid = env->GetStaticMethodID(manager, "loadVSTiClass", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class;");
 	if (loadcl_mid == NULL)  {
 		log("** ERROR: cannot find static method loadVSTiClass(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class;");
 		checkException(env); //print statck trace...
 		goto leave;
 	}
 
-	jstring dllloc = env->NewStringUTF(DllLocation);
-	jstring plug = env->NewStringUTF(cfg->PluginClass);
-	jstring cp = env->NewStringUTF(class_path);
-	jclass clazz = (jclass)env->CallStaticObjectMethod(manager, loadcl_mid, dllloc, plug, cp);
+	dllloc = env->NewStringUTF(DllLocation);
+	plug = env->NewStringUTF(cfg->PluginClass);
+	cp = env->NewStringUTF(class_path);
+	clazz = (jclass)env->CallStaticObjectMethod(manager, loadcl_mid, dllloc, plug, cp);
 	if(clazz == NULL) {
 		log("** ERROR: Could not load Plugin Class");
 		checkException(env);
@@ -461,14 +557,14 @@ int loadPlugin() {
 
 	//calling static _initPlugFromNative
 	//passing config data
-	jmethodID init_mid = env->GetStaticMethodID(clazz, "_initPlugFromNative", "(Ljava/lang/String;Z)V");
+	init_mid = env->GetStaticMethodID(clazz, "_initPlugFromNative", "(Ljava/lang/String;Z)V");
 	if (init_mid == NULL)  {
 		log("** ERROR: cannot find static method _initPlugFromNative(Ljava/lang/String;Z)V");
 		checkException(env); //print statck trace...
 		goto leave;
 	}
-	jstring dll = env->NewStringUTF(DllLocation);
-	jboolean doLogging = cfg->IsLoggingEnabled;
+	dll = env->NewStringUTF(DllLocation);
+	doLogging = cfg->IsLoggingEnabled;
 	env->CallStaticVoidMethod(clazz, init_mid, dll, doLogging);
 
 	if (checkException(env)) goto leave;
@@ -512,13 +608,19 @@ int loadPlugin() {
 
 	log("calling java guis init!");
 	if(hasGUI) {
+//TODO: VSTGUI
+//#ifndef linux
 		//init gui wrapper
 		WrapperInstance->setEditor(new VSTGUIWrapper(WrapperInstance));
 		if (((VSTGUIWrapper*)WrapperInstance->getEditor())->initJavaSide(guiClass)) goto leave;
+//#endif
 	}
 	else {
+//TODO: VSTGUI
+//#ifndef linux
 		WrapperInstance->setEditor(NULL);
 		log("Plugin is NOT using a custom UI!");
+//#endif
 	}
 	
 	delete cfg;
@@ -541,27 +643,49 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 
 //------------------------------------------------------------------------
 void calculatePaths() {
-#ifdef WIN32
+#ifdef linux
+	//find out where we are:
+	Dl_info info;
+	if (dladdr((const void*)&calculatePaths, &info)==0) {
+		log("** ERROR: could not locate my location!");
+		log(dlerror());
+		return;
+	}
+	strcpy(DllLocation, info.dli_fname);
+	log("DllLocation=%s", DllLocation);
+#endif
+
+#if defined(WIN32) || defined(linux)
+
 	//calculating paths
+#ifdef WIN32
 	char* lastSlash = strrchr(DllLocation, '\\');
-	
+#endif
+#ifdef linux
+	char* lastSlash = strrchr(DllLocation, '/');
+#endif
+
 	//config file name
 	strcpy(ConfigFileName, lastSlash);
 	char* lastPoint = strrchr(ConfigFileName, '.');
 	int len = lastPoint - ConfigFileName;
 	strncpy(ConfigFileName + len + 1, "ini\0", 4);
+	log("ConfigFileName=%s", ConfigFileName);
 	
 	//log file name
 	strcpy(LogFileName, lastSlash);
 	lastPoint = strrchr(LogFileName, '.');
 	len = lastPoint - LogFileName;
 	strncpy(LogFileName + len, "_log.txt\0", 9);
+	log("LogFileName=%s", LogFileName);
 	
 	//DllPath
 	len = lastSlash - DllLocation;
 	strncpy(DllPath, DllLocation, len);
 	DllPath[len]='\0';
+	log("DllPath=%s", DllPath);
 #endif
+
 #ifdef MACX
 	const mach_header* header = &_mh_bundle_header;
 	const char* imagename = 0;

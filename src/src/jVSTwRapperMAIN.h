@@ -42,22 +42,4 @@
 #endif
 
 
-//------------------------------------------------------------------------
-// Prototype of the export functions
-//------------------------------------------------------------------------
-// NOT NEEDED ANY MORE !!!
-
-/*
-#ifdef WIN32
-	AEffect* VSTPluginMain (audioMasterCallback pAudioMaster); 
-	//AEffect *main (audioMasterCallback audioMaster); //old vst 2.3 entry function signature
-#endif
-
-#ifdef MACX
-	extern "C" AEffect *main_macho (audioMasterCallback audioMaster);
-#endif
-*/
-
-
-
 #endif

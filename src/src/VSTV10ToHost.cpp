@@ -45,14 +45,12 @@
 #include "VSTV24ToPlug.h"
 #endif
 
-#ifdef MACX
-#include "pthread.h"
+#if defined(MACX) || defined(linux)
+#include <pthread.h>
 #endif
 
 
-
-VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj)
-{
+VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj) {
 	jclass plugclass=env->GetObjectClass(obj);
 	jfieldID fid = env->GetFieldID(plugclass, "WrapperInstance", "J");
 	if (fid == NULL) {
@@ -261,7 +259,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setParameter
 	//Workaround for energyXT: Save Thread for setParameterAutomated
 	WrapperInstance->ToHostThread=GetCurrentThreadId();
 #endif
-#ifdef MACX
+#if defined(MACX) || defined(linux)
 	WrapperInstance->ToHostThread=pthread_self();
 #endif
 	
