@@ -3,7 +3,7 @@
 JAVA_HOME=/usr/lib/jvm/java-6-sun
 
 
-all:	test
+all:	release
 
 debug:
 #	debug build option as executable so that all errors are reported!
