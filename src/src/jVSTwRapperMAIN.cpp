@@ -74,6 +74,8 @@
 #ifdef linux
 	#include <dlfcn.h>
 	
+	//i know i know... this is not good coding practice, should link together 
+	//individual objects instead...
 	#include "ConfigFileReader.cpp"
 	#include "JNIUtils.cpp"
 	#include "VSTV10ToHost.cpp"
@@ -647,7 +649,7 @@ void calculatePaths() {
 	//find out where we are:
 	Dl_info info;
 	if (dladdr((const void*)&calculatePaths, &info)==0) {
-		log("** ERROR: could not locate my location!");
+		log("** ERROR: could not locate my own location!");
 		log(dlerror());
 		return;
 	}
@@ -656,7 +658,6 @@ void calculatePaths() {
 #endif
 
 #if defined(WIN32) || defined(linux)
-
 	//calculating paths
 #ifdef WIN32
 	char* lastSlash = strrchr(DllLocation, '\\');

@@ -62,21 +62,22 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 	: AEffGUIEditor (effect) {
 
 	this->ThreadID = 0;	
-#ifdef WIN32 
-	this->JavaWindowHandle = 0;
-#endif
 	this->Jvm = ((VSTV10ToPlug*)effect)->Jvm;
 	this->JEnv = ((VSTV10ToPlug*)effect)->JEnv;
 	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;
 
 #ifdef WIN32
+	this->JavaWindowHandle = 0;
+
 	ConfigFileReader *cfg = new ConfigFileReader();
 	if(cfg!=NULL) {
 	  this->AttachWindow=(cfg->AttachToNativePluginWindow==1);
 	  delete cfg;
 	}
 #endif
-#ifdef MACX
+
+#if defined(MACX) || defined(linux)
+	//window embedding code is windows only for now...
 	this->AttachWindow=0;
 #endif
 }

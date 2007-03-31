@@ -410,16 +410,14 @@ char* readJVMLibLocation(char* requestedJVMVersion) {
 #ifdef linux
 //on linux, we check if there is a $JAVA_HOME 
 char* readJVMLibLocation(char* requestedJVMVersion) {
-	char *pPath = NULL;
-	char *libpath = NULL;
+	char *pPath = new char[512];
 	
   	pPath = getenv("JAVA_HOME");
   	
   	if(pPath==NULL) return NULL;
   	else {
-  		libpath = strdup(pPath);
-  		strcat(libpath,"/lib/i386/client/libjvm.so\0");
-  		return strdup(libpath);
+  		strcat(pPath,"/lib/i386/client/libjvm.so\0");
+  		return strdup(pPath);
   	}
 }
 #endif
