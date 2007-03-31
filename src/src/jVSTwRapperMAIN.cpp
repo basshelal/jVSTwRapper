@@ -145,18 +145,6 @@ char LogFileName[100];
 audioMasterCallback audioMaster;
 
 
-#ifdef linux
-	//extern "C" AEffect* main_plugin (audioMasterCallback pAudioMaster) asm ("main");
-	AEffect* main_plugin (audioMasterCallback pAudioMaster) asm ("main");
-	#define main main_plugin
-		
-	//extern "C" AEffect *main (audioMasterCallback pAudioMaster) {
-	AEffect *main (audioMasterCallback pAudioMaster) {
-		return jvst_main(pAudioMaster);
-	}
-#endif
-
-
 //main entry points for different platforms
 extern "C" {
 	#if defined (__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
@@ -174,6 +162,12 @@ extern "C" {
 	#endif
 	#ifdef MACX
 		VST_EXPORT AEffect *main_macho (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+	#endif
+	#ifdef linux
+		AEffect* main_plugin (audioMasterCallback pAudioMaster) asm ("main");
+		#define main main_plugin
+	
+		AEffect *main (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
 	#endif
 } // extern "C"
 
