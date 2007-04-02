@@ -625,10 +625,16 @@ printf(line); //TODO: debug!
 		end_addr = strchr (line, '-');
 		file = strchr (line, '/');
 
-		//remove \n from file name
-		int len = strlen(file);
-		file[len]='\0';
-		file[len-1]='\0';
+		int len = strlen (file);
+		if (len == 0)
+			continue;
+		if (file[len - 1] == '\n')
+			file[len - 1] = '\0';
+
+		/* Get rid of "(deleted)" from the filename. */
+		len = strlen (file);
+		if (len > 10 && strcmp (file + len - 10, " (deleted)") == 0)
+			file[len - 10] = '\0';
 
 		/* More sanity check. */
 		if (!(file > end_addr && end_addr != NULL && end_addr[0] == '-'))
