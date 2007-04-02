@@ -103,7 +103,7 @@ public abstract class VSTV10ToHost  {
   protected static void _initPlugFromNative(String dllLocation, boolean log) {
     File nativeLib = new File(dllLocation);
   	if (nativeLib.isDirectory() || !nativeLib.exists()) 
-  		throw new IllegalArgumentException("Illegal native lib location: " + dllLocation);
+  		throw new IllegalArgumentException("Illegal native lib location: '" + dllLocation + "'");
     
   	logBasePath = nativeLib.getParent();
     logEnabled = log;

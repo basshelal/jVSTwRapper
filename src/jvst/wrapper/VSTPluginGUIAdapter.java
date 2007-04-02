@@ -44,7 +44,7 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = this.getSize();
 
-		if (frameSize.height > frameSize.height) frameSize.height = screenSize.height;
+		if (frameSize.height > screenSize.height) frameSize.height = screenSize.height;
 		if (frameSize.width > screenSize.width) frameSize.width = screenSize.width;
 		this.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 
