@@ -30,7 +30,7 @@
 // Dll WinAPI entry
 // VSTi API entry
 //-
-// 2003,2004 Daniel Martin, Gerard Roma
+// 2003,2004,2007 Daniel Martin, Gerard Roma
 //-------------------------------------------------------------------------------------------------------
 
 #ifndef __jVSTwRapperMAIN__
@@ -73,33 +73,6 @@
 
 #ifdef linux
 	#include <dlfcn.h>
-	
-	//i know i know... this is not good coding practice, should link together 
-	//individual objects instead...
-	#include "ConfigFileReader.cpp"
-	#include "JNIUtils.cpp"
-	#include "VSTV10ToHost.cpp"
-	#include "VSTV10ToPlug.cpp"
-	#include "VSTV20ToHost.cpp"
-	#include "VSTV20ToPlug.cpp"
-	#include "VSTV21ToHost.cpp"
-	#include "VSTV21ToPlug.cpp"
-	#include "VSTV22ToHost.cpp"
-	#include "VSTV22ToPlug.cpp"
-	#include "VSTV23ToHost.cpp"
-	#include "VSTV23ToPlug.cpp"
-	#include "VSTV24ToHost.cpp"
-	#include "VSTV24ToPlug.cpp"
-	
-	#include "VSTGUIWrapper.cpp"
-	
-	//vst sdk 2.4 files...
-	#include "public.sdk/vst2.x/audioeffect.cpp"
-	#include "public.sdk/vst2.x/audioeffectx.cpp"
-	
-	//vstgui
-	#include "vstgui/aeffguieditor.cpp"
-	#include "vstgui/vstgui.cpp"
 #endif
 
 #if defined(WIN32) || defined(linux)
@@ -604,19 +577,13 @@ int loadPlugin() {
 
 	log("calling java guis init!");
 	if(hasGUI) {
-//TODO: VSTGUI
-//#ifndef linux
 		//init gui wrapper
 		WrapperInstance->setEditor(new VSTGUIWrapper(WrapperInstance));
 		if (((VSTGUIWrapper*)WrapperInstance->getEditor())->initJavaSide(guiClass)) goto leave;
-//#endif
 	}
 	else {
-//TODO: VSTGUI
-//#ifndef linux
 		WrapperInstance->setEditor(NULL);
 		log("Plugin is NOT using a custom UI!");
-//#endif
 	}
 	
 	delete cfg;
@@ -631,7 +598,6 @@ leave:
 
 
 //------------------------------------------------------------------------
-
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 	return JNI_VERSION_1_2; //we use JNI 1.2 functions, tell that the jvm that loads us. 
 							//we dont need jni 1.4 functionality, so 1.2 is enough
@@ -641,18 +607,16 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 void calculatePaths() {
 #ifdef linux
 	//find out where we are:
-	Dl_info info;
-	if (dladdr((const void*)&calculatePaths, &info)==0) {
-		log("** ERROR: could not locate my own location!");
-		log(dlerror());
+	char* soPath = findLastLoadedSO();
+	if (soPath == NULL) {
+		log("** ERROR: could not locate last loaded .so file!");
 		return;
-	}
-	strcpy(DllLocation, info.dli_fname);
+	}	
+	strcpy(DllLocation, soPath);
 	log("DllLocation=%s", DllLocation);
 #endif
 
 #if defined(WIN32) || defined(linux)
-	//calculating paths
 #ifdef WIN32
 	char* lastSlash = strrchr(DllLocation, '\\');
 #endif

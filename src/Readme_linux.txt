@@ -2,17 +2,22 @@ Writing VST plugins in Java on LINUX mini HOW-TO
 --------------------------------------------------
 
 1. Make sure you have a JAVA_HOME environment variable that is set to the correct value
-   e.g. in file .bash_profile: export JAVA_HOME=/usr/lib/jvm/java-6-sun/jre/
+   e.g. in your .bashrc add: export JAVA_HOME=/usr/lib/jvm/java-6-sun/jre/
    
 2. On a fresh installed sun jvm, you may need to create a symbolic link to libmawt.so as follows:
    # cd /usr/lib/jvm/java-6-sun/jre/lib/i386/xawt
    # sudo ln -s ./libmawt.so ../libmawt.so
-   it may even be possible to make a link to /usr/lib
+   
+   it may even be necessary to create a link to /usr/lib
    # sudo ln -s ./libmawt.so /usr/lib/libmawt.so
    
+   in the worst case, you need to add a link to /xawt in the 
+   folder where your java plugins are 
+   
+   As an alternative, you can set your LD_LIBRARY_PATH to contain the path to /xawt/libmawt.so
    
    Do this when you see the following error in jvstwrapper_log.txt:
-   ** java.lang.UnsatisfiedLinkError: Can't load library: $[SOME PATH] /xawt/libmawt.so
+   ** java.lang.UnsatisfiedLinkError: Can't load library: $[SOME PATH]/xawt/libmawt.so
    
 
 3. Write your plugin using the wrapper api.

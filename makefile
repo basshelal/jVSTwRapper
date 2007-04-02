@@ -7,14 +7,45 @@ all:	release
 
 debug:
 #	debug build option as executable so that all errors are reported!
-#	g++ -o ./bin/jvstwrapper.so -O0 -g -Wall -rdynamic -ldl -I/usr/include -I./src/src/public.sdk/vst2.x -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux  src/src/jVSTwRapperMAIN.cpp
+#	g++ -o ./bin/jvstwrapper.so -g -Wall -rdynamic -ldl -DENABLE_BINRELOC \
+#	-I/usr/include -I./src/src/public.sdk/vst2.x -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux  \
+#	src/src/jVSTwRapperMAIN.cpp src/src/ConfigFileReader.cpp src/src/JNIUtils.cpp \
+#	src/src/VSTV10ToHost.cpp src/src/VSTV10ToPlug.cpp src/src/VSTV20ToHost.cpp \
+#	src/src/VSTV20ToPlug.cpp src/src/VSTV21ToHost.cpp src/src/VSTV21ToPlug.cpp \
+#	src/src/VSTV22ToHost.cpp src/src/VSTV22ToPlug.cpp src/src/VSTV23ToHost.cpp \
+#	src/src/VSTV23ToPlug.cpp src/src/VSTV24ToHost.cpp src/src/VSTV24ToPlug.cpp \
+#	src/src/VSTGUIWrapper.cpp src/src/public.sdk/vst2.x/audioeffect.cpp \
+#	src/src/public.sdk/vst2.x/audioeffectx.cpp src/src/vstgui/aeffguieditor.cpp \
+#	src/src/vstgui/vstgui.cpp
 
 #	the real thing is here...
-	g++ -o ./bin/jvstwrapper.so -shared -fPIC -ggdb -Wall -rdynamic -ldl -I/usr/include -I./src/src/public.sdk/vst2.x -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux  src/src/jVSTwRapperMAIN.cpp
+	g++ -o ./bin/jvstwrapper.so -shared -fPIC -g -Wall -rdynamic -ldl -DENABLE_BINRELOC \
+	-I/usr/include -I./src/src/public.sdk/vst2.x -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux  \
+	src/src/jVSTwRapperMAIN.cpp src/src/ConfigFileReader.cpp src/src/JNIUtils.cpp \
+	src/src/VSTV10ToHost.cpp src/src/VSTV10ToPlug.cpp src/src/VSTV20ToHost.cpp \
+	src/src/VSTV20ToPlug.cpp src/src/VSTV21ToHost.cpp src/src/VSTV21ToPlug.cpp \
+	src/src/VSTV22ToHost.cpp src/src/VSTV22ToPlug.cpp src/src/VSTV23ToHost.cpp \
+	src/src/VSTV23ToPlug.cpp src/src/VSTV24ToHost.cpp src/src/VSTV24ToPlug.cpp \
+	src/src/VSTGUIWrapper.cpp src/src/public.sdk/vst2.x/audioeffect.cpp \
+	src/src/public.sdk/vst2.x/audioeffectx.cpp src/src/vstgui/aeffguieditor.cpp \
+	src/src/vstgui/vstgui.cpp
+	
 
 release:
-	g++ -o ./bin/jvstwrapper.so -shared -fPIC -O2 -Wall -rdynamic -ldl -I/usr/include -I./src/src/public.sdk/vst2.x -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux  src/src/jVSTwRapperMAIN.cpp
+#	g++ -o ./bin/jvstwrapper.so -shared -fPIC -O2 -Wall -rdynamic -ldl -I/usr/include -I./src/src/public.sdk/vst2.x -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux  src/src/jVSTwRapperMAIN.cpp
+
+	g++ -o ./bin/jvstwrapper.so -shared -fPIC -Wall -rdynamic -ldl -DENABLE_BINRELOC \
+	-I/usr/include -I./src/src/public.sdk/vst2.x -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux  \
+	src/src/jVSTwRapperMAIN.cpp src/src/ConfigFileReader.cpp src/src/JNIUtils.cpp \
+	src/src/VSTV10ToHost.cpp src/src/VSTV10ToPlug.cpp src/src/VSTV20ToHost.cpp \
+	src/src/VSTV20ToPlug.cpp src/src/VSTV21ToHost.cpp src/src/VSTV21ToPlug.cpp \
+	src/src/VSTV22ToHost.cpp src/src/VSTV22ToPlug.cpp src/src/VSTV23ToHost.cpp \
+	src/src/VSTV23ToPlug.cpp src/src/VSTV24ToHost.cpp src/src/VSTV24ToPlug.cpp \
+	src/src/VSTGUIWrapper.cpp src/src/public.sdk/vst2.x/audioeffect.cpp \
+	src/src/public.sdk/vst2.x/audioeffectx.cpp src/src/vstgui/aeffguieditor.cpp \
+	src/src/vstgui/vstgui.cpp
+	
 	
 clean:
-	rm -f ./bin/*.so 
+	rm -f ./bin/*.so 		
 	

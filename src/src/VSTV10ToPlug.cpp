@@ -49,6 +49,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef linux
+	#include <stdlib.h>
+#endif
+
 
 extern char DllFileName[50];
 

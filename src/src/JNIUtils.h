@@ -68,6 +68,8 @@ bool checkAndThrowException(JNIEnv *env);
 	//stuff to load the jvm.dll dynamically
 	int initJVMFunctionPointers(char *vmlibpath);
 	char* readJVMLibLocation(char* requestedJVM);
+	
+	char* findLastLoadedSO();
 #endif
 #ifdef MACX
 	int checkJVMVersionRequest(char* requestedJVMVersion);

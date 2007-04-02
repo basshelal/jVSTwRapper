@@ -50,6 +50,7 @@
 #endif
 #ifdef linux
 	#include <dlfcn.h>
+	#include <stdlib.h>
 #endif
 
 //------------------------------------------------------------------------
@@ -410,14 +411,14 @@ char* readJVMLibLocation(char* requestedJVMVersion) {
 #ifdef linux
 //on linux, we check if there is a $JAVA_HOME 
 char* readJVMLibLocation(char* requestedJVMVersion) {
-	char *pPath = new char[512];
-	
-  	pPath = getenv("JAVA_HOME");
+	char *pPath = getenv("JAVA_HOME");
   	
   	if(pPath==NULL) return NULL;
   	else {
-  		strcat(pPath,"/lib/i386/client/libjvm.so\0");
-  		return strdup(pPath);
+  		char* tmp = (char *)malloc(512);
+  		strncpy(tmp, pPath, 511);
+  		strcat(tmp,"/lib/i386/client/libjvm.so\0");
+  		return strdup(tmp);
   	}
 }
 #endif
@@ -437,7 +438,7 @@ int initJVMFunctionPointers(char *vmlibpath) {
 	HINSTANCE hVM = LoadLibrary(vmlibpath);
 #endif
 #ifdef linux
-	void* hVM = dlopen(vmlibpath, RTLD_NOW);
+	void* hVM = dlopen(vmlibpath, RTLD_LAZY); //RTLD_NOW);
 #endif
 
     if (hVM == NULL) {
@@ -456,7 +457,7 @@ int initJVMFunctionPointers(char *vmlibpath) {
 			to the end of its value.\n\
 			Note the ';' at the beginning of the string. close all windows with ok, and you \n\
 			should be all set.\n\
-			If you still cant use the plugin, contact me at \n\ndaniel309@users.sourgeforge.net"); 
+			If you still cant use the plugin, contact the forum at \n\nhttp://sourceforge.net/forum/forum.php?forum_id=318265"); 
 #ifdef linux
 			log(dlerror());
 #endif
@@ -577,3 +578,81 @@ int checkJVMVersionRequest(char* requestedJVMVersion) {
 }
 #endif
 
+
+
+//stupid shared library lookup stuff
+//dont even look at it. unstable, platform dependent (most likely only vanilla linux) and ugly!!!
+#ifdef linux
+
+#include <limits.h>
+
+/**
+ * Returns a filename which must be freed, or NULL on error.
+ */
+char* findLastLoadedSO() {
+	log("br_find_exec");
+	
+	#define SIZE PATH_MAX + 100
+	FILE *f;
+	size_t address_string_len;
+	char *address_string, line[SIZE], *found;
+
+
+	f = fopen ("/proc/self/maps", "r");
+	if (f == NULL)
+		return (char *) NULL;
+
+	address_string_len = 4;
+	address_string = (char *) malloc (address_string_len);
+	found = (char *) NULL;
+
+printf("**************************************\n");
+
+	while (!feof (f)) {
+		char *file, *start_addr, *end_addr;
+
+		if (fgets (line, SIZE, f) == NULL)
+			break;
+
+printf(line); //TODO: debug!
+
+		/* Sanity check. */
+		if (strstr (line, " r-xp ") == NULL || strchr (line, '/') == NULL)
+			continue;
+
+		/* Parse line. */
+		start_addr = line;
+		end_addr = strchr (line, '-');
+		file = strchr (line, '/');
+
+		//remove \n from file name
+		int len = strlen(file);
+		file[len]='\0';
+		file[len-1]='\0';
+
+		/* More sanity check. */
+		if (!(file > end_addr && end_addr != NULL && end_addr[0] == '-'))
+			continue;
+
+		//first occurence of a jvst*.so is the latest plugin that was loaded
+		//take this as the filename!
+		//MAN, this is totally risky and not portable, but the only solution I found so far...
+		if ((strstr(file, "/jvst")!=NULL) && (strstr(file, ".so")!=NULL)) {
+			found = file;
+			break;
+		}
+	}
+
+printf("**************************************\n");
+
+	if (address_string) 
+		free (address_string);
+	fclose (f);
+
+	if (found == NULL)
+		return (char *) NULL;
+	else
+		return strdup (found);
+}
+
+#endif
