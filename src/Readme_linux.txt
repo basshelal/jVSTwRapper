@@ -19,8 +19,13 @@ Writing VST plugins in Java on LINUX mini HOW-TO
    Do this when you see the following error in jvstwrapper_log.txt:
    ** java.lang.UnsatisfiedLinkError: Can't load library: $[SOME PATH]/xawt/libmawt.so
    
-
 3. Write your plugin using the wrapper api.
+
+4. On Linux, a special name convention for the .so file is necessary: 
+   The name pattern is: jvst*.so 
+   You can rename the .so file to whatever ou want, just make sure the 
+   first 4 letters are 'jvst', all lowercase. Also, make sure that the .ini has the same 
+   name as the .so file and is stored in the same directory.
 
 4. Specify your plugin main class in the jvstwrapper.ini file 
 
