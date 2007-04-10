@@ -69,7 +69,7 @@ bool checkAndThrowException(JNIEnv *env);
 	int initJVMFunctionPointers(char *vmlibpath);
 	char* readJVMLibLocation(char* requestedJVM);
 	
-	char* findLastLoadedSO();
+	char* find_exe_for_symbol (const void *symbol);
 #endif
 #ifdef MACX
 	int checkJVMVersionRequest(char* requestedJVMVersion);

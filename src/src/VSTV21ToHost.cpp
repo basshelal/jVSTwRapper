@@ -53,6 +53,12 @@ extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 //**********************************************
 
 
+#ifdef linux
+	//patch original JNIEXPORT to use -fvisibility=hidden compiler option 
+	//so that default visibility for symbols is "hidden"
+	#define JNIEXPORT __attribute__ ((visibility ("default")))   //risky !!!
+#endif
+
 
 /*
  * Class:     jvst_wrapper_communication_VSTV21ToHost

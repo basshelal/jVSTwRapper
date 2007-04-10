@@ -73,6 +73,11 @@
 
 #ifdef linux
 	#include <dlfcn.h>
+	
+	//patch original JNIEXPORT to use -fvisibility=hidden compiler option 
+	//so that default visibility for symbols is "hidden"
+	//make JNI_OnLoad externally visible 
+	#define JNIEXPORT __attribute__ ((visibility ("default")))
 #endif
 
 #if defined(WIN32) || defined(linux)
@@ -137,10 +142,10 @@ extern "C" {
 		VST_EXPORT AEffect *main_macho (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
 	#endif
 	#ifdef linux
-		AEffect* main_plugin (audioMasterCallback pAudioMaster) asm ("main");
+		VST_EXPORT AEffect* main_plugin (audioMasterCallback pAudioMaster) asm ("main");
 		#define main main_plugin
 	
-		AEffect *main (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
+		VST_EXPORT AEffect *main (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
 	#endif
 } // extern "C"
 
@@ -239,7 +244,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 		jvmLibLocation = readJVMLibLocation(NULL);
 
 		if (jvmLibLocation==NULL) {
-			log("* WARNING: $JAVA_HOME not defined! Unable to load from $JAVA_HOME/jre/lib/i386/client/libjvm.so!\n using the one from $LD_LIBRARY_PATH!");
+			log("* WARNING: $JAVA_HOME not defined! Unable to load from $JAVA_HOME/jre/lib/i386/client/libjvm.so!\n Trying to load libjvm.so from $LD_LIBRARY_PATH!");
 			//try to load jvm from LD_LIBRARY_PATH
 			jvmLibLocation = "libjvm.so";
 		}
@@ -606,10 +611,12 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 //------------------------------------------------------------------------
 void calculatePaths() {
 #ifdef linux
+	printf("Hallo from LIB tatata\n");
+
 	//find out where we are:
-	char* soPath = findLastLoadedSO();
+	char* soPath = find_exe_for_symbol ((const void*)"");
 	if (soPath == NULL) {
-		log("** ERROR: could not locate last loaded .so file!");
+		log("** ERROR: could not locate my own location! (/proc/self/maps missing?)");
 		return;
 	}	
 	strcpy(DllLocation, soPath);

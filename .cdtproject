@@ -52,6 +52,9 @@
 <pathentry kind="out" path=""/>
 <pathentry kind="out" path="bin"/>
 <pathentry kind="con" path="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO"/>
+<pathentry include="/usr/lib/jvm/java-6-sun/include" kind="inc" path="" system="true"/>
+<pathentry include="/usr/lib/jvm/java-6-sun/include/linux" kind="inc" path="" system="true"/>
+<pathentry kind="mac" name="JNIEXPORT" path="" value="__attribute__ ((visibility (&quot;default&quot;)))"/>
 </item>
 <item id="org.eclipse.cdt.make.core.buildtargets">
 <buildTargets>
