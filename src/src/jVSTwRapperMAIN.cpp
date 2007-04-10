@@ -611,8 +611,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
 //------------------------------------------------------------------------
 void calculatePaths() {
 #ifdef linux
-	printf("Hallo from LIB tatata\n");
-
 	//find out where we are:
 	char* soPath = find_exe_for_symbol ((const void*)"");
 	if (soPath == NULL) {
