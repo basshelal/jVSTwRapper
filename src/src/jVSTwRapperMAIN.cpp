@@ -669,17 +669,17 @@ void calculatePaths() {
 	
 	int len = strlen(lastSlash);
 	strcpy(DllLocation, imagename);
-	log("DllLocation=%s\n", DllLocation);
+	log("DllLocation=%s", DllLocation);
 	
 	//config file name
 	strcpy(ConfigFileName, lastSlash);
 	strncpy(ConfigFileName + len , ".ini\0", 5);
-	log("ConfigFileName=%s\n", ConfigFileName);
+	log("ConfigFileName=%s", ConfigFileName);
 	
 	//log file name
 	strcpy(LogFileName, lastSlash);
 	strncpy(LogFileName + len, "_log.txt\0", 9);
-	log("LogFileName=%s\n", LogFileName);
+	log("LogFileName=%s", LogFileName);
 
 	//DllPath
 	len = lastSlash - imagename - 1;
@@ -691,7 +691,7 @@ void calculatePaths() {
 	strncpy(DllPath, imagename, len);
 	DllPath[len]='\0';
 	strcat(DllPath,"/Resources/\0");
-	log("DllPath=%s\n", DllPath);
+	log("DllPath=%s", DllPath);
 #endif
 	
 }
