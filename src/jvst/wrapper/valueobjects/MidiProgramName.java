@@ -50,8 +50,8 @@ public class MidiProgramName {
   public String getName() {return this.name;}
   public byte getReserved() {return this.reserved;}
   public byte getMidiProgram() {return this.midiProgram;}
-  public byte getMidiBankMsb() {return this.getMidiBankMsb();}
-  public byte getMidiBankLsb() {return this.getMidiBankLsb();}
+  public byte getMidiBankMsb() {return this.midiBankMsb;}
+  public byte getMidiBankLsb() {return this.midiBankLsb;}
 
 
   public void setReserved(byte p) {this.reserved = p;}
