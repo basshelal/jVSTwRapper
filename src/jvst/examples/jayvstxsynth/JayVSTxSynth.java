@@ -438,18 +438,23 @@ public class JayVSTxSynth extends VSTPluginAdapter {
       float vol = (float)(this.fVolume * (double)this.currentVelocity * MIDI_SCALER);
       int mask = WAVE_SIZE - 1;
 
+      int start = 0;
+      
       if (this.currentDelta > 0) {
-        if (this.currentDelta >= sampleFrames) {
+        if (this.currentDelta >= sampleFrames) { //future
           this.currentDelta -= sampleFrames;
           return;
         }
-        out1[0] += this.currentDelta;
-        out2[0] += this.currentDelta;
+        for(int i = 0; i < this.currentDelta; i++) {//zero delta frames
+        	out1[i] = 0;
+    		out2[i] = 0;
+        }
+        start = this.currentDelta;
         sampleFrames -= this.currentDelta;
         this.currentDelta = 0;
       }
 
-      for (int i = 0; i < sampleFrames; i++) {
+      for (int i = start, j=out1.length; i < j; i++) {
         // this is all very raw, there is no means of interpolation,
         // and we will certainly get aliasing due to non-bandlimited
         // waveforms. don't use this for serious projects...
@@ -459,7 +464,13 @@ public class JayVSTxSynth extends VSTPluginAdapter {
         this.fPhase2 += freq2;
       }
     }
-
+    else {
+    	//note off
+    	for (int i=0; i<outputs[0].length; i++){
+    		outputs[0][i] = 0;
+    		outputs[1][i] = 0;
+    	}
+    }
   }
 
   //processReplacing is REPLACING the calculated floats to the output
@@ -476,18 +487,23 @@ public class JayVSTxSynth extends VSTPluginAdapter {
       float vol = (float)(this.fVolume * (double)this.currentVelocity * MIDI_SCALER);
       int mask = WAVE_SIZE - 1;
 
+      int start = 0;
+      
       if (this.currentDelta > 0) {
-        if (this.currentDelta >= sampleFrames) {
+        if (this.currentDelta >= sampleFrames) { //future
           this.currentDelta -= sampleFrames;
           return;
         }
-        out1[0] += this.currentDelta;
-        out2[0] += this.currentDelta;
+        for(int i = 0; i < this.currentDelta; i++) { //zero delta frames
+        	out1[i] = 0;
+    		out2[i] = 0;
+        }
+        start = this.currentDelta;
         sampleFrames -= this.currentDelta;
         this.currentDelta = 0;
       }
 
-      for (int i = 0; i < sampleFrames; i++) {
+      for (int i = start, j=out1.length; i < j; i++) {
         // this is all very raw, there is no means of interpolation,
         // and we will certainly get aliasing due to non-bandlimited
         // waveforms. don't use this for serious projects...
@@ -497,7 +513,13 @@ public class JayVSTxSynth extends VSTPluginAdapter {
         this.fPhase2 += freq2;
       }
     }
-
+    else {
+    	//note off
+    	for (int i=0; i<outputs[0].length; i++){
+    		outputs[0][i] = 0;
+    		outputs[1][i] = 0;
+    	}
+    }
   }
 
   public int processEvents (VSTEvents ev) {
