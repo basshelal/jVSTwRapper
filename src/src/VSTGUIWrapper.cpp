@@ -105,8 +105,8 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	else {
 		rect.left   = 0;
 		rect.top    = 0;
-		rect.right  = 0;
-		rect.bottom = 0;
+		rect.right  = 1;
+		rect.bottom = 1;
 	}
 	*ppErect = &rect;
 	return true;
