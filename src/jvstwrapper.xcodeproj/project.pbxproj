@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C3B572360BD8815A00846E41 /* jLADSPAwRapperMAIN.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3B572340BD8815A00846E41 /* jLADSPAwRapperMAIN.cpp */; };
 		C3C3AEB40B6247C100C0F71B /* PkgInfo in Resources */ = {isa = PBXBuildFile; fileRef = C3C3AE9D0B6244AC00C0F71B /* PkgInfo */; };
 		C3C3AED90B62683000C0F71B /* jvstwrapper.icns in Resources */ = {isa = PBXBuildFile; fileRef = C3C3AED80B62683000C0F71B /* jvstwrapper.icns */; };
 		C3C70FE60B4582F900DA1076 /* libjvstwrapper.jnilib.ini in Resources */ = {isa = PBXBuildFile; fileRef = C3E310630B405D130015E591 /* libjvstwrapper.jnilib.ini */; };
@@ -43,6 +44,8 @@
 
 /* Begin PBXFileReference section */
 		8D01CCD10486CAD60068D4B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C3B572340BD8815A00846E41 /* jLADSPAwRapperMAIN.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = jLADSPAwRapperMAIN.cpp; sourceTree = "<group>"; };
+		C3B572350BD8815A00846E41 /* ladspa.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ladspa.h; sourceTree = "<group>"; };
 		C3B7D3F40B3EEFE700EE5C26 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		C3B7D3FD0B3EF01800EE5C26 /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
 		C3C3AE9D0B6244AC00C0F71B /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = PkgInfo; sourceTree = "<group>"; };
@@ -131,6 +134,7 @@
 		089C166AFE841209C02AAC07 /* jvstwrapper */ = {
 			isa = PBXGroup;
 			children = (
+				C3B572330BD8815A00846E41 /* ladspa */,
 				C3B7D5750B3F526900EE5C26 /* wrapper */,
 				C3EA1B620B3D97AE00B4C69F /* conf */,
 				C3EA1B6F0B3D97AE00B4C69F /* pluginterfaces */,
@@ -170,6 +174,16 @@
 				C3C70FE00B45823100DA1076 /* jvstwrapper.vst */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C3B572330BD8815A00846E41 /* ladspa */ = {
+			isa = PBXGroup;
+			children = (
+				C3B572340BD8815A00846E41 /* jLADSPAwRapperMAIN.cpp */,
+				C3B572350BD8815A00846E41 /* ladspa.h */,
+			);
+			name = ladspa;
+			path = src/ladspa;
 			sourceTree = "<group>";
 		};
 		C3B7D5750B3F526900EE5C26 /* wrapper */ = {
@@ -383,6 +397,7 @@
 				C3C70FFE0B45830A00DA1076 /* VSTV22ToHost.cpp in Sources */,
 				C3C711300B45B4D800DA1076 /* VSTGUIWrapperMAC.mm in Sources */,
 				C3F9CC4B0B52D54B0085453F /* VSTGUIWrapper.cpp in Sources */,
+				C3B572360BD8815A00846E41 /* jLADSPAwRapperMAIN.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,7 +435,7 @@
 		C3C70FE30B45823200DA1076 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = ppc;
+				ARCHS = i386;
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_EXTENSION = jnilib;
 				EXECUTABLE_PREFIX = lib;

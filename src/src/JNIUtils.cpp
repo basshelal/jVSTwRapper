@@ -482,6 +482,11 @@ int initJVMFunctionPointers(char *vmlibpath) {
 
 
 #ifdef MACX
+
+void printCurrentThreadID() {
+	log("Current Thread ID=%i", pthread_self());
+}
+
 //**************************************************************************************************
 // Mac feature for requesting a specific JVM
 

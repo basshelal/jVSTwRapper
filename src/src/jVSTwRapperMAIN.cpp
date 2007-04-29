@@ -82,7 +82,8 @@ void calculatePaths();
 int loadPlugin();
 
 #ifdef MACX
-	CFTypeRef runLoop;
+	CFTypeRef runLoop = NULL;
+	pthread_t JavaVMThreadID = NULL;
 
 	void sourceCallBack(void *info);
 	int loadCFApp();
@@ -103,7 +104,7 @@ char DllPath[512];
 
 char ConfigFileName[100];
 char LogFileName[100];
-audioMasterCallback audioMaster;
+audioMasterCallback audioMaster = NULL;
 
 
 
@@ -146,7 +147,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	if (err_stream!=NULL) log("\nredirecting stderr stream OK");
 	//FILE *out_stream = freopen(log_location, "a", stdout);		//this caused an error in melodyne
 	//if (out_stream!=NULL) log("redirecting stdout stream OK");	//we dont need it anyways! 
-																	//log() writes to stderr
+
 
 	log("\n***** START *****");
 	log("log_location=%s", log_location);
@@ -253,7 +254,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 		
 		//make sure that we use any jvm
 		if (ret!=0) {
-			log("Warning: Could NOT find requested JVM version, using default JVM instead");
+			log("Warning: Could NOT find requested JVM version from .ini, using default JVM instead");
 			unsetenv("JAVA_JVM_VERSION");
 		} 
 	}
@@ -368,7 +369,12 @@ void* startJava(void *nix) {
 	if (nVMs>0) {
 		log("before reusing JavaVM");
 		jvm = &vmBuffer[nVMs-1];
+#if defined(WIN32) || defined(linux)
 		res = jvm->GetEnv((void**)&env, JNI_VERSION_1_2);
+#endif
+#ifdef MACX
+		res = jvm->GetEnv((void**)&env, JNI_VERSION_1_4);
+#endif		
 		log("after reusing JavaVM");
 		
 		log("* Warning: Since we are reusing a Java VM which is already in memory, \n\
@@ -387,13 +393,16 @@ void* startJava(void *nix) {
 		}
 	} 
 	else {
-		log("before JNI_CreateJavaVM");
 		/* Create the Java VM */
+		
+		log("Before JNI_CreateJavaVM");
 #if defined(WIN32) || defined(linux)
-	res = PTR_CreateJavaVM(&jvm, (void**)&env, &vm_args);
+		res = PTR_CreateJavaVM(&jvm, (void**)&env, &vm_args);
 #endif
 #ifdef MACX
-	res = JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
+		JavaVMThreadID = pthread_self();
+		log("creating Java VM in thread=%i", JavaVMThreadID);
+		res = JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
 #endif		
 		log("AFTER JNI_CreateJavaVM");
 		
@@ -414,7 +423,10 @@ void* startJava(void *nix) {
 leave:
 #ifdef MACX
 	//TODO: ASK Gerard why we need this ???
-	CFRunLoopStop((CFRunLoopRef)runLoop);
+	//I guess this wakes up the thread used to spawn the jvm thread
+	//without waking it up we would simply wait forever and never return from 
+	//startJavaThread
+	if (runLoop) CFRunLoopStop((CFRunLoopRef)runLoop);
 	return NULL; //NULL //man, this makes the whole result var unecessary...
 #endif
 #if defined(WIN32) || defined(linux)
@@ -554,11 +566,24 @@ int loadPlugin() {
 
 	if (checkException(env)) goto leave;
 
-	log("calling java guis init!");
 	if(hasGUI) {
+		log("calling java guis init!");
 		//init gui wrapper
-		WrapperInstance->setEditor(new VSTGUIWrapper(WrapperInstance));
-		if (((VSTGUIWrapper*)WrapperInstance->getEditor())->initJavaSide(guiClass)) goto leave;
+		VSTGUIWrapper* guiWrapper = new VSTGUIWrapper(WrapperInstance);
+		WrapperInstance->setEditor(guiWrapper);
+		int ret = -1;
+				
+#if defined(WIN32) || defined(linux)
+		ret = guiWrapper->initJavaSide(guiClass);
+#endif
+#ifdef MACX
+		log("Current thread=%i, JavaVMThread=%i", pthread_self(), JavaVMThreadID);
+		ret = guiWrapper->initJavaSide(guiClass); //*** 
+		//perform this method in a new Thread
+		//ret = performOnAnotherThread(guiWrapper, guiClass, GuiWrapperInitJavaSide, false);		
+#endif		
+
+		if (ret) goto leave;
 	}
 	else {
 		WrapperInstance->setEditor(NULL);
@@ -578,8 +603,13 @@ leave:
 
 //------------------------------------------------------------------------
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved) {
+#if defined(WIN32) || defined(linux)
 	return JNI_VERSION_1_2; //we use JNI 1.2 functions, tell that the jvm that loads us. 
 							//we dont need jni 1.4 functionality, so 1.2 is enough
+#endif
+#ifdef MACX
+	return JNI_VERSION_1_4;
+#endif
 }
 
 //------------------------------------------------------------------------
@@ -699,6 +729,7 @@ int startJavaThread(){
 			log("** Error while initilizing Cocoa");
 			return -1;
 		}
+		//performOnAnotherThread(NULL,NULL,GuiWrapperInitCocoa,false);
 	}
 	else log("NOT using Cocoa!");
 	if(cfg) delete(cfg);

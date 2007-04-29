@@ -57,7 +57,13 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		
 		//Utility
 		int initJavaSide(jclass gui);	
-
+/*
+#ifdef MACX
+		bool wrappedOpen (void *ptr);
+		void wrappedClose ();
+		void wrappedDestroy();
+#endif
+*/
 #ifdef WIN32
 		HWND JavaWindowHandle;
 #endif
@@ -85,9 +91,6 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		jclass JavaPlugGUIClass;
 
 		bool AttachWindow;
-
-		// Bitmap
-		//CBitmap *hBackground;
 };
 
 #endif

@@ -46,10 +46,16 @@
 #if defined(MACX) || defined(linux)
 	#include <pthread.h>
 #endif
+#ifdef MACX
+	#include "VSTGUIWrapperMAC.h"
+#endif
+
 
 
 VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect) 
 	: AEffGUIEditor (effect) {
+
+	log("GUI wrapper init");
 
 	this->ThreadID = 0;	
 	this->Jvm = ((VSTV10ToPlug*)effect)->Jvm;
@@ -74,6 +80,7 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 
 //-----------------------------------------------------------------------------
 bool VSTGUIWrapper::getRect (ERect **ppErect) {
+	log("GUI wrapper getRect");
 	if(this->AttachWindow) {
 		this->ensureJavaThreadAttachment();
 
@@ -95,7 +102,7 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	else {
 		rect.left   = 0;
 		rect.top    = 0;
-		rect.right  = 1;
+		rect.right  = 1; //maybe this fixes the fact that some hosts dont even call open()
 		rect.bottom = 1;
 	}
 	*ppErect = &rect;
@@ -104,6 +111,16 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 
 //-----------------------------------------------------------------------------
 VSTGUIWrapper::~VSTGUIWrapper () {
+	log("GUI wrapper destroy");
+/*
+#ifdef MACX
+	performOnAnotherThread(this, NULL, GuiWrapperDestroy, false);
+}
+
+void VSTGUIWrapper::wrappedDestroy() {
+	printCurrentThreadID();
+#endif
+*/
 	this->ensureJavaThreadAttachment();
 	
 	//destroy() der gui aufrufen
@@ -143,9 +160,20 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
 
 bool VSTGUIWrapper::open (void *ptr) {
-    this->ensureJavaThreadAttachment();
-
+	log("GUI wrapper open");
+/*
+#ifdef MACX
+	//all awt calls need to be on a different thread -- wrap host calls and forward them to different thread
+	performOnAnotherThread(this, ptr, GuiWrapperOpen, false);
+	
+	this->checkException();
+	return true;
+} //close method
+#endif
+*/
 #ifdef WIN32
+	this->ensureJavaThreadAttachment();
+
 	ConfigFileReader *cfg = new ConfigFileReader();
 	JAWT awt;	
 	jboolean result;
@@ -249,7 +277,15 @@ bool VSTGUIWrapper::open (void *ptr) {
 	} //Attaching    
 #endif		
 
-
+/*
+#ifdef MACX
+bool VSTGUIWrapper::wrappedOpen (void *ptr) {
+	log("GUI wrapper WRAPPED open");
+	printCurrentThreadID();
+#endif
+*/
+	this->ensureJavaThreadAttachment();
+	
 	// Call Open
     jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
@@ -286,6 +322,16 @@ bool VSTGUIWrapper::open (void *ptr) {
 
 //-----------------------------------------------------------------------------
 void VSTGUIWrapper::close () {
+/*
+#ifdef MACX
+	performOnAnotherThread(this, NULL, GuiWrapperClose, false);
+}
+
+void VSTGUIWrapper::wrappedClose () {
+	log("GUI wrapper close");
+	printCurrentThreadID();
+#endif
+*/
 	this->ensureJavaThreadAttachment();
     
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
@@ -312,24 +358,24 @@ void VSTGUIWrapper::close () {
 
 //-----------------------------------------------------------------------------
 int VSTGUIWrapper::initJavaSide(jclass guiClass) {
+	log("GUI wrapper initJavaSide");
 	this->ensureJavaThreadAttachment();
-
 
 	if (guiClass==NULL) return -1;
 	this->JavaPlugGUIClass = guiClass;
 
 	log("WITHIN gui initjavaside");
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "<init>", "()V");
+	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "<init>", "()V");	
 	if (mid == NULL) {
 		log("** ERROR: cannot find GUIs default contructor");
 		this->checkException(); //print stack trace!
 		return -1;
 	}
-
 	if (this->checkException()) return -1;
-
+	
 	log("creating instance of GUI class");
-	this->JavaPlugGUIObj = JEnv->NewObject(this->JavaPlugGUIClass, mid);
+
+	this->JavaPlugGUIObj = this->JEnv->NewObject(this->JavaPlugGUIClass, mid);
 	if (this->JavaPlugGUIObj == NULL) {
 		log("** ERROR: cannot create Java Plugin GUI Object");
 		this->checkException(); //print stack trace!
@@ -383,6 +429,7 @@ void  VSTGUIWrapper::ensureJavaThreadAttachment() {
 bool VSTGUIWrapper::checkException() {
 	return ::checkException(this->JEnv);	
 }
+
 
 #ifdef WIN32
 void VSTGUIWrapper::detachWindow() {

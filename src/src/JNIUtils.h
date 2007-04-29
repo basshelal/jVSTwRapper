@@ -74,6 +74,7 @@ bool checkAndThrowException(JNIEnv *env);
 #endif
 #ifdef MACX
 	int checkJVMVersionRequest(char* requestedJVMVersion);
+	void printCurrentThreadID();
 #endif
 
 
