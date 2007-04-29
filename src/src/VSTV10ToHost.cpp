@@ -60,11 +60,6 @@ VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj) {
 //Java -> Native
 //**********************************************
 
-#ifdef linux
-	//patch original JNIEXPORT to use -fvisibility=hidden compiler option 
-	//so that default visibility for symbols is "hidden"
-	#define JNIEXPORT __attribute__ ((visibility ("default")))   //risky !!!
-#endif
 
 //------------------------------------------------------------------------
 /*

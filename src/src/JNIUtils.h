@@ -67,6 +67,10 @@ bool checkAndThrowException(JNIEnv *env);
 	char* readJVMLibLocation(char* requestedJVM);
 	
 	char* find_exe_for_symbol (const void *symbol);
+	
+	//patch original JNIEXPORT to use -fvisibility=hidden compiler option 
+	//so that default visibility for symbols is "hidden"
+	#define JNIEXPORT __attribute__ ((visibility ("default")))
 #endif
 #ifdef MACX
 	int checkJVMVersionRequest(char* requestedJVMVersion);

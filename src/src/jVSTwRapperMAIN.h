@@ -38,8 +38,15 @@
 
 #include "public.sdk/vst2.x/audioeffectx.h"
 
+#define VST_FORCE_DEPRECATED 0
+
+#if defined (__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
+	#define VST_EXPORT	__attribute__ ((visibility ("default")))
+#else
+	#define VST_EXPORT
+#endif
 
 
-
+AEffect* jvst_main(audioMasterCallback pAudioMaster);
 
 #endif

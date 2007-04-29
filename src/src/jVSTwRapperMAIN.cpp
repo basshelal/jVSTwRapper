@@ -62,11 +62,6 @@
 
 #ifdef linux
 	#include <dlfcn.h>
-	
-	//patch original JNIEXPORT to use -fvisibility=hidden compiler option 
-	//so that default visibility for symbols is "hidden"
-	//make JNI_OnLoad externally visible 
-	#define JNIEXPORT __attribute__ ((visibility ("default")))
 #endif
 
 #if defined(WIN32) || defined(linux)
@@ -85,8 +80,6 @@ JavaVM *GlobalJVM = NULL;
 //------------------------------------------------------------------------
 void calculatePaths();
 int loadPlugin();
-AEffect* jvst_main(audioMasterCallback pAudioMaster);
-
 
 #ifdef MACX
 	CFTypeRef runLoop;
@@ -99,6 +92,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster);
 
 	int checkJVMVersionRequest(char* requestedJVMVersion);
 #endif
+
 #if defined(WIN32) || defined(linux)
 	int startJava(void *nix);
 #endif
@@ -112,14 +106,9 @@ char LogFileName[100];
 audioMasterCallback audioMaster;
 
 
+
 //main entry points for different platforms
 extern "C" {
-	#if defined (__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
-		#define VST_EXPORT	__attribute__ ((visibility ("default")))
-	#else
-		#define VST_EXPORT
-	#endif
-	
 	//vst2.4 generic entry point
 	VST_EXPORT AEffect* VSTPluginMain (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
 	
@@ -137,10 +126,6 @@ extern "C" {
 		VST_EXPORT AEffect *main (audioMasterCallback pAudioMaster) {return jvst_main(pAudioMaster);}
 	#endif
 } // extern "C"
-
-
-
-
 
 
 //-----------------------------------------------------------------------
