@@ -86,7 +86,7 @@ ConfigFileReader::~ConfigFileReader() {
 }
 
 void ConfigFileReader::ReadConfigFile() {
-	char line[1024];
+	char* line = (char*)malloc(1024);
 	char sep[3] = "=\n";
 	char* token;
 
