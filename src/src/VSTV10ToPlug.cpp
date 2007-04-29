@@ -33,18 +33,9 @@
 // 2003,2004 Daniel Martin, Gerard Roma
 //-------------------------------------------------------------------------------------------------------
 
-#ifndef __VSTV10ToPlug__
 #include "VSTV10ToPlug.h"
-#endif
-
-#ifndef __JNIUtils__
 #include "JNIUtils.h"
-#endif
-
-#ifndef __ConfigFileReader__
 #include "ConfigFileReader.h"
-#endif
-
 
 #include <stdio.h>
 #include <string.h>

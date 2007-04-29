@@ -33,18 +33,11 @@
 // 2003,2004 Daniel Martin, Gerard Roma
 //-------------------------------------------------------------------------------------------------------
 
-	
-#ifndef __VSTV20ToPlug__
 #include "VSTV20ToPlug.h"
-#endif
-
-#ifndef __JNIUtils__
 #include "JNIUtils.h"
-#endif
-
 
 #if defined(MACX) || defined(linux)
-#include <pthread.h>
+	#include <pthread.h>
 #endif
 
 

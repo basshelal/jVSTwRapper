@@ -32,15 +32,8 @@
 //-------------------------------------------------------------------------------------------------------
 
 	
-#ifndef __VSTV21ToPlug__
 #include "VSTV21ToPlug.h"
-#endif
-
-#ifndef __JNIUtils__
 #include "JNIUtils.h"
-#endif
-
-
 
 
 //Impl of Host -> Plug calls

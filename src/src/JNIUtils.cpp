@@ -32,17 +32,10 @@
 // 2003,2004 Daniel Martin
 //-------------------------------------------------------------------------------------------------------
 
-#ifndef __JNIUtils__
+
 #include "JNIUtils.h"
-#endif
-
-#ifndef __VSTV20ToPlug__
 #include "VSTV20ToPlug.h"
-#endif
-
-#ifndef __ConfigFileReader__
 #include "ConfigFileReader.h"
-#endif
 
 #ifdef MACX
 	#include <Carbon/Carbon.h>

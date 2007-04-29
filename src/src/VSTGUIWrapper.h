@@ -38,9 +38,7 @@
 
 #include <jni.h>
 
-#ifndef __vstgui__
 #include "vstgui/vstgui.h"
-#endif
 
 #ifdef linux
 	#include <pthread.h>

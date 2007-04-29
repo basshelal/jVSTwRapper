@@ -31,17 +31,9 @@
 //-------------------------------------------------------------------------------------------------------
 
 
-#ifndef _Included_jvst_wrapper_communication_VSTV21ToHost
 #include "VSTV21ToHost.h"
-#endif
-
-#ifndef __JNIUtils__
 #include "JNIUtils.h"
-#endif
-
-#ifndef __VSTV24ToPlug__
 #include "VSTV24ToPlug.h"
-#endif
 
 extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 

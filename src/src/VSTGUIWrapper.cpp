@@ -32,21 +32,11 @@
 // 2003,2004 Daniel Martin, Gerard Roma
 //-------------------------------------------------------------------------------------------------------
 
-#ifndef __VSTGUIWrapper__
+
 #include "VSTGUIWrapper.h"
-#endif
-
-#ifndef __VSTV10ToPlug__
 #include "VSTV10ToPlug.h"
-#endif
-
-#ifndef __ConfigFileReader__
 #include "ConfigFileReader.h"
-#endif
-
-#ifndef __JNIUtils__
 #include "JNIUtils.h"
-#endif
 
 
 #ifdef WIN32

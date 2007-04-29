@@ -32,13 +32,9 @@
 // 2003,2004 Daniel Martin
 //-------------------------------------------------------------------------------------------------------
 
-#ifndef __ConfigFileReader__
-#include "ConfigFileReader.h"
-#endif
 
-#ifndef __JNIUtils__
+#include "ConfigFileReader.h"
 #include "JNIUtils.h"
-#endif
 
 #include <stdlib.h>
 #include <string.h>

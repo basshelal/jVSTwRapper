@@ -32,18 +32,9 @@
 // 2003,2004 Daniel Martin
 //-------------------------------------------------------------------------------------------------------
 
-
-#ifndef _Included_jvst_wrapper_communication_VSTV10ToHost
 #include "VSTV10ToHost.h"
-#endif
-
-#ifndef __JNIUtils__
 #include "JNIUtils.h"
-#endif
-
-#ifndef __VSTV24ToPlug__
 #include "VSTV24ToPlug.h"
-#endif
 
 #if defined(MACX) || defined(linux)
 #include <pthread.h>

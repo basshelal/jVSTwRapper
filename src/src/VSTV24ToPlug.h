@@ -35,12 +35,7 @@
 #ifndef __VSTV24ToPlug__
 #define __VSTV24ToPlug__
 
-
-#ifndef __VSTV23ToPlug__
 #include "VSTV23ToPlug.h"
-#endif
-
-
 
 
 //------------------------------------------------------------------------

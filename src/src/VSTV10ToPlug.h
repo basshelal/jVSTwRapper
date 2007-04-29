@@ -35,17 +35,11 @@
 #ifndef __VSTV10ToPlug__
 #define __VSTV10ToPlug__
 
-
-#ifndef __audioeffectx__
 #include "public.sdk/vst2.x/audioeffectx.h"
-#endif
-
-#ifndef __VSTGUIWrapper__
 #include "VSTGUIWrapper.h"
-#endif
 
 #if defined(MACX) || defined(linux)
-#include <pthread.h>
+	#include <pthread.h>
 #endif
 
 #include <jni.h>

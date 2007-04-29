@@ -35,10 +35,7 @@
 #ifndef __JNIUtils__
 #define __JNIUtils__
 
-
-#ifndef __audioeffectx__
 #include "public.sdk/vst2.x/audioeffectx.h"
-#endif
 
 #include <jni.h>
 

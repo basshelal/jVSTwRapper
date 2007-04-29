@@ -36,10 +36,10 @@
 #ifndef __jVSTwRapperMAIN__
 #define __jVSTwRapperMAIN__
 
-
-#ifndef __audioeffectx__
 #include "public.sdk/vst2.x/audioeffectx.h"
-#endif
+
+
+
 
 
 #endif

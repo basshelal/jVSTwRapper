@@ -33,21 +33,10 @@
 // 2003,2004,2007 Daniel Martin, Gerard Roma
 //-------------------------------------------------------------------------------------------------------
 
-#ifndef __jVSTwRapperMAIN__
 #include "jVSTwRapperMAIN.h"
-#endif
-
-#ifndef __JNIUtils__
 #include "JNIUtils.h"
-#endif
-
-#ifndef __VSTV24ToPlug__
 #include "VSTV24ToPlug.h"
-#endif
-
-#ifndef __ConfigFileReader__
 #include "ConfigFileReader.h"
-#endif
 
 
 #ifdef WIN32
