@@ -86,21 +86,22 @@ ConfigFileReader::~ConfigFileReader() {
 }
 
 void ConfigFileReader::ReadConfigFile() {
-	char* line = (char*)malloc(1024);
+	char line2[1024];
+	char* line;
 	char sep[3] = "=\n";
 	char* token;
 
 
 	while(!feof(this->INIFile)) {
-		fgets(line, 1024, this->INIFile);
+		fgets(line2, 1024, this->INIFile);
 		
 		if(ferror(this->INIFile)) {
 			log("** INI File Read error");
 			break;
 		}
 
-		if(line==NULL) break;
-		line = trim(line);
+		if(line2==NULL) break;
+		line = trim(line2);
 
 		//tokenize
 		token = strtok(line, sep);
@@ -108,50 +109,50 @@ void ConfigFileReader::ReadConfigFile() {
 
 		if(strcmp(token, "PluginClass")==0) {
 			token = strtok(NULL, sep);
-			if (token != NULL) this->PluginClass = strdup(token);
+			if (token != NULL) this->PluginClass = strdup(trim(token));
 			else log("**ERROR: finding PluginClass token");
 		}
 		if(strcmp(token, "PluginUIClass")==0) {
 			token = strtok(NULL, sep);
-			if (token != NULL) this->PluginUIClass = strdup(token);
+			if (token != NULL) this->PluginUIClass = strdup(trim(token));
 			else log("**ERROR: finding PluginUIClass token");
 		}
 		if(strcmp(token, "ClassPath")==0) {
 			token = strtok(NULL, sep);
-			if (token != NULL) this->JVMClassPath = strdup(token);
+			if (token != NULL) this->JVMClassPath = strdup(trim(token));
 			else log("**ERROR: finding JVMClassPath token");
 		}
 		if(strcmp(token, "JVMOption1")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption1 = strdup(token);
+			if (token != NULL) this->JVMOption1 = strdup(trim(token));
 		}
 		if(strcmp(token, "JVMOption2")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption2 = strdup(token);
+			if (token != NULL) this->JVMOption2 = strdup(trim(token));
 		}
 		if(strcmp(token, "JVMOption3")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption3 = strdup(token);
+			if (token != NULL) this->JVMOption3 = strdup(trim(token));
 		}
 		if(strcmp(token, "JVMOption4")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption4 = strdup(token);
+			if (token != NULL) this->JVMOption4 = strdup(trim(token));
 		}
 		if(strcmp(token, "JVMOption5")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->JVMOption5 = strdup(token);
+			if (token != NULL) this->JVMOption5 = strdup(trim(token));
 		}
 		if(strcmp(token, "CustomJVMLocation")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->CustomJVMLocation = strdup(token);
+			if (token != NULL) this->CustomJVMLocation = strdup(trim(token));
 		}
 		if(strcmp(token, "RequestJVMVersion")==0) {
 			token = strtok(NULL, "\n");
-			if (token != NULL) this->RequestedJVMVersion = strdup(token);
+			if (token != NULL) this->RequestedJVMVersion = strdup(trim(token));
 		}
 		if(strcmp(token, "SystemClassPath")==0) {
 			token = strtok(NULL, sep);
-			if (token != NULL) this->SystemClassPath = strdup(token);
+			if (token != NULL) this->SystemClassPath = strdup(trim(token));
 			else log("**ERROR: finding SystemClassPath token");
 		}
 		if(strcmp(token, "IsLoggingEnabled")==0) {
