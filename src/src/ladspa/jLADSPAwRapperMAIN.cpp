@@ -170,7 +170,7 @@ static void vst_cleanup(LADSPA_Handle handle) {
 	printf("LADSPA cleanup\n");
    	LadspaPluginAdapter *inst = (LadspaPluginAdapter *) handle;
    	inst->Cleanup();
-   	delete inst;
+   	//delete inst; //this causes all hosts to coredump !!!
 }
 
 
