@@ -28,8 +28,8 @@ Use 'java -version' in a terminal window to check your version and 'Software Upd
 if you have a lower version.
 
 
-I will continue working on that an enable Java GUI support again once I have it working stable. 
-For the meantime, you can try these config values for the .ini to enable Java GUI of the demo 
+I will continue working on that an fully support Java GUIs once I have it working stable. 
+In the meantime, you can use these config values for the .ini to enable the Java GUI of the demo 
 plugins:
 
 # If your Plug doesnt have a custom user interface (UI), simply comment out

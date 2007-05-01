@@ -28,6 +28,9 @@ NOTE: On Ubuntu Edgy Eft (6.10), I had problems with java GUIs. They completely 
 	  plugins by commenting out PluginUIClass in the .ini file).
 	  Ubuntu Feisty Fawn (7.04) works perfect!
 
+LADSPA: jVSTwRapper now exposes your plugins as VST and LADSPA plugins at the same time. To use 
+        your plug in a LADSPA host (e.g. ardour, rezound, muse, audacity, ...) simply symlink the 
+        jvstwrapper.so to the dir where your ladspa plugs are (e.g. /usr/lib/ladspa or /usr/local/lib/ladspa).
 
 
 *** PLEASE USE THE FORUM FOR QUESTIONS ***
