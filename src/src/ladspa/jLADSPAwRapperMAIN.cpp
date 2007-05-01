@@ -79,12 +79,12 @@ class LadspaPluginAdapter {
 
 // This is the ladspa MAIN entry point
 VST_EXPORT const LADSPA_Descriptor *ladspa_descriptor( unsigned long index ) {
-	printf("ladspa MAIN: index=%d\n", index);
-	
 	if (index>0) return NULL; //Only one plugin per .so file!
 	 
 	LadspaPluginAdapter *plugin = new LadspaPluginAdapter();
 			
+	//TODO: fix this so that a random id is generated every time
+   	//random() here generates always the same num (check with analysepluing)
 	bool success = plugin->Init( 100000 + (rand() % 100000) );
 	if (success==false) {
 		log("** LADSPA: Error wrapping VST Plugin");
@@ -99,21 +99,21 @@ VST_EXPORT const LADSPA_Descriptor *ladspa_descriptor( unsigned long index ) {
 
 
 static LADSPA_Handle vst_instantiate(const LADSPA_Descriptor *desc, unsigned long rate) {
-   printf("LADSPA instantiate\n");
+   //printf("LADSPA instantiate\n");
    
    LadspaPluginAdapter *plug = (LadspaPluginAdapter *) desc->ImplementationData;
    bool success = false;
    
    if (plug->canBeReused) {
-   		printf("reusing LADSPA wrapper instance\n");
+   		log("reusing LADSPA wrapper instance\n");
    		success = plug->InitVSTEffect(rate);
    		plug->canBeReused=false;
    }
    else {
-   		printf("creating new LADSPA wrapper instance\n");
+   		log("creating new LADSPA wrapper instance\n");
    		plug = new LadspaPluginAdapter();
    		
-   		success = plug->Init( 100000 + (rand() % 100000) );
+   		success = plug->Init( 100000 + (random() % 100000) ); 
    		if (success==false) {
 			log("** LADSPA: Error initializing VST Plugin");
 			delete plug;
@@ -136,11 +136,11 @@ static LADSPA_Handle vst_instantiate(const LADSPA_Descriptor *desc, unsigned lon
 
 static void vst_activate(LADSPA_Handle handle) {
 	//show GUI here???
-	printf("LADSPA activate\n");	
+	//printf("LADSPA activate\n");	
 }
 
 static void vst_connect_port(LADSPA_Handle handle, unsigned long port, LADSPA_Data *data) {
-   printf("LADSPA connectPort\n");
+   //printf("LADSPA connectPort\n");
    LadspaPluginAdapter *inst = (LadspaPluginAdapter *) handle;
    inst->Connect_Port( port, data );
 }
@@ -156,18 +156,18 @@ static void vst_run_adding(LADSPA_Handle handle, unsigned long count) {
 }
 
 static void vst_set_run_adding_gain(LADSPA_Handle handle, LADSPA_Data gain) {
-	printf("LADSPA setRunAddingAgain\n");
+	//printf("LADSPA setRunAddingAgain\n");
    	LadspaPluginAdapter *inst = (LadspaPluginAdapter *) handle;
    	inst->Set_Run_Adding_Gain( gain );
 }
 
 static void vst_deactivate(LADSPA_Handle handle) {
 	//hide GUI here???
-	printf("LADSPA DEactivate\n");
+	//printf("LADSPA DEactivate\n");
 }
 
 static void vst_cleanup(LADSPA_Handle handle) {
-	printf("LADSPA cleanup\n");
+	//printf("LADSPA cleanup\n");
    	LadspaPluginAdapter *inst = (LadspaPluginAdapter *) handle;
    	inst->Cleanup();
    	//delete inst; //this causes all hosts to coredump !!!
@@ -226,10 +226,19 @@ bool LadspaPluginAdapter::Init( unsigned long id ) {
 		log("** LADSPA: Error during jvst_main");
 		return false;
    }
+     
    mThunk = effect;
    mEffect = effect;
-
    mDesc.UniqueID = id;
+ 
+   //check vst plugin type
+   //we only accept types of effect (ladspa doesnt know midi, vst instruments, ...)
+   VstInt32 cat = mEffect->dispatcher(effect, effGetPlugCategory , 0, 0, NULL, 0);
+   log("LADSPA: vst plug is of category=%i", cat);
+   if (cat==kPlugCategSynth || cat==kPlugCategOfflineProcess || cat==kPlugCategShell) {
+   		log("** LADSPA Error: VST plug is of type Synth, OfflineProcess or Shell --> LADSPA doesnt support this!");
+   		return false;
+   }
 
    mDesc.Label = GetStr( effGetEffectName, "jVSTwRapper" );
    mDesc.Name = GetStr( effGetProductString, "jVSTwRapper" );
