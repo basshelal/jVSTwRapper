@@ -20,26 +20,10 @@ Writing VST plugins in Java on the Mac mini HOW-TO
 
 NOTE:
 ------
-In this release (0.9d), Java GUI support is back, but not included in the .ini file since there 
-are still a few hosts that freeze/crash when loading the Java GUI. 
+In this release (0.9e), Java GUI support is back, but NOT ENABLED in the .ini file since there 
+MAY be still a few hosts that freeze/crash when loading the Java GUI. 
 
-*** Note that Java GUIs require at least Java 1.5.0_06 to be installed on your system ***
-Use 'java -version' in a terminal window to check your version and 'Software Update' to install it 
-if you have a lower version.
-
-
-I will continue working on that an fully support Java GUIs once I have it working stable. 
-In the meantime, you can use these config values for the .ini to enable the Java GUI of the demo 
-plugins:
-
-# If your Plug doesnt have a custom user interface (UI), simply comment out
-# the following line (prefix it with a #)
-
-# this config value is OPTIONAL!
-# ******************************************************************
-#PluginUIClass=jvst/examples/jayvstxsynth/JayVSTxSynthGUI
-#PluginUIClass=jvst/examples/jaydlay/JayDLayGUI
-#PluginUIClass=jvst/examples/dreinulldrei/DreiNullDreiGUI
+MAKE SURE TO HAVE AT LEAST JAVA 1.5.0_06 INSTALLED ON YOUR SYSTEM WHEN YOU USE JAVA GUIs
 
 
 Please report to the forum any host that causes problems with Java GUIs. I will include them
