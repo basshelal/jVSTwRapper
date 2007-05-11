@@ -161,6 +161,10 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
 bool VSTGUIWrapper::open (void *ptr) {
 	log("GUI wrapper open");
+	
+	//NOTE: *ptr may be NULL when using the wrapper as LADSPA
+	//      Always keep that in mind here!!!
+	
 /*
 #ifdef MACX
 	//all awt calls need to be on a different thread -- wrap host calls and forward them to different thread
@@ -179,7 +183,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 	jboolean result;
 	bool isAttached = false;
 
-	if (this->AttachWindow) {  
+	if (this->AttachWindow && ptr!=NULL) {  
 		this->AttachWindow=false; //if something goes wrong, dont try again
 		jfieldID libraryOk = this->JEnv->GetStaticFieldID(this->JavaPlugGUIClass, "libraryOk", "Z");	
 		this->checkException();
@@ -205,6 +209,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 			}
 		}
 	}	
+	else this->AttachWindow=false; //ptr was NULL, dont trust this host any more!
 
 	if ((!isAttached) && (cfg->CloseNativePluginWindow==1)) {
 		DestroyWindow(GetParent((HWND)ptr));	
@@ -299,20 +304,22 @@ bool VSTGUIWrapper::wrappedOpen (void *ptr) {
 		log("Exception in Open!");
 		this->checkException();
 
-        //Close Gui
-		jmethodID midClose = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
-	    if (midClose == NULL) log("** ERROR: cannot find GUI instance-method close()V");
-	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midClose);
-		this->checkException();
-
-		log("* WARNING: Exception occured in GUI open() --> disabling native window attachment");
-		this->AttachWindow=false; //dont attach again!
-		this->detachWindow(); //detach window	
-
-		this->undecorateJavaWindow(); //call undecorate (this now redecorates the window)
-
-		//Call open again
- 	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
+		if (isAttached) {
+	        //Close Gui
+			jmethodID midClose = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
+		    if (midClose == NULL) log("** ERROR: cannot find GUI instance-method close()V");
+		    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midClose);
+			this->checkException();
+	
+			log("* WARNING: Exception occured in GUI open() --> disabling native window attachment");
+			this->AttachWindow=false; //dont attach again!
+			this->detachWindow(); //detach window	
+	
+			this->undecorateJavaWindow(); //call undecorate (this now redecorates the window)
+	
+			//Call open again
+	 	    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
+		}
 	}
 #endif
 
