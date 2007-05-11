@@ -23,8 +23,9 @@ NOTE:
 In this release (0.9e), Java GUI support is back, but NOT ENABLED in the .ini file since there 
 MAY be still a few hosts that freeze/crash when loading the Java GUI. 
 
-MAKE SURE TO HAVE AT LEAST JAVA 1.5.0_06 INSTALLED ON YOUR SYSTEM WHEN YOU USE JAVA GUIs
-
+*** Note that Java GUIs require at least Java 1.5.0_06 to be installed on your system ***
+Use 'java -version' in a terminal window to check your version and 'Software Update' to install it 
+if you have a lower version.
 
 Please report to the forum any host that causes problems with Java GUIs. I will include them
 in my tests. 
