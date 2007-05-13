@@ -85,7 +85,7 @@ VST_EXPORT const LADSPA_Descriptor *ladspa_descriptor( unsigned long index ) {
 			
 	//TODO: fix this so that a random id is generated every time
    	//random() here generates always the same num (check with analysepluing)
-	bool success = plugin->Init( 100000 + (random() % 100000) );
+	bool success = plugin->Init( 100000 + (rand() % 100000) );
 	if (success==false) {
 		log("** LADSPA: Error wrapping VST Plugin");
 		delete plugin;
@@ -113,7 +113,7 @@ static LADSPA_Handle vst_instantiate(const LADSPA_Descriptor *desc, unsigned lon
    		log("creating new LADSPA wrapper instance\n");
    		plug = new LadspaPluginAdapter();
    		
-   		success = plug->Init( 100000 + (random() % 100000) ); 
+   		success = plug->Init( 100000 + (rand() % 100000) ); 
    		if (success==false) {
 			log("** LADSPA: Error initializing VST Plugin");
 			delete plug;

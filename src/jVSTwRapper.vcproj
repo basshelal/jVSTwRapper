@@ -370,6 +370,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\conf\jvstwrapper_linux.ini"
+				>
+			</File>
+			<File
 				RelativePath=".\src\conf\libjvstwrapper.jnilib.ini"
 				>
 			</File>
