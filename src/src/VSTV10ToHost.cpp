@@ -33,8 +33,9 @@
 //-------------------------------------------------------------------------------------------------------
 
 #include "VSTV10ToHost.h"
-#include "JNIUtils.h"
 #include "VSTV24ToPlug.h"
+#include "JNIUtils.h" //important, this needs always to be the LAST import!
+
 
 #if defined(MACX) || defined(linux)
 #include <pthread.h>

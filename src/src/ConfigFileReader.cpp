@@ -56,8 +56,7 @@ ConfigFileReader::ConfigFileReader() {
 
 	this->INIFile = fopen(ConfigFileLocation, "rt");
 	if(this->INIFile==NULL) {
-		log("** Error opening config file at ");
-		log(ConfigFileLocation);
+		log("** Error opening config file at '%s#'", ConfigFileLocation);
 	}
 
 	//init config fields

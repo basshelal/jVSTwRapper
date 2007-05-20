@@ -40,6 +40,17 @@
 #include <jni.h>
 
 
+//we still want all VST2.4 deprecated methods to be backward compatible
+#undef VST_FORCE_DEPRECATED
+#define VST_FORCE_DEPRECATED 0
+
+#if defined(MACX) || defined(linux)
+	//patch original JNIEXPORT to use -fvisibility=hidden compiler option 
+	//so that default visibility for symbols is "hidden"
+	#undef JNIEXPORT
+	#define JNIEXPORT __attribute__ ((visibility ("default")))
+#endif
+
 
 jvalue JNU_CallJavaMethod(	JNIEnv *env,
 							jobject obj, 
@@ -67,10 +78,6 @@ bool checkAndThrowException(JNIEnv *env);
 	char* readJVMLibLocation(char* requestedJVM);
 	
 	char* find_exe_for_symbol (const void *symbol);
-	
-	//patch original JNIEXPORT to use -fvisibility=hidden compiler option 
-	//so that default visibility for symbols is "hidden"
-	#define JNIEXPORT __attribute__ ((visibility ("default")))
 #endif
 #ifdef MACX
 	int checkJVMVersionRequest(char* requestedJVMVersion);
@@ -79,3 +86,4 @@ bool checkAndThrowException(JNIEnv *env);
 
 
 #endif
+

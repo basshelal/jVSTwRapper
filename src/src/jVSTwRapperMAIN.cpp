@@ -105,6 +105,7 @@ char DllPath[512];
 char ConfigFileName[100];
 char LogFileName[100];
 audioMasterCallback audioMaster = NULL;
+FILE *log_stream = NULL;
 
 
 
@@ -133,27 +134,26 @@ extern "C" {
 //main entry point! --> The real thing
 //-----------------------------------------------------------------------
 AEffect* jvst_main(audioMasterCallback pAudioMaster) {
+	log("\n***** jVSTwRapper *****");
 	calculatePaths();
 	
 	audioMaster=pAudioMaster;
 
+	ConfigFileReader *cfg = new ConfigFileReader();
+	IsLogEnabled = cfg->IsLoggingEnabled;
+
 	char log_location[700];
 	strcpy(log_location, DllPath);
 	strcat(log_location, LogFileName);
+	log("log_location=%s", log_location);
 
-
-	//redirecting system streams...
-	FILE *err_stream = freopen(log_location, "a", stderr);
-	if (err_stream!=NULL) log("\nredirecting stderr stream OK");
+	//creating log stream...
+	log_stream = fopen(log_location, "a");
+	if (log_stream==NULL) log("** ERROR: cant create log stream at '%s'", log_location);
 	//FILE *out_stream = freopen(log_location, "a", stdout);		//this caused an error in melodyne
 	//if (out_stream!=NULL) log("redirecting stdout stream OK");	//we dont need it anyways! 
 
-
 	log("\n***** START *****");
-	log("log_location=%s", log_location);
-
-	ConfigFileReader *cfg = new ConfigFileReader();
-	IsLogEnabled = cfg->IsLoggingEnabled;
 
 	// Get VST Version
 	if (!pAudioMaster(0, audioMasterVersion, 0, 0, 0, 0)) return 0;  // old version

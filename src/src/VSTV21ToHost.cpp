@@ -32,8 +32,8 @@
 
 
 #include "VSTV21ToHost.h"
-#include "JNIUtils.h"
 #include "VSTV24ToPlug.h"
+#include "JNIUtils.h" //important, this needs always to be the LAST import!
 
 extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 

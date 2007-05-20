@@ -34,8 +34,8 @@
 //-------------------------------------------------------------------------------------------------------
 
 #include "VSTV10ToPlug.h"
-#include "JNIUtils.h"
 #include "ConfigFileReader.h"
+#include "JNIUtils.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -72,7 +72,8 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 
 	this->ProcessThreadID = 0;
 	this->ThreadID = 0;
-
+	this->isProcessing=false; //fix to ensure that resume was called before process*
+	
 
 	jint res = this->Jvm->GetEnv((void**)&this->JEnv, JNI_VERSION_1_2);
 	if (res < 0) {
@@ -259,6 +260,10 @@ void VSTV10ToPlug::getParameterLabel (VstInt32 index, char *label) {
 void VSTV10ToPlug::suspend () {
 	this->ensureJavaThreadAttachment();
 	
+	//call to overwritten method, this is done in all steinberg sample plugs, 
+	//so we do it too...
+	AudioEffectX::suspend();
+	
 	// Called when Plugin is switched to Off
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "suspend", "()V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method suspend()V");
@@ -266,11 +271,15 @@ void VSTV10ToPlug::suspend () {
 	this->JEnv->CallVoidMethod(this->JavaPlugObj, mid);
 
 	this->checkException();
+
+	this->isProcessing=false;
 }
 
 //------------------------------------------------------------------------	
 void VSTV10ToPlug::resume () {
 	this->ensureJavaThreadAttachment();
+	
+	this->isProcessing=true;
 	
 	// Called when Plugin is switched to On
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "resume", "()V");
@@ -434,6 +443,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		log("Process ThreadID=%i", this->ProcessThreadID);
 	}
 
+	if (!this->isProcessing) this->resume();
 
 	if (this->ProcessJEnv == NULL)this->ProcessJEnv = this->JEnv;	
 		
@@ -523,6 +533,8 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 
 		log("ProcessReplacing ThreadID=%i", this->ProcessReplacingThreadID);
 	}
+	
+	if (!this->isProcessing) this->resume();
 	
 	if(this->JavaFloatClass == NULL) {
 		this->JavaFloatClass = this->ProcessReplacingJEnv->FindClass("[F");

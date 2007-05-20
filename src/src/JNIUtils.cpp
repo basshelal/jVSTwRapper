@@ -49,6 +49,7 @@
 //------------------------------------------------------------------------
 int IsLogEnabled = 1;
 int MessageBoxCount = 0;
+extern FILE* log_stream;
 
 
 //------------------------------------------------------------------------
@@ -161,11 +162,18 @@ int log(char* data, ...) {
 	}
 
 	if (IsLogEnabled || isWarningOrError) {
-		fprintf(stderr, "\n");
-		fprintf(stderr, message);
-		fflush(stderr);
-		retval = 0;
-	} else retval = 0;
+		if(log_stream!=NULL) {
+			fprintf(log_stream, "\n%s", message);
+			fflush(log_stream);
+			retval = 0;
+		}
+		else {
+			fprintf(stderr, "\n%s", message);
+			fflush(stderr);
+			retval = 0;
+		}
+	} 
+	else retval = 0;
 
     return retval;
 }

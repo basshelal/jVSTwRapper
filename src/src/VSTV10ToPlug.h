@@ -114,7 +114,7 @@ class VSTV10ToPlug : public AudioEffectX {
 		jmethodID ProcessReplacingMethodID;
 		JNIEnv *ProcessJEnv;
 		JNIEnv *ProcessReplacingJEnv;
-		
+		bool isProcessing;
 
 #ifdef WIN32
 		DWORD ProcessThreadID;
