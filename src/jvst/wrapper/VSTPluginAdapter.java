@@ -63,6 +63,9 @@ public abstract class VSTPluginAdapter extends VSTV24ToHost implements VSTV24ToP
   	
   	//since processReplacing is MANDATORY from 2.4 on
   	canProcessReplacing(true);
+  	
+  	//were vst2.4 compatible: no Vu, no Clip
+  	hasVu(false); hasClip(false);
   }
 
 
