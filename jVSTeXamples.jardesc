@@ -12,5 +12,6 @@
 <javaElement handleIdentifier="=jvst_examples/src&lt;jvst.examples.dreinulldrei"/>
 <javaElement handleIdentifier="=jvst_examples/src&lt;jvst.examples.jayvstxsynth"/>
 <javaElement handleIdentifier="=jvst_examples/src&lt;jvst.examples.jaydlay"/>
+<javaElement handleIdentifier="=jvst_examples/src&lt;jvst.examples.ddelay"/>
 </selectedElements>
 </jardesc>
