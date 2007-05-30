@@ -65,6 +65,7 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 				libraryOk = false;
 			} catch (Error e) {
 				// Maybe library is already loaded
+				//TODO: find a better way!
 				if (e.getMessage().indexOf("already loaded") != -1) libraryOk = true;
 				else libraryOk = false;
 			}
