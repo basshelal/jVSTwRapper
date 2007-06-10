@@ -102,6 +102,7 @@ int loadPlugin();
 char DllLocation[512];
 char DllPath[512];
 
+bool IsLADSPALoaded = false;
 char ConfigFileName[100];
 char LogFileName[100];
 audioMasterCallback audioMaster = NULL;
@@ -549,7 +550,7 @@ int loadPlugin() {
 
 
 	//test if we can load the GUI class
-	if (cfg->PluginUIClass!=NULL) {
+	if (cfg->PluginUIClass!=NULL && IsLADSPALoaded==false) {
 		log("classloding gui class %s", cfg->PluginUIClass);
 
 		//load gui using our own ClassLoader...

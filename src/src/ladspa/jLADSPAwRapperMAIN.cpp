@@ -11,6 +11,9 @@
 #include <stdlib.h>
 
 
+extern bool IsLADSPALoaded;  //this is only used to disable custom VST GUIs, no need to load them in LADSPA!
+
+
 //***********************************************************************************
 // VST AudioMaster callback
 //
@@ -81,6 +84,7 @@ class LadspaPluginAdapter {
 VST_EXPORT const LADSPA_Descriptor *ladspa_descriptor( unsigned long index ) {
 	if (index>0) return NULL; //Only one plugin per .so file!
 	 
+	IsLADSPALoaded = true;
 	LadspaPluginAdapter *plugin = new LadspaPluginAdapter();
 			
 	//TODO: fix this so that a random id is generated every time
