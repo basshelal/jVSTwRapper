@@ -39,8 +39,7 @@
 #include "JNIUtils.h"
 
 
-#ifdef WIN32
-	#include <windows.h>
+#if defined(WIN32) || defined(linux)
 	#include "jawt_md.h"
 #endif
 #if defined(MACX) || defined(linux)
@@ -48,6 +47,9 @@
 #endif
 #ifdef MACX
 	#include "VSTGUIWrapperMAC.h"
+#endif
+#ifdef WIN32
+	#include <windows.h>
 #endif
 
 
@@ -62,7 +64,7 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 	this->JEnv = ((VSTV10ToPlug*)effect)->JEnv;
 	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;
 
-#ifdef WIN32
+#if defined (WIN32) || defined(linux)
 	this->JavaWindowHandle = 0;
 
 	ConfigFileReader *cfg = new ConfigFileReader();
@@ -71,9 +73,8 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 	  delete cfg;
 	}
 #endif
-
-#if defined(MACX) || defined(linux)
-	//window embedding code is windows only for now...
+#ifdef MACX
+	//no window embedding on the mac for now...
 	this->AttachWindow=0;
 #endif
 }
@@ -102,7 +103,7 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	else {
 		rect.left   = 0;
 		rect.top    = 0;
-		rect.right  = 1; //maybe this fixes the fact that some hosts dont even call open()
+		rect.right  = 1; //maybe this fixes the fact that some hosts dont even call open() ?
 		rect.bottom = 1;
 	}
 	*ppErect = &rect;
@@ -157,13 +158,17 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 	return CallWindowProc (oldWndProcEdit, hwnd, message, wParam, lParam);
 }
 #endif
+#ifdef linux
+	Display *GlobalDisplay = NULL;
+#endif
+
 
 
 bool VSTGUIWrapper::open (void *ptr) {
 	log("GUI wrapper open");
 	
-	//NOTE: *ptr may be NULL when using the wrapper as LADSPA
-	//      Always keep that in mind here!!!
+	//!!! always call this !!!
+	AEffGUIEditor::open(ptr);
 	
 /*
 #ifdef MACX
@@ -175,7 +180,8 @@ bool VSTGUIWrapper::open (void *ptr) {
 } //close method
 #endif
 */
-#ifdef WIN32
+
+#if defined(WIN32) || defined(linux)
 	this->ensureJavaThreadAttachment();
 
 	ConfigFileReader *cfg = new ConfigFileReader();
@@ -184,6 +190,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 	bool isAttached = false;
 
 	if (this->AttachWindow && ptr!=NULL) {  
+		log("attaching");
 		this->AttachWindow=false; //if something goes wrong, dont try again
 		jfieldID libraryOk = this->JEnv->GetStaticFieldID(this->JavaPlugGUIClass, "libraryOk", "Z");	
 		this->checkException();
@@ -193,11 +200,13 @@ bool VSTGUIWrapper::open (void *ptr) {
 			this->checkException();
 		   
 			if(lOk==JNI_TRUE) {  
+				log("successfully loaded the jawt library");
 				// Get the AWT
 				awt.version = JAWT_VERSION_1_3;
 				result = JAWT_GetAWT(this->JEnv, &awt);
 				
 				if(result != JNI_FALSE) { 
+					log("JAWT structs initialised!");
 					//Inform the class
 					jfieldID attachField = this->JEnv->GetFieldID(this->JavaPlugGUIClass, "WindowAttached", "Z");
 					if (attachField != NULL) this->JEnv->SetBooleanField(this->JavaPlugGUIObj, attachField, JNI_TRUE);
@@ -206,13 +215,24 @@ bool VSTGUIWrapper::open (void *ptr) {
 					isAttached=true;
 					this->AttachWindow=true;
 				}
+				else log("** Error: JAWT_GetAWT returned with error!");
 			}
+			else log("** Error: Could not load the JAWT library on the java side!");
 		}
 	}	
 	else this->AttachWindow=false; //ptr was NULL, dont trust this host any more!
 
+
 	if ((!isAttached) && (cfg->CloseNativePluginWindow==1)) {
-		DestroyWindow(GetParent((HWND)ptr));	
+#ifdef WIN32
+		DestroyWindow(GetParent((HWND)ptr));
+#endif
+#ifdef linux
+		/* Not implemented on Linux! (no way to obtain a ref to the diplay at this time...) */
+		//if (::GlobalDisplay!=NULL) 
+		//	XDestroyWindow(::GlobalDisplay, (Window)ptr);
+			//XUnmapWindow(::GlobalDisplay, (Window)ptr);
+#endif	
 	} 
 	if (cfg) delete cfg;
 
@@ -222,32 +242,50 @@ bool VSTGUIWrapper::open (void *ptr) {
 		this->undecorateJavaWindow();
 
 		//Try to attach the Window
-		log("Attach Winow");
+		log("Attaching Window");
 		JAWT_DrawingSurface* ds;
 		JAWT_DrawingSurfaceInfo* dsi;
+#ifdef WIN32
 		JAWT_Win32DrawingSurfaceInfo* dsi_win;
-		
+#endif
+#ifdef linux
+		JAWT_X11DrawingSurfaceInfo* dsi_win;
+#endif
 		jint lock;				
   	    // Get the drawing surface
 		ds = awt.GetDrawingSurface(this->JEnv, this->JavaPlugGUIObj);
 		if(ds != NULL){
+			log("obtained drawing surface");
 			// Lock the drawing surface
 			lock = ds->Lock(ds);
 			if((lock & JAWT_LOCK_ERROR) == 0) {
+				log("locked the drawing surface");
    				// Get the drawing surface info
 				dsi = ds->GetDrawingSurfaceInfo(ds);
 			
 				if(dsi!=NULL) {
+					log("obtained ds info");
 					// Get the platform-specific drawing info
+#ifdef WIN32
 					dsi_win = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
+#endif
+#ifdef linux
+					dsi_win = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
+#endif
 
+//#ifdef WIN32
 					//Create Frame to embedd the java Frame
 					ERect* thissize;
 					this->getRect(&thissize);
+					
+					//create new Frame using VSTGUI! (CRect, CFrame)
 					CRect size (0, 0, thissize->right, thissize->bottom);
 
+					//frame is a var from AEffectGUIEditor
 					if (frame!=NULL) delete frame;
 					frame = new CFrame (size, ptr, this);
+					
+#ifdef WIN32
 					HWND frhwnd=(HWND)frame->getSystemWindow();
 
 					//Get Java Window-Handle
@@ -268,17 +306,35 @@ bool VSTGUIWrapper::open (void *ptr) {
 
 					//Set new Paint-Method	
 					oldWndProcEdit = (WNDPROC)SetWindowLong ((HWND)frhwnd, GWL_WNDPROC, (long)WindowProcEdit);
+#endif
+#ifdef linux
+					Window frhwnd = (Window)frame->getSystemWindow(); 
+					
+					//Get Java Window-Handle
+					this->JavaWindowHandle=dsi_win->drawable;  //cast drawable to window! (is only a handle anyways...)
+					if (::GlobalDisplay==NULL) ::GlobalDisplay = dsi_win->display;   //init global var diplay
+					
+					//Set Parent Window
+					int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, frhwnd, 0, 0);
+					//int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
+					log("win reparent=%i", ret);
+#endif
 
 					// Free the drawing surface info
 					ds->FreeDrawingSurfaceInfo(dsi);
 				}
+				else log("**Error: Unable to retrieve drawing surface INFO!");
  
 				// Unlock the drawing surface
 				ds->Unlock(ds);
 			}
+			else log("**Error: Unable to LOCK the drawing surface!");
+			
 			// Free the drawing surface
 			awt.FreeDrawingSurface(ds);
-		} //Drawng Surface Ok!
+		} 
+		else log("**Error: Unable to retrieve the drawing surface!");
+		
 	} //Attaching    
 #endif		
 
@@ -297,13 +353,15 @@ bool VSTGUIWrapper::wrappedOpen (void *ptr) {
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 
 
-#ifdef WIN32
+#if defined(WIN32) || defined(linux)
 	//Check exceptions in open, if exception, then unattach immediately
 	if(this->JEnv->ExceptionCheck()==JNI_TRUE) {
 		//If a Exception occured close the gui again
 		log("Exception in Open!");
-		this->checkException();
-
+		this->checkException(); //log and clear exception
+			
+		this->AttachWindow=false; //dont attach again!
+			
 		if (isAttached) {
 	        //Close Gui
 			jmethodID midClose = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
@@ -312,7 +370,6 @@ bool VSTGUIWrapper::wrappedOpen (void *ptr) {
 			this->checkException();
 	
 			log("* WARNING: Exception occured in GUI open() --> disabling native window attachment");
-			this->AttachWindow=false; //dont attach again!
 			this->detachWindow(); //detach window	
 	
 			this->undecorateJavaWindow(); //call undecorate (this now redecorates the window)
@@ -329,6 +386,7 @@ bool VSTGUIWrapper::wrappedOpen (void *ptr) {
 
 //-----------------------------------------------------------------------------
 void VSTGUIWrapper::close () {
+	log("closing GUI");
 /*
 #ifdef MACX
 	performOnAnotherThread(this, NULL, GuiWrapperClose, false);
@@ -343,11 +401,10 @@ void VSTGUIWrapper::wrappedClose () {
     
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
-	
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 	bool error = this->checkException();
 
-#ifdef WIN32
+#if defined(WIN32) || defined(linux)
 	this->detachWindow(); //detach from hosts native window
 	
 	if (error) {
@@ -438,14 +495,21 @@ bool VSTGUIWrapper::checkException() {
 }
 
 
-#ifdef WIN32
+#if defined(WIN32) || defined(linux)
 void VSTGUIWrapper::detachWindow() {
 	log("detaching java window from native win");
 
 	// Detach the Window
-	if(this->JavaWindowHandle!=NULL) {
+	if(this->JavaWindowHandle!=0) {   
+#ifdef WIN32
 		SetParent(this->JavaWindowHandle,NULL);
 		this->JavaWindowHandle=NULL;
+#endif
+#ifdef linux
+		int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, DefaultRootWindow(::GlobalDisplay), 0, 0);
+		log("remap=%i", ret);
+		this->JavaWindowHandle=0;
+#endif
 	}
 	if(frame!=NULL) {
 		delete frame;
@@ -465,6 +529,19 @@ void VSTGUIWrapper::undecorateJavaWindow() {
     if (midUndeco == NULL) log("** ERROR: cannot find GUI instance-method undecorate()V");
     this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midUndeco);
     this->checkException();
+}
+#endif
+
+#ifdef linux
+void VSTGUIWrapper::repaint() {
+	log("repaint!");
+	this->ensureJavaThreadAttachment();
+	
+	//jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "pack", "()V");
+	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "repaint", "()V");
+    if (mid == NULL) log("** ERROR: cannot find GUI instance-method pack()V");
+    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
+	this->checkException();
 }
 #endif
 

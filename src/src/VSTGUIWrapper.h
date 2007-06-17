@@ -40,8 +40,14 @@
 
 #include "vstgui/vstgui.h"
 
-#ifdef linux
+#if defined(MACX) || defined(linux)
 	#include <pthread.h>
+#endif
+#ifdef linux
+  	#include <X11/Xlib.h>
+  	//#include <X11/Xutil.h>
+  	//#include <X11/Xatom.h>
+  	#undef KeyPress
 #endif
 
 //-----------------------------------------------------------------------------
@@ -67,6 +73,10 @@ class VSTGUIWrapper : public AEffGUIEditor {
 #ifdef WIN32
 		HWND JavaWindowHandle;
 #endif
+#ifdef linux
+		Window JavaWindowHandle;
+		virtual void repaint();
+#endif
 
 	protected:
 		bool checkException();
@@ -75,15 +85,16 @@ class VSTGUIWrapper : public AEffGUIEditor {
 	private:
 		void ensureJavaThreadAttachment();
 
-#ifdef WIN32
+#if defined(WIN32) || defined(linux)
 		void detachWindow();
 		void undecorateJavaWindow();
-		DWORD ThreadID;	
 #endif
 #if defined(MACX) || defined(linux)
 		pthread_t ThreadID;
 #endif
-
+#ifdef WIN32
+		DWORD ThreadID;	
+#endif
 		JNIEnv *JEnv;
 		JavaVM *Jvm;
 		jobject JavaPlugObj;

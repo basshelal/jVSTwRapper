@@ -1,36 +1,55 @@
-Writing VST plugins in Java on LINUX mini HOW-TO
+Installing Java VST plugins on LINUX mini HOW-TO
 --------------------------------------------------
 
+NOTE: these steps are only required once! If you got JayDlay to work, any other plugin will 
+      work too. 
+
 1. Make sure you have a JAVA_HOME environment variable that is set to the correct value
-   e.g. in your .bashrc add: export JAVA_HOME=/usr/lib/jvm/java-6-sun/jre/
-   If you have a jdk installed (like me), JAVA_HOME should point to the location of your JRE. This is 
+   e.g. in your .bashrc add: 
+   export JAVA_HOME=/usr/lib/jvm/java-6-sun/jre/
+   
+   If you have a JDK installed (like me), JAVA_HOME should point to the location of your JRE. This is 
    usually done by appending /jre to the path of your jdk, like in the example above.
+   In any case, check if the path is valid!
    
-2. On a fresh installed sun jvm, you MAY need to tweak your LD_LIBRARY_PATH to contain 
-	the path to $PATH_TO_JAVA/jre/lib/i386/
+2. You need to tweak your LD_LIBRARY_PATH, e.g. add the following line to your .bashrc, replacing $JAVA_HOME with 
+   the correct value:
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JAVA_HOME/lib/:$JAVA_HOME/lib/i386/:$JAVA_HOME/lib/i386/xawt/:$JAVA_HOME/lib/i386/client/
    
-   Do this when you see the following error in jvstwrapper_log.txt:
-   ** java.lang.UnsatisfiedLinkError: Can't load library: ### some .so file ###
+   Alternatively, it may work when you add all the paths mention above to /etc/ld.so.conf 
+   and then do "sudo ldconfig" afterwards.
    
-3. Write your plugin using the wrapper api.
+3. *** CHECK YOUR CONFIGURATION *** 
+   by executing "ldd jvstwrapper.so". Your configuration ONLY was successful when the output 
+   of this call does NOT contain the text "=> not found" for ANY library that is listed in the output. 	
+	
+4. Fire up Jost, energyXT2 or any other VST host application and enjoy the JayDLay demo plugin!
+ 
+If you see the following error in jvstwrapper_log.txt:
+** java.lang.UnsatisfiedLinkError: Can't load library: ### some .so file ###
 
-4. Specify your plugin main class in the jvstwrapper.ini file 
+Create a symbolic link to the directory $JAVA_HOME/lib/i386/xawt/ in the folder where the 
+jvstwrapper.so file is. 
 
-5. Make sure that the .ini has the same 
+
+	
+**** The following steps are for plugin development ONLY! ****
+   
+5. Write your java plugin using the wrapper API.
+
+6. Specify your plugin main class in the jvstwrapper.ini file 
+
+7. Make sure that the .ini has the same 
    name as the .so file and is stored in the same directory.
    
-6. Look for problems. If you left IsLoggingEnabled=1 in the ini file, the log files will 
+8. Look for problems. If you left IsLoggingEnabled=1 in the ini file, the log files will 
 	appear in the same directory as the plugin .so file is.
 
 
-NOTE: On Ubuntu Edgy Eft (6.10), I had problems with java GUIs. They completely froze the host applications. If 
-	  you encounter the same problem, consider upgrading your Linux distribution (or disable the java GUI for the 
-	  plugins by commenting out PluginUIClass in the .ini file).
-	  Ubuntu Feisty Fawn (7.04) works perfect!
-
 LADSPA: jVSTwRapper now exposes your plugins as VST and LADSPA plugins at the same time. To use 
-        your plug in a LADSPA host (e.g. ardour, rezound, muse, audacity, ...) simply symlink the 
+        your plug in a LADSPA host (e.g. ardour, rezound, muse, audacity, ...) simply symlink  
         jvstwrapper.so to the directory where your ladspa plugs are (e.g. /usr/lib/ladspa or /usr/local/lib/ladspa).
+		e.g. "sudo ln -s absolute_path_to_jvstwrapper.so_file /usr/lib/ladspa/jvstwrapper.so"
 
 
 *** PLEASE USE THE FORUM FOR QUESTIONS ***
