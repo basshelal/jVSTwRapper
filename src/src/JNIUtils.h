@@ -70,7 +70,7 @@ bool checkAndThrowException(JNIEnv *env);
 	//stuff to load the jvm.dll dynamically
 	//this removes the need to add the path to jvm.dll to the PATH variable
 	int initJVMFunctionPointers(char *vmlibpath);
-	char* readJVMLibLocation(char* requestedJVM);
+	char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey);
 #endif
 #ifdef linux
 	//stuff to load the jvm.dll dynamically

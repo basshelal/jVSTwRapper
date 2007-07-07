@@ -167,11 +167,16 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	char* jvmLibLocation;
 	jvmLibLocation = cfg->CustomJVMLocation;
 	
+	if (jvmLibLocation==NULL && cfg->CustomJVMRegistryKey!=NULL) {
+		//see if we can read the jvm location from a custom reg key
+		jvmLibLocation = readJVMLibLocation(NULL, cfg->CustomJVMRegistryKey);
+	}
+
 	if (jvmLibLocation==NULL) {
 		//no custom jvm specified, see if there is a request for a specific version in the .ini
 		if (cfg->RequestedJVMVersion!=NULL) {
 			log("Looking for a JVM version=%s", cfg->RequestedJVMVersion);
-			jvmLibLocation = readJVMLibLocation(cfg->RequestedJVMVersion);
+			jvmLibLocation = readJVMLibLocation(cfg->RequestedJVMVersion, NULL);
 
 			if (jvmLibLocation!=NULL) log("desired JVM version found in registry at %s", jvmLibLocation);
 			else log("Could not find desired JVM version, seems not to be installed. Falling back to latest JVM installed on this system.");
@@ -181,7 +186,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 			log("querying registry for location of DEFAULT jvm.dll");
 			//no custom JVM configured in the .ini. Look in the windows registry
 			//get jvm location from registry and load jvm interface pointers
-			jvmLibLocation = readJVMLibLocation(NULL);
+			jvmLibLocation = readJVMLibLocation(NULL, NULL);
 
 			if (jvmLibLocation==NULL) {
 				log("* WARNING: Could not find jvm.dll location in registry! \n using the one from the PATH environment variable!");

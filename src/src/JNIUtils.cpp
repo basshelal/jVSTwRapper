@@ -338,14 +338,37 @@ bool checkAndThrowException(JNIEnv *env) {
 #define JVM_REG_13 "Software\\JavaSoft\\Java Runtime Environment\\1.3"
 #define JVM_REG_12 "Software\\JavaSoft\\Java Runtime Environment\\1.2"
 
-char* readJVMLibLocation(char* requestedJVMVersion) {
+char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey) {
 	DWORD	rc; 
 	HKEY	regKey;
 	DWORD	len; 
 	DWORD	dwType; 
 	char	javaLibLocation[512]; //value stored here
 	
-	if(requestedJVMVersion==NULL) {
+	if (customRegKey!=NULL) {
+		log("Trying to locate custom jvm location from registry with key=", customRegKey);
+		
+		//check if this key is available
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, customRegKey, 0, KEY_ALL_ACCESS, &regKey); 
+		if (rc != ERROR_SUCCESS) {
+			return NULL;
+		}
+	}
+	else if (requestedJVMVersion!=NULL) {
+		//there is a specific jvm version mentioned in the .ini, try to locate this one...
+		char jvmRegKey[512] = {'\0'};
+		strcat(jvmRegKey, "Software\\JavaSoft\\Java Runtime Environment\\\0");
+		strcat(jvmRegKey, requestedJVMVersion);
+		
+		log("Trying to locate specific jvm version with regkey=", jvmRegKey);
+		
+		//check if this key is available
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey); 
+		if (rc != ERROR_SUCCESS) {
+			return NULL;
+		}
+	}
+	else {
 		//Auto check for installed JVMs
 		
 		//check for jvm 1.8 (future) in registry
@@ -384,22 +407,8 @@ char* readJVMLibLocation(char* requestedJVMVersion) {
 			}
 		}
 	}
-	else {
-		//there is a specific jvm version mentioned in the .ini, try to locate this one...
-		char jvmRegKey[512] = {'\0'};
-		strcat(jvmRegKey, "Software\\JavaSoft\\Java Runtime Environment\\\0");
-		strcat(jvmRegKey, requestedJVMVersion);
-		
-		log("Trying to locate specific jvm version with regkey:");
-		log(jvmRegKey);
-		
-		//check if this key is available
-		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey); 
-		if (rc != ERROR_SUCCESS) {
-			return NULL;
-		}
-	}
-
+	
+	
 	len = sizeof(javaLibLocation);
 
 	rc = RegQueryValueEx(regKey, "RuntimeLib", 0, &dwType, (unsigned char*)javaLibLocation, &len); 

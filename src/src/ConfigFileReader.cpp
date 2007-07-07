@@ -74,6 +74,7 @@ ConfigFileReader::ConfigFileReader() {
 	this->CloseNativePluginWindow = 0;
 	this->CustomJVMLocation = NULL;
 	this->RequestedJVMVersion = NULL;
+	this->CustomJVMRegistryKey = NULL;
 
 	this->ReadConfigFile();
 
@@ -153,6 +154,11 @@ void ConfigFileReader::ReadConfigFile() {
 			token = strtok(NULL, sep);
 			if (token != NULL) this->SystemClassPath = strdup(trim(token));
 			else log("**ERROR: finding SystemClassPath token");
+		}
+		if(strcmp(token, "CustomJVMRegistryKey")==0) {
+			token = strtok(NULL, sep);
+			if (token != NULL) this->CustomJVMRegistryKey = strdup(trim(token));
+			else log("**ERROR: finding CustomJVMRegistryKey token");
 		}
 		if(strcmp(token, "IsLoggingEnabled")==0) {
 			token = strtok(NULL, sep);
