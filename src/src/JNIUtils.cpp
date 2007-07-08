@@ -345,14 +345,13 @@ char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey) {
 	DWORD	dwType; 
 	char	javaLibLocation[512]; //value stored here
 	
+
 	if (customRegKey!=NULL) {
-		log("Trying to locate custom jvm location from registry with key=", customRegKey);
+		log("Trying to locate custom jvm location from registry with key=%s", customRegKey);
 		
 		//check if this key is available
 		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, customRegKey, 0, KEY_ALL_ACCESS, &regKey); 
-		if (rc != ERROR_SUCCESS) {
-			return NULL;
-		}
+		if (rc != ERROR_SUCCESS) return NULL;
 	}
 	else if (requestedJVMVersion!=NULL) {
 		//there is a specific jvm version mentioned in the .ini, try to locate this one...
@@ -360,57 +359,33 @@ char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey) {
 		strcat(jvmRegKey, "Software\\JavaSoft\\Java Runtime Environment\\\0");
 		strcat(jvmRegKey, requestedJVMVersion);
 		
-		log("Trying to locate specific jvm version with regkey=", jvmRegKey);
+		log("Trying to locate specific jvm version with regkey=%s", jvmRegKey);
 		
 		//check if this key is available
 		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey); 
-		if (rc != ERROR_SUCCESS) {
-			return NULL;
-		}
+		if (rc != ERROR_SUCCESS) return NULL;
 	}
 	else {
 		//Auto check for installed JVMs
-		
-		//check for jvm 1.8 (future) in registry
-		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_18, 0, KEY_ALL_ACCESS, &regKey); 
-		if (rc != ERROR_SUCCESS) {
-			
-			//check for jvm 1.7 (future) in registry
-			rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_17, 0, KEY_ALL_ACCESS, &regKey); 
-			if (rc != ERROR_SUCCESS) {
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_ALL_ACCESS, &regKey); 
+		if (rc!=ERROR_SUCCESS) return NULL;
 
-				//check for jvm 1.6 (future) in registry
-				rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_16, 0, KEY_ALL_ACCESS, &regKey); 
-				if (rc != ERROR_SUCCESS) {
-					
-					//no 1.6, try 1.5
-					rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_15, 0, KEY_ALL_ACCESS, &regKey); 
-					if (rc != ERROR_SUCCESS) {
-						
-						//no 1.5 try 1.4!
-						rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_14, 0, KEY_ALL_ACCESS, &regKey); 
-						if (rc != ERROR_SUCCESS) {
-						
-							//no 1.4 try 1.3!
-							rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_13, 0, KEY_ALL_ACCESS, &regKey); 
-							if (rc != ERROR_SUCCESS) {
-							
-								//no 1.3 try 1.2!
-								rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, JVM_REG_12, 0, KEY_ALL_ACCESS, &regKey); 
-								if (rc != ERROR_SUCCESS) {
-									return NULL;
-								}
-							}
-						}
-					} 
-				}
-			}
-		}
+		char currentVersion[64];
+		len = sizeof(currentVersion);
+		rc = RegQueryValueEx(regKey, "CurrentVersion", 0, &dwType, (unsigned char*)currentVersion, &len); 
+		if (rc!=ERROR_SUCCESS) return NULL;
+
+		char jvmRegKey[512] = {'\0'};
+		strcat(jvmRegKey, "Software\\JavaSoft\\Java Runtime Environment\\\0");
+		strcat(jvmRegKey, currentVersion);
+
+		log("default jvm is at regkey=%s", jvmRegKey);
+
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey); 
+		if (rc!=ERROR_SUCCESS) return NULL;
 	}
 	
-	
 	len = sizeof(javaLibLocation);
-
 	rc = RegQueryValueEx(regKey, "RuntimeLib", 0, &dwType, (unsigned char*)javaLibLocation, &len); 
 
 	if (rc==ERROR_SUCCESS) return strdup(javaLibLocation);
