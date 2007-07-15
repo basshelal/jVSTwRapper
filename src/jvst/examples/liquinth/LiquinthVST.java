@@ -5,13 +5,14 @@ import jvst.wrapper.*;
 import jvst.wrapper.valueobjects.*;
 
 public class LiquinthVST extends VSTPluginAdapter {
-	private static final String VERSION = "LiquinthVST a28";
-	private static final String AUTHOR = "(c)2007 mumart@gmail.com";
+	public static final String VERSION = "LiquinthVST a29";
+	public static final String AUTHOR = "(c)2007 mumart@gmail.com";
 
 	private static final int
 		NUM_PROGRAMS = 16,
 		MIX_BUF_FRAMES = 1024;
 
+	private LiquinthVSTGUI liquinth_vst_gui;
 	private Synthesizer synthesizer;
 	private LiquinthProgram[] programs;
 	private int num_controllers, current_program;
@@ -42,6 +43,18 @@ public class LiquinthVST extends VSTPluginAdapter {
 		suspend();
 	}
 
+	public void set_gui( LiquinthVSTGUI gui ) {
+		liquinth_vst_gui = gui;
+	}
+
+	public void set_controller( int ctrl_idx, int value ) {
+		LiquinthProgram program = programs[ current_program ];
+		if( ctrl_idx >= 0 && ctrl_idx < num_controllers ) {
+			program.controllers[ ctrl_idx ] = value;
+			synthesizer.set_controller( ctrl_idx, value );
+		}
+	}
+
 	/* Deprecated as of VST 2.4 */
 	public void resume() {
 		wantEvents( 1 );
@@ -54,12 +67,13 @@ public class LiquinthVST extends VSTPluginAdapter {
 
 	public void setProgram( int index ) {
 		if( index < 0 || index >= NUM_PROGRAMS ) return;
+		current_program = index;
 		LiquinthProgram program = programs[ index ];
 		for( int ctrl_idx = 0; ctrl_idx < num_controllers; ctrl_idx++ ) {
 			int controller = program.controllers[ ctrl_idx ];
-			synthesizer.set_controller( ctrl_idx, controller );
+			liquinth_vst_gui.set_controller( ctrl_idx, controller );
 		}
-		current_program = index;
+
 	}
 
 	public void setProgramName( String name ) {
@@ -83,11 +97,7 @@ public class LiquinthVST extends VSTPluginAdapter {
 	}
 
 	public void setParameter( int index, float value ) {
-		int param = ( int ) ( value * 127 );
-		LiquinthProgram program = programs[ current_program ];
-		if( index < 0 || index >= num_controllers ) return;
-		program.controllers[ index ] = param;
-		synthesizer.set_controller( index, param );
+		liquinth_vst_gui.set_controller( index, (int) ( value * 127 ) );
 	}
 
 	public float getParameter( int index ) {
@@ -223,8 +233,12 @@ public class LiquinthVST extends VSTPluginAdapter {
 					/* Controller 120 = all sound off */
 					/* Controller 121 = reset all controllers */
 					/* Controller 123 = all notes off */
-					int ctrl = msg_data[ 1 ];
-					if( ctrl == 0x7E || ctrl == 0x7B ) synthesizer.all_notes_off( false );
+					int ctrl = msg_data[ 1 ] & 0x7F;
+					int value = msg_data[ 2 ] & 0x7F;
+					if( ctrl >= 20 && ctrl < num_controllers + 20 )
+						liquinth_vst_gui.set_controller( ctrl - 20, value );
+					if( ctrl == 0x7E || ctrl == 0x7B )
+						synthesizer.all_notes_off( false );
 					break;
 				case 0xE0: /* Pitch wheel.*/
 					int pitch = ( msg_data[ 1 ] & 0x7F ) | ( ( msg_data[ 2 ] & 0x7F ) << 7 );
