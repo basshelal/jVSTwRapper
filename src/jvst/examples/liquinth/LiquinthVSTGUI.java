@@ -69,7 +69,7 @@ public class LiquinthVSTGUI extends VSTPluginGUIAdapter {
 		public void stateChanged( ChangeEvent e ) {
 			int value;
 			value = controllers[ controller ].getValue();
-			liquinth_vst.set_controller( controller, value );
+			liquinth_vst.set_controller( controller, value, false );
 		}
 	}
 }

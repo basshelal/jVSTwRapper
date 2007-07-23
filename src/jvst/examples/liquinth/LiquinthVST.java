@@ -5,7 +5,7 @@ import jvst.wrapper.*;
 import jvst.wrapper.valueobjects.*;
 
 public class LiquinthVST extends VSTPluginAdapter {
-	public static final String VERSION = "LiquinthVST a29";
+	public static final String VERSION = "LiquinthVST a30";
 	public static final String AUTHOR = "(c)2007 mumart@gmail.com";
 
 	private static final int
@@ -47,12 +47,13 @@ public class LiquinthVST extends VSTPluginAdapter {
 		liquinth_vst_gui = gui;
 	}
 
-	public void set_controller( int ctrl_idx, int value ) {
+	public void set_controller( int ctrl_idx, int value, boolean update_gui ) {
+		if( ctrl_idx < 0 || ctrl_idx >= num_controllers) return;
 		LiquinthProgram program = programs[ current_program ];
-		if( ctrl_idx >= 0 && ctrl_idx < num_controllers ) {
-			program.controllers[ ctrl_idx ] = value;
-			synthesizer.set_controller( ctrl_idx, value );
-		}
+		program.controllers[ ctrl_idx ] = value;
+		synthesizer.set_controller( ctrl_idx, value );
+		if( update_gui && liquinth_vst_gui != null )
+			liquinth_vst_gui.set_controller( ctrl_idx, value );
 	}
 
 	/* Deprecated as of VST 2.4 */
@@ -71,9 +72,18 @@ public class LiquinthVST extends VSTPluginAdapter {
 		LiquinthProgram program = programs[ index ];
 		for( int ctrl_idx = 0; ctrl_idx < num_controllers; ctrl_idx++ ) {
 			int controller = program.controllers[ ctrl_idx ];
-			liquinth_vst_gui.set_controller( ctrl_idx, controller );
+			set_controller( ctrl_idx, controller, true );
 		}
+	}
 
+	public void setParameter( int index, float value ) {
+		set_controller( index, ( int ) Math.round( value * 127 ), true );
+	}
+
+	public float getParameter( int index ) {
+		if( index < 0 || index >= num_controllers ) return 0;
+		LiquinthProgram program = programs[ current_program ];
+		return program.controllers[ index ] / 127f;
 	}
 
 	public void setProgramName( String name ) {
@@ -94,16 +104,6 @@ public class LiquinthVST extends VSTPluginAdapter {
 
 	public String getParameterName( int index ) {
 		return Synthesizer.get_controller_name( index );
-	}
-
-	public void setParameter( int index, float value ) {
-		liquinth_vst_gui.set_controller( index, (int) ( value * 127 ) );
-	}
-
-	public float getParameter( int index ) {
-		if( index < 0 || index >= num_controllers ) return 0;
-		LiquinthProgram program = programs[ current_program ];
-		return program.controllers[ index ] / 127f;
 	}
 
 	public VSTPinProperties getOutputProperties( int index ) {
@@ -236,7 +236,7 @@ public class LiquinthVST extends VSTPluginAdapter {
 					int ctrl = msg_data[ 1 ] & 0x7F;
 					int value = msg_data[ 2 ] & 0x7F;
 					if( ctrl >= 20 && ctrl < num_controllers + 20 )
-						liquinth_vst_gui.set_controller( ctrl - 20, value );
+						set_controller( ctrl - 20, value, true );
 					if( ctrl == 0x7E || ctrl == 0x7B )
 						synthesizer.all_notes_off( false );
 					break;
