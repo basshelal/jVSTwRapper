@@ -385,7 +385,7 @@ void VSTGUIWrapper::close () {
 	this->ensureJavaThreadAttachment();
     
 #if defined(linux)
-	this->detachWindow(); //on linux, first detach, then close
+	this->detachWindow(); //on linux, first detach, then close (seems more logical and work better here)
 #endif
     
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
