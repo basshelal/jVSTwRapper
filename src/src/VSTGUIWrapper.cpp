@@ -51,6 +51,9 @@
 #ifdef WIN32
 	#include <windows.h>
 #endif
+#ifdef linux
+	#include <unistd.h>
+#endif
 
 
 
@@ -113,15 +116,7 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 //-----------------------------------------------------------------------------
 VSTGUIWrapper::~VSTGUIWrapper () {
 	log("GUI wrapper destroy");
-/*
-#ifdef MACX
-	performOnAnotherThread(this, NULL, GuiWrapperDestroy, false);
-}
-
-void VSTGUIWrapper::wrappedDestroy() {
-	printCurrentThreadID();
-#endif
-*/
+	
 	this->ensureJavaThreadAttachment();
 	
 	//destroy() der gui aufrufen
@@ -160,30 +155,33 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 #endif
 #ifdef linux
 	Display *GlobalDisplay = NULL;
+	
+int errorHandler(Display *dp, XErrorEvent *e) {
+	char text[1024];
+	XGetErrorText(dp, e->error_code, text, sizeof(text));
+	text[1023]='\0';
+	log("**XError: code=%i, minor=%i, request=%i, ressource=%i, serial=%i, type=%i, text=%s",
+		e->error_code, e->minor_code, e->request_code, e->resourceid, e->serial, e->type, text);
+	return 0;
+}
 #endif
 
 
 
 bool VSTGUIWrapper::open (void *ptr) {
-	log("GUI wrapper open");
+	log("GUI wrapper open %p", ptr);
 	
 	//!!! always call this !!!
 	AEffGUIEditor::open(ptr);
+	this->ensureJavaThreadAttachment();
 	
-/*
-#ifdef MACX
-	//all awt calls need to be on a different thread -- wrap host calls and forward them to different thread
-	performOnAnotherThread(this, ptr, GuiWrapperOpen, false);
 	
-	this->checkException();
-	return true;
-} //close method
+#ifdef linux
+	//install error handler to be notified if anything goes wrong in the win embedding code...
+	XSetErrorHandler(errorHandler);
 #endif
-*/
 
 #if defined(WIN32) || defined(linux)
-	this->ensureJavaThreadAttachment();
-
 	ConfigFileReader *cfg = new ConfigFileReader();
 	JAWT awt;	
 	jboolean result;
@@ -230,7 +228,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 #ifdef linux
 		/* Not implemented on Linux! (no way to obtain a ref to the diplay at this time...) */
 		//if (::GlobalDisplay!=NULL) 
-		//	XDestroyWindow(::GlobalDisplay, (Window)ptr);
+			//XDestroyWindow(::GlobalDisplay, (Window)ptr);
 			//XUnmapWindow(::GlobalDisplay, (Window)ptr);
 #endif	
 	} 
@@ -314,10 +312,14 @@ bool VSTGUIWrapper::open (void *ptr) {
 					this->JavaWindowHandle=dsi_win->drawable;  //cast drawable to window! (is only a handle anyways...)
 					if (::GlobalDisplay==NULL) ::GlobalDisplay = dsi_win->display;   //init global var diplay
 					
+					//usleep(500); //wait a little to ensure that the x operation completes...
+					
 					//Set Parent Window
 					int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, frhwnd, 0, 0);
 					//int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
 					log("win reparent=%i", ret);
+					
+					//usleep(500); //wait a little to ensure that the x operation completes...
 #endif
 
 					// Free the drawing surface info
@@ -338,15 +340,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 	} //Attaching    
 #endif		
 
-/*
-#ifdef MACX
-bool VSTGUIWrapper::wrappedOpen (void *ptr) {
-	log("GUI wrapper WRAPPED open");
-	printCurrentThreadID();
-#endif
-*/
-	this->ensureJavaThreadAttachment();
-	
+		
 	// Call Open
     jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
@@ -387,26 +381,23 @@ bool VSTGUIWrapper::wrappedOpen (void *ptr) {
 //-----------------------------------------------------------------------------
 void VSTGUIWrapper::close () {
 	log("closing GUI");
-/*
-#ifdef MACX
-	performOnAnotherThread(this, NULL, GuiWrapperClose, false);
-}
 
-void VSTGUIWrapper::wrappedClose () {
-	log("GUI wrapper close");
-	printCurrentThreadID();
-#endif
-*/
 	this->ensureJavaThreadAttachment();
+    
+#if defined(linux)
+	this->detachWindow(); //on linux, first detach, then close
+#endif
     
 	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
 	this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
 	bool error = this->checkException();
 
-#if defined(WIN32) || defined(linux)
-	this->detachWindow(); //detach from hosts native window
-	
+#if defined(WIN32) 
+	this->detachWindow(); //on windows do the other way round!
+#endif
+
+#if defined(WIN32) || defined(linux) 
 	if (error) {
 		this->AttachWindow=false; //error in close --> dont attach to window again!
 		log("* WARNING: Exception occured in GUI close() --> disabling native window attachment");
@@ -414,7 +405,6 @@ void VSTGUIWrapper::wrappedClose () {
 	}
 #endif
 }
-
 
 
 
@@ -506,7 +496,10 @@ void VSTGUIWrapper::detachWindow() {
 		this->JavaWindowHandle=NULL;
 #endif
 #ifdef linux
+		//usleep(500); //wait a little to ensure that the x operation completes...
 		int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, DefaultRootWindow(::GlobalDisplay), 0, 0);
+		usleep(500); //wait a little to ensure that the x operation completes...
+		
 		log("remap=%i", ret);
 		this->JavaWindowHandle=0;
 #endif
@@ -529,19 +522,6 @@ void VSTGUIWrapper::undecorateJavaWindow() {
     if (midUndeco == NULL) log("** ERROR: cannot find GUI instance-method undecorate()V");
     this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, midUndeco);
     this->checkException();
-}
-#endif
-
-#ifdef linux
-void VSTGUIWrapper::repaint() {
-	log("repaint!");
-	this->ensureJavaThreadAttachment();
-	
-	//jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "pack", "()V");
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugGUIClass, "repaint", "()V");
-    if (mid == NULL) log("** ERROR: cannot find GUI instance-method pack()V");
-    this->JEnv->CallVoidMethod(this->JavaPlugGUIObj, mid);
-	this->checkException();
 }
 #endif
 

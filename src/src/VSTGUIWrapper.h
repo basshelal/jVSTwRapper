@@ -75,7 +75,6 @@ class VSTGUIWrapper : public AEffGUIEditor {
 #endif
 #ifdef linux
 		Window JavaWindowHandle;
-		virtual void repaint();
 #endif
 
 	protected:
