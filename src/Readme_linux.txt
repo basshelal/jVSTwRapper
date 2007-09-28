@@ -16,20 +16,22 @@ NOTE: these steps are only required once! If you got JayDlay to work, any other 
    the correct value:
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JAVA_HOME/lib/:$JAVA_HOME/lib/i386/:$JAVA_HOME/lib/i386/xawt/:$JAVA_HOME/lib/i386/client/
    
-   Alternatively, it may work when you add all the paths mention above to /etc/ld.so.conf 
+   Alternatively, it may work when you add all the paths from LD_LIBRARY_PATH above separately to /etc/ld.so.conf 
    and then do "sudo ldconfig" afterwards.
    
 3. *** CHECK YOUR CONFIGURATION *** 
    by executing "ldd jvstwrapper.so". Your configuration ONLY was successful when the output 
-   of this call does NOT contain the text "=> not found" for ANY library that is listed in the output. 	
+   of this call does NOT contain the text "=> not found" for ANY library that is listed in the output. 
+   (i.e. "ldd jvstwrapper.so | grep not found" returns zero lines!)	
 	
 4. Fire up Jost, energyXT2 or any other VST host application and enjoy the JayDLay demo plugin!
+ 
  
 If you see the following error in jvstwrapper_log.txt:
 ** java.lang.UnsatisfiedLinkError: Can't load library: ### some .so file ###
 
 Create a symbolic link to the directory $JAVA_HOME/lib/i386/xawt/ in the folder where the 
-jvstwrapper.so file is. 
+jvstwrapper.so file is. (e.g. execute "ln -s $JAVA_HOME/lib/i386/xawt/ axwt" in the folder where jvstwrapper.so is located)
 
 
 	
