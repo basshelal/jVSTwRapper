@@ -42,8 +42,8 @@ VSTV24ToPlug::VSTV24ToPlug (audioMasterCallback audioMaster, int progs, int parm
 	: VSTV23ToPlug (audioMaster, progs, parms, jvm) {
 
 	this->ProcessDoubleReplacingMethodID = NULL;
-	this->ProcessDoubleReplacingJEnv = NULL;
-	this->ProcessDoubleReplacingThreadID = 0;
+	//this->ProcessDoubleReplacingJEnv = NULL;
+	//this->ProcessDoubleReplacingThreadID = 0;
 
 	this->JavaDoubleClass = NULL;
 }
@@ -56,49 +56,49 @@ VSTV24ToPlug::~VSTV24ToPlug () {
 
 //-----------------------------------------------------------------------------------------
 bool VSTV24ToPlug::setProcessPrecision (VstInt32 precision) {	
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setProcessPrecision", "(I)Z");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setProcessPrecision", "(I)Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method setProcessPrecision(I)Z"); return false;}
 	
-	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, precision);
+	jboolean ret = env->CallBooleanMethod(this->JavaPlugObj, mid, precision);
 	
-	if (this->checkException()) return false;
+	if (this->checkException(env)) return false;
 
 	return ret!=0;
 } 
 
 //-----------------------------------------------------------------------------------------
 VstInt32 VSTV24ToPlug::getNumMidiInputChannels() {	
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getNumMidiInputChannels", "()I");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "getNumMidiInputChannels", "()I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getNumMidiInputChannels()I"); return false;}
 	
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid);
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid);
 	
-	this->checkException();
+	this->checkException(env);
 
 	return ret;
 } 			
 
 //-----------------------------------------------------------------------------------------
 VstInt32 VSTV24ToPlug::getNumMidiOutputChannels() {	
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getNumMidiOutputChannels", "()I");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "getNumMidiOutputChannels", "()I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getNumMidiOutputChannels()I"); return false;}
 	
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid);
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid);
 	
-	this->checkException();
+	this->checkException(env);
 
 	return ret;
 } 
 
 //-----------------------------------------------------------------------------------------
 void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, VstInt32 sampleFrames) {
-    
+/*
 #ifdef WIN32
 	DWORD threadID;
 	threadID = GetCurrentThreadId();
@@ -118,36 +118,39 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 
 		log("ProcessDoubleReplacing ThreadID=%i", this->ProcessDoubleReplacingThreadID);
 	}
-	
+*/
+
+	JNIEnv* env = this->ensureJavaThreadAttachment();
+
 	if(this->JavaDoubleClass == NULL) {
-		this->JavaDoubleClass = this->ProcessDoubleReplacingJEnv->FindClass("[D");
+		this->JavaDoubleClass = env->FindClass("[D");
 		if (this->JavaDoubleClass == NULL) log("** ERROR: cannot find class [D");
 	}
 
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
 
-	jinputs = this->ProcessDoubleReplacingJEnv->NewObjectArray(this->getAeffect()->numInputs, this->JavaDoubleClass, NULL);
-	joutputs = this->ProcessDoubleReplacingJEnv->NewObjectArray(this->getAeffect()->numOutputs, this->JavaDoubleClass, NULL);
+	jinputs = env->NewObjectArray(this->getAeffect()->numInputs, this->JavaDoubleClass, NULL);
+	joutputs = env->NewObjectArray(this->getAeffect()->numOutputs, this->JavaDoubleClass, NULL);
 	if (jinputs == NULL) log("** ERROR: out of memory! jinputs");
 	if (joutputs == NULL) log("** ERROR: out of memory! joutputs");
 
 	for (int i=0; i<this->getAeffect()->numInputs; i++) {
 		double* in = inputs[i];
-		jdoubleArray darr = this->ProcessDoubleReplacingJEnv->NewDoubleArray(sampleFrames);
+		jdoubleArray darr = env->NewDoubleArray(sampleFrames);
 		
-		this->ProcessDoubleReplacingJEnv->SetDoubleArrayRegion(darr, 0, sampleFrames, in);
-        this->ProcessDoubleReplacingJEnv->SetObjectArrayElement(jinputs, i, darr);
-        this->ProcessDoubleReplacingJEnv->DeleteLocalRef(darr);
+		env->SetDoubleArrayRegion(darr, 0, sampleFrames, in);
+        env->SetObjectArrayElement(jinputs, i, darr);
+        env->DeleteLocalRef(darr);
 	}
 
 	//processDoubleReplacing replaces the output 
 	//--> send emtpy output (do not copy output from native to java)
 	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		//create empty float array
-		jdoubleArray darr = this->ProcessDoubleReplacingJEnv->NewDoubleArray(sampleFrames);
-		this->ProcessDoubleReplacingJEnv->SetObjectArrayElement(joutputs, i, darr);
-		this->ProcessDoubleReplacingJEnv->DeleteLocalRef(darr);
+		jdoubleArray darr = env->NewDoubleArray(sampleFrames);
+		env->SetObjectArrayElement(joutputs, i, darr);
+		env->DeleteLocalRef(darr);
 	}
 
 
@@ -155,10 +158,10 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 	//call java method
 	if(this->ProcessDoubleReplacingMethodID == NULL) {
 		log("creating new processDoubleRplacing mid");
-		this->ProcessDoubleReplacingMethodID = this->ProcessDoubleReplacingJEnv->GetMethodID(this->JavaPlugClass, "processDoubleReplacing", "([[D[[DI)V");
+		this->ProcessDoubleReplacingMethodID = env->GetMethodID(this->JavaPlugClass, "processDoubleReplacing", "([[D[[DI)V");
 		if (this->ProcessDoubleReplacingMethodID == NULL) log("** ERROR: cannot find effects .processDoubleReplacing(...)");
 	}
-	this->ProcessDoubleReplacingJEnv->CallVoidMethod(this->JavaPlugObj, this->ProcessDoubleReplacingMethodID, jinputs, joutputs, (jint)sampleFrames);
+	env->CallVoidMethod(this->JavaPlugObj, this->ProcessDoubleReplacingMethodID, jinputs, joutputs, (jint)sampleFrames);
 
 
 
@@ -168,19 +171,19 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 		jdoubleArray jout;
 		jdouble *jval;
 
-		jout = (jdoubleArray)this->ProcessDoubleReplacingJEnv->GetObjectArrayElement(joutputs, i);
-		jval = this->ProcessDoubleReplacingJEnv->GetDoubleArrayElements(jout, NULL);
+		jout = (jdoubleArray)env->GetObjectArrayElement(joutputs, i);
+		jval = env->GetDoubleArrayElements(jout, NULL);
 		
 		memcpy(out, jval, sampleFrames * sizeof(double));
 		
-		this->ProcessDoubleReplacingJEnv->ReleaseDoubleArrayElements(jout, jval, 0);
-		this->ProcessDoubleReplacingJEnv->DeleteLocalRef(jout);
+		env->ReleaseDoubleArrayElements(jout, jval, 0);
+		env->DeleteLocalRef(jout);
 	}
 	
-	//ARRAYS mit deletelocalref wieder zerst�ren...
-	this->ProcessDoubleReplacingJEnv->DeleteLocalRef(jinputs);
-	this->ProcessDoubleReplacingJEnv->DeleteLocalRef(joutputs);
+	//ARRAYS mit deletelocalref wieder zerstoeren...
+	env->DeleteLocalRef(jinputs);
+	env->DeleteLocalRef(joutputs);
 
-	::checkException(this->ProcessDoubleReplacingJEnv);
+	::checkException(env);
 }
  

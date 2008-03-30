@@ -96,6 +96,7 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 
 
 	private:
+/*
 #ifdef WIN32
 		DWORD ProcessEventsThreadID;
 #endif
@@ -103,7 +104,7 @@ class VSTV20ToPlug : public VSTV10ToPlug {
 		pthread_t ProcessEventsThreadID;
 #endif
 		JNIEnv *ProcessEventsJEnv;
-
+*/
 		void initProcessEventsCache();
 		bool isProcessEventsCacheInitialised;
 

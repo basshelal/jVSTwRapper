@@ -53,92 +53,92 @@ VSTV21ToPlug::~VSTV21ToPlug () {
 VstInt32 VSTV21ToPlug::getMidiProgramName (VstInt32 channel, MidiProgramName* midiProgramName) { 
 	if (midiProgramName==NULL) return 0;
 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jclass jMidiProgramClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/MidiProgramName");
+	jclass jMidiProgramClass = env->FindClass("jvst/wrapper/valueobjects/MidiProgramName");
 	if (jMidiProgramClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.MidiProgramName");
 		return 0;
 	}
 
-	jmethodID mid = this->JEnv->GetMethodID(jMidiProgramClass, "<init>", "()V");
+	jmethodID mid = env->GetMethodID(jMidiProgramClass, "<init>", "()V");
 	if (mid == NULL) {
 		log("** ERROR: cannot find default contructor for MidiProgramName!");
 		return 0;
 	}
-	jobject jMidiProgramObject = this->JEnv->NewObject(jMidiProgramClass, mid);
+	jobject jMidiProgramObject = env->NewObject(jMidiProgramClass, mid);
 	if (jMidiProgramObject == NULL) {
 		log("** ERROR: cannot create MidiProgramName Object!");
 		return 0;
 	}
 
-	jfieldID thisProgramIndexField = this->JEnv->GetFieldID(jMidiProgramClass, "thisProgramIndex", "I");
+	jfieldID thisProgramIndexField = env->GetFieldID(jMidiProgramClass, "thisProgramIndex", "I");
 	if (thisProgramIndexField == NULL) {
 		log("** ERROR: cannot find field-id thisProgramIndex (I)");
 		return 0;
 	}
-	jfieldID parentCategoryIndexField = this->JEnv->GetFieldID(jMidiProgramClass, "parentCategoryIndex", "I");
+	jfieldID parentCategoryIndexField = env->GetFieldID(jMidiProgramClass, "parentCategoryIndex", "I");
 	if (parentCategoryIndexField == NULL) {
 		log("** ERROR: cannot find field-id parentCategoryIndex (I)");
 		return 0;
 	}
-	jfieldID flagsField = this->JEnv->GetFieldID(jMidiProgramClass, "flags", "I");
+	jfieldID flagsField = env->GetFieldID(jMidiProgramClass, "flags", "I");
 	if (flagsField == NULL) {
 		log("** ERROR: cannot find field-id flags (I)");
 		return 0;
 	}
-	jfieldID nameField = this->JEnv->GetFieldID(jMidiProgramClass, "name", "Ljava/lang/String;");
+	jfieldID nameField = env->GetFieldID(jMidiProgramClass, "name", "Ljava/lang/String;");
 	if (nameField == NULL) {
 		log("** ERROR: cannot find field-id name (Ljava/lang/String;)");
 		return 0;
 	}
-	jfieldID midiProgramField = this->JEnv->GetFieldID(jMidiProgramClass, "midiProgram", "B");
+	jfieldID midiProgramField = env->GetFieldID(jMidiProgramClass, "midiProgram", "B");
 	if (midiProgramField == NULL) {
 		log("** ERROR: cannot find field-id midiProgram (B)");
 		return 0;
 	}
-	jfieldID midiBankMsbField = this->JEnv->GetFieldID(jMidiProgramClass, "midiBankMsb", "B");
+	jfieldID midiBankMsbField = env->GetFieldID(jMidiProgramClass, "midiBankMsb", "B");
 	if (midiBankMsbField == NULL) {
 		log("** ERROR: cannot find field-id midiBankMsb (B)");
 		return 0;
 	}
-	jfieldID midiBankLsbField = this->JEnv->GetFieldID(jMidiProgramClass, "midiBankLsb", "B");
+	jfieldID midiBankLsbField = env->GetFieldID(jMidiProgramClass, "midiBankLsb", "B");
 	if (midiBankLsbField == NULL) {
 		log("** ERROR: cannot find field-id midiBankLsb (B)");
 		return 0;
 	}
-	jfieldID reservedField = this->JEnv->GetFieldID(jMidiProgramClass, "reserved", "B");
+	jfieldID reservedField = env->GetFieldID(jMidiProgramClass, "reserved", "B");
 	if (reservedField == NULL) {
 		log("** ERROR: cannot find field-id reserved (B)");
 		return 0;
 	}
 	
 	//in parameter!
-	this->JEnv->SetIntField(jMidiProgramObject, thisProgramIndexField, midiProgramName->thisProgramIndex);
+	env->SetIntField(jMidiProgramObject, thisProgramIndexField, midiProgramName->thisProgramIndex);
 	
-	mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getMidiProgramName", "(ILjvst/wrapper/valueobjects/MidiProgramName;)I");
+	mid = env->GetMethodID(this->JavaPlugClass, "getMidiProgramName", "(ILjvst/wrapper/valueobjects/MidiProgramName;)I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getMidiProgramName(ILjvst/wrapper/valueobjects/MidiProgramName;)I"); return 0;}
 	
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, channel, jMidiProgramObject);
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid, channel, jMidiProgramObject);
 	
 	//read out parameters
-	midiProgramName->flags = this->JEnv->GetIntField(jMidiProgramObject, flagsField);
-	midiProgramName->parentCategoryIndex = this->JEnv->GetIntField(jMidiProgramObject, parentCategoryIndexField);
+	midiProgramName->flags = env->GetIntField(jMidiProgramObject, flagsField);
+	midiProgramName->parentCategoryIndex = env->GetIntField(jMidiProgramObject, parentCategoryIndexField);
 	
-	jstring jstr = (jstring)this->JEnv->GetObjectField(jMidiProgramObject, nameField);
+	jstring jstr = (jstring)env->GetObjectField(jMidiProgramObject, nameField);
 	if (jstr!=NULL) {
-		const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
+		const char* str = env->GetStringUTFChars(jstr, NULL);
 		strncpy (midiProgramName->name, str, 63);
-		this->JEnv->ReleaseStringUTFChars(jstr, str);
-		this->JEnv->DeleteLocalRef(jstr);
+		env->ReleaseStringUTFChars(jstr, str);
+		env->DeleteLocalRef(jstr);
 	}
 
-	midiProgramName->midiBankLsb = this->JEnv->GetByteField(jMidiProgramObject, midiBankLsbField);
-	midiProgramName->midiBankMsb = this->JEnv->GetByteField(jMidiProgramObject, midiBankMsbField);
-	midiProgramName->midiProgram = this->JEnv->GetByteField(jMidiProgramObject, midiProgramField);
-	midiProgramName->reserved = this->JEnv->GetByteField(jMidiProgramObject, reservedField);
+	midiProgramName->midiBankLsb = env->GetByteField(jMidiProgramObject, midiBankLsbField);
+	midiProgramName->midiBankMsb = env->GetByteField(jMidiProgramObject, midiBankMsbField);
+	midiProgramName->midiProgram = env->GetByteField(jMidiProgramObject, midiProgramField);
+	midiProgramName->reserved = env->GetByteField(jMidiProgramObject, reservedField);
 
-	this->checkException();
+	this->checkException(env);
 
 	return ret;
 }
@@ -147,90 +147,90 @@ VstInt32 VSTV21ToPlug::getMidiProgramName (VstInt32 channel, MidiProgramName* mi
 VstInt32 VSTV21ToPlug::getCurrentMidiProgram (VstInt32 channel, MidiProgramName* midiProgramName) { 
 	if (midiProgramName==NULL) return 0;
 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jclass jMidiProgramClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/MidiProgramName");
+	jclass jMidiProgramClass = env->FindClass("jvst/wrapper/valueobjects/MidiProgramName");
 	if (jMidiProgramClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.MidiProgramName");
 		return 0;
 	}
 
-	jmethodID mid = this->JEnv->GetMethodID(jMidiProgramClass, "<init>", "()V");
+	jmethodID mid = env->GetMethodID(jMidiProgramClass, "<init>", "()V");
 	if (mid == NULL) {
 		log("** ERROR: cannot find default contructor for MidiProgramName!");
 		return 0;
 	}
-	jobject jMidiProgramObject = this->JEnv->NewObject(jMidiProgramClass, mid);
+	jobject jMidiProgramObject = env->NewObject(jMidiProgramClass, mid);
 	if (jMidiProgramObject == NULL) {
 		log("** ERROR: cannot create MidiProgramName Object!");
 		return 0;
 	}
 
-	jfieldID thisProgramIndexField = this->JEnv->GetFieldID(jMidiProgramClass, "thisProgramIndex", "I");
+	jfieldID thisProgramIndexField = env->GetFieldID(jMidiProgramClass, "thisProgramIndex", "I");
 	if (thisProgramIndexField == NULL) {
 		log("** ERROR: cannot find field-id thisProgramIndex (I)");
 		return 0;
 	}
-	jfieldID parentCategoryIndexField = this->JEnv->GetFieldID(jMidiProgramClass, "parentCategoryIndex", "I");
+	jfieldID parentCategoryIndexField = env->GetFieldID(jMidiProgramClass, "parentCategoryIndex", "I");
 	if (parentCategoryIndexField == NULL) {
 		log("** ERROR: cannot find field-id parentCategoryIndex (I)");
 		return 0;
 	}
-	jfieldID flagsField = this->JEnv->GetFieldID(jMidiProgramClass, "flags", "I");
+	jfieldID flagsField = env->GetFieldID(jMidiProgramClass, "flags", "I");
 	if (flagsField == NULL) {
 		log("** ERROR: cannot find field-id flags (I)");
 		return 0;
 	}
-	jfieldID nameField = this->JEnv->GetFieldID(jMidiProgramClass, "name", "Ljava/lang/String;");
+	jfieldID nameField = env->GetFieldID(jMidiProgramClass, "name", "Ljava/lang/String;");
 	if (nameField == NULL) {
 		log("** ERROR: cannot find field-id name (Ljava/lang/String;)");
 		return 0;
 	}
-	jfieldID midiProgramField = this->JEnv->GetFieldID(jMidiProgramClass, "midiProgram", "B");
+	jfieldID midiProgramField = env->GetFieldID(jMidiProgramClass, "midiProgram", "B");
 	if (midiProgramField == NULL) {
 		log("** ERROR: cannot find field-id flags (B)");
 		return 0;
 	}
-	jfieldID midiBankMsbField = this->JEnv->GetFieldID(jMidiProgramClass, "midiBankMsb", "B");
+	jfieldID midiBankMsbField = env->GetFieldID(jMidiProgramClass, "midiBankMsb", "B");
 	if (midiBankMsbField == NULL) {
 		log("** ERROR: cannot find field-id midiBankMsb (B)");
 		return 0;
 	}
-	jfieldID midiBankLsbField = this->JEnv->GetFieldID(jMidiProgramClass, "midiBankLsb", "B");
+	jfieldID midiBankLsbField = env->GetFieldID(jMidiProgramClass, "midiBankLsb", "B");
 	if (midiBankLsbField == NULL) {
 		log("** ERROR: cannot find field-id midiBankLsb (B)");
 		return 0;
 	}
-	jfieldID reservedField = this->JEnv->GetFieldID(jMidiProgramClass, "reserved", "B");
+	jfieldID reservedField = env->GetFieldID(jMidiProgramClass, "reserved", "B");
 	if (reservedField == NULL) {
 		log("** ERROR: cannot find field-id reserved (B)");
 		return 0;
 	}
 
-	mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getCurrentMidiProgram", "(ILjvst/wrapper/valueobjects/MidiProgramName;)I");
+	mid = env->GetMethodID(this->JavaPlugClass, "getCurrentMidiProgram", "(ILjvst/wrapper/valueobjects/MidiProgramName;)I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getCurrentMidiProgram(ILjvst/wrapper/valueobjects/MidiProgramName;)I"); return 0;}
 	
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, channel, jMidiProgramObject);
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid, channel, jMidiProgramObject);
 	
 	//read out parameters
-	midiProgramName->thisProgramIndex = this->JEnv->GetIntField(jMidiProgramObject, thisProgramIndexField);
-	midiProgramName->flags = this->JEnv->GetIntField(jMidiProgramObject, flagsField);
-	midiProgramName->parentCategoryIndex = this->JEnv->GetIntField(jMidiProgramObject, parentCategoryIndexField);
+	midiProgramName->thisProgramIndex = env->GetIntField(jMidiProgramObject, thisProgramIndexField);
+	midiProgramName->flags = env->GetIntField(jMidiProgramObject, flagsField);
+	midiProgramName->parentCategoryIndex = env->GetIntField(jMidiProgramObject, parentCategoryIndexField);
 	
-	jstring jstr = (jstring)this->JEnv->GetObjectField(jMidiProgramObject, nameField);
+	jstring jstr = (jstring)env->GetObjectField(jMidiProgramObject, nameField);
 	if (jstr!=NULL) {
-		const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
+		const char* str = env->GetStringUTFChars(jstr, NULL);
 		strncpy (midiProgramName->name, str, 63);
-		this->JEnv->ReleaseStringUTFChars(jstr, str);
-		this->JEnv->DeleteLocalRef(jstr);
+		env->ReleaseStringUTFChars(jstr, str);
+		env->DeleteLocalRef(jstr);
 	}
 
-	midiProgramName->midiBankLsb = this->JEnv->GetByteField(jMidiProgramObject, midiBankLsbField);
-	midiProgramName->midiBankMsb = this->JEnv->GetByteField(jMidiProgramObject, midiBankMsbField);
-	midiProgramName->midiProgram = this->JEnv->GetByteField(jMidiProgramObject, midiProgramField);
-	midiProgramName->reserved = this->JEnv->GetByteField(jMidiProgramObject, reservedField);
+	midiProgramName->midiBankLsb = env->GetByteField(jMidiProgramObject, midiBankLsbField);
+	midiProgramName->midiBankMsb = env->GetByteField(jMidiProgramObject, midiBankMsbField);
+	midiProgramName->midiProgram = env->GetByteField(jMidiProgramObject, midiProgramField);
+	midiProgramName->reserved = env->GetByteField(jMidiProgramObject, reservedField);
 
-	this->checkException();
+	this->checkException(env);
 
 	return ret;
 }
@@ -239,41 +239,41 @@ VstInt32 VSTV21ToPlug::getCurrentMidiProgram (VstInt32 channel, MidiProgramName*
 VstInt32 VSTV21ToPlug::getMidiProgramCategory (VstInt32 channel, MidiProgramCategory* category) { 
 	if (category==NULL) return 0;
 	
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jclass jMidiProgramCategoryClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/MidiProgramCategory");
+	jclass jMidiProgramCategoryClass = env->FindClass("jvst/wrapper/valueobjects/MidiProgramCategory");
 	if (jMidiProgramCategoryClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.MidiProgramCategory");
 		return 0;
 	}
 
-	jmethodID mid = this->JEnv->GetMethodID(jMidiProgramCategoryClass, "<init>", "()V");
+	jmethodID mid = env->GetMethodID(jMidiProgramCategoryClass, "<init>", "()V");
 	if (mid == NULL) {
 		log("** ERROR: cannot find default contructor for MidiProgramCategory!");
 		return 0;
 	}
-	jobject jMidiProgramCategoryObject = this->JEnv->NewObject(jMidiProgramCategoryClass, mid);
+	jobject jMidiProgramCategoryObject = env->NewObject(jMidiProgramCategoryClass, mid);
 	if (jMidiProgramCategoryObject == NULL) {
 		log("** ERROR: cannot create MidiProgramCategory Object!");
 		return 0;
 	}
 
-	jfieldID thisCategoryIndexField = this->JEnv->GetFieldID(jMidiProgramCategoryClass, "thisCategoryIndex", "I");
+	jfieldID thisCategoryIndexField = env->GetFieldID(jMidiProgramCategoryClass, "thisCategoryIndex", "I");
 	if (thisCategoryIndexField == NULL) {
 		log("** ERROR: cannot find field-id thisCategoryIndex (I)");
 		return 0;
 	}
-	jfieldID parentCategoryIndexField = this->JEnv->GetFieldID(jMidiProgramCategoryClass, "parentCategoryIndex", "I");
+	jfieldID parentCategoryIndexField = env->GetFieldID(jMidiProgramCategoryClass, "parentCategoryIndex", "I");
 	if (parentCategoryIndexField == NULL) {
 		log("** ERROR: cannot find field-id parentCategoryIndex (I)");
 		return 0;
 	}
-	jfieldID flagsField = this->JEnv->GetFieldID(jMidiProgramCategoryClass, "flags", "I");
+	jfieldID flagsField = env->GetFieldID(jMidiProgramCategoryClass, "flags", "I");
 	if (flagsField == NULL) {
 		log("** ERROR: cannot find field-id flags (I)");
 		return 0;
 	}
-	jfieldID nameField = this->JEnv->GetFieldID(jMidiProgramCategoryClass, "name", "Ljava/lang/String;");
+	jfieldID nameField = env->GetFieldID(jMidiProgramCategoryClass, "name", "Ljava/lang/String;");
 	if (nameField == NULL) {
 		log("** ERROR: cannot find field-id name (Ljava/lang/String;)");
 		return 0;
@@ -282,40 +282,40 @@ VstInt32 VSTV21ToPlug::getMidiProgramCategory (VstInt32 channel, MidiProgramCate
 
 
 	//in parameter!
-	this->JEnv->SetIntField(jMidiProgramCategoryObject, thisCategoryIndexField, category->thisCategoryIndex);
+	env->SetIntField(jMidiProgramCategoryObject, thisCategoryIndexField, category->thisCategoryIndex);
 	
-	mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getMidiProgramCategory", "(ILjvst/wrapper/valueobjects/MidiProgramCategory;)I");
+	mid = env->GetMethodID(this->JavaPlugClass, "getMidiProgramCategory", "(ILjvst/wrapper/valueobjects/MidiProgramCategory;)I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getMidiProgramCategory(ILjvst/wrapper/valueobjects/MidiProgramCategory;)I"); return 0;}
 	
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, channel, jMidiProgramCategoryObject);
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid, channel, jMidiProgramCategoryObject);
 	
 	//read out parameters
-	category->flags = this->JEnv->GetIntField(jMidiProgramCategoryObject, flagsField);
-	category->parentCategoryIndex = this->JEnv->GetIntField(jMidiProgramCategoryObject, parentCategoryIndexField);
+	category->flags = env->GetIntField(jMidiProgramCategoryObject, flagsField);
+	category->parentCategoryIndex = env->GetIntField(jMidiProgramCategoryObject, parentCategoryIndexField);
 	
-	jstring jstr = (jstring)this->JEnv->GetObjectField(jMidiProgramCategoryObject, nameField);
+	jstring jstr = (jstring)env->GetObjectField(jMidiProgramCategoryObject, nameField);
 	if (jstr!=NULL) {
-		const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
+		const char* str = env->GetStringUTFChars(jstr, NULL);
 		strncpy (category->name, str, 63);
-		this->JEnv->ReleaseStringUTFChars(jstr, str);
-		this->JEnv->DeleteLocalRef(jstr);
+		env->ReleaseStringUTFChars(jstr, str);
+		env->DeleteLocalRef(jstr);
 	}
 
-	this->checkException();
+	this->checkException(env);
 
 	return ret;
 }
 
 //-----------------------------------------------------------------------------------------
 bool VSTV21ToPlug::hasMidiProgramsChanged (VstInt32 channel) { 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "hasMidiProgramsChanged", "(I)Z");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "hasMidiProgramsChanged", "(I)Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method hasMidiProgramsChanged(I)Z"); return false;}
 	
-	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, channel);
+	jboolean ret = env->CallBooleanMethod(this->JavaPlugObj, mid, channel);
 	
-	if (this->checkException()) return false;
+	if (this->checkException(env)) return false;
 
 	return ret!=0;
 }
@@ -324,46 +324,46 @@ bool VSTV21ToPlug::hasMidiProgramsChanged (VstInt32 channel) {
 bool VSTV21ToPlug::getMidiKeyName (VstInt32 channel, MidiKeyName* keyName) { 
 	if (keyName==NULL) return false;
 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jclass jMidiKeyNameClass = this->JEnv->FindClass("jvst/wrapper/valueobjects/MidiKeyName");
+	jclass jMidiKeyNameClass = env->FindClass("jvst/wrapper/valueobjects/MidiKeyName");
 	if (jMidiKeyNameClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.MidiKeyName");
 		return false;
 	}
 
-	jmethodID mid = this->JEnv->GetMethodID(jMidiKeyNameClass, "<init>", "()V");
+	jmethodID mid = env->GetMethodID(jMidiKeyNameClass, "<init>", "()V");
 	if (mid == NULL) {
 		log("** ERROR: cannot find default contructor for MidiKeyName!");
 		return false;
 	}
-	jobject jMidikeyNameObject = this->JEnv->NewObject(jMidiKeyNameClass, mid);
+	jobject jMidikeyNameObject = env->NewObject(jMidiKeyNameClass, mid);
 	if (jMidikeyNameObject == NULL) {
 		log("** ERROR: cannot create MidiKeyName Object!");
 		return false;
 	}
 
-	jfieldID thisProgramIndexField = this->JEnv->GetFieldID(jMidiKeyNameClass, "thisProgramIndex", "I");
+	jfieldID thisProgramIndexField = env->GetFieldID(jMidiKeyNameClass, "thisProgramIndex", "I");
 	if (thisProgramIndexField == NULL) {
 		log("** ERROR: cannot find field-id thisProgramIndex (I)");
 		return false;
 	}
-	jfieldID thisKeyNumberField = this->JEnv->GetFieldID(jMidiKeyNameClass, "thisKeyNumber", "I");
+	jfieldID thisKeyNumberField = env->GetFieldID(jMidiKeyNameClass, "thisKeyNumber", "I");
 	if (thisKeyNumberField == NULL) {
 		log("** ERROR: cannot find field-id thisKeyNumber (I)");
 		return false;
 	}
-	jfieldID flagsField = this->JEnv->GetFieldID(jMidiKeyNameClass, "flags", "I");
+	jfieldID flagsField = env->GetFieldID(jMidiKeyNameClass, "flags", "I");
 	if (flagsField == NULL) {
 		log("** ERROR: cannot find field-id flags (I)");
 		return false;
 	}
-	jfieldID reservedField = this->JEnv->GetFieldID(jMidiKeyNameClass, "reserved", "I");
+	jfieldID reservedField = env->GetFieldID(jMidiKeyNameClass, "reserved", "I");
 	if (reservedField == NULL) {
 		log("** ERROR: cannot find field-id reserved (I)");
 		return false;
 	}
-	jfieldID keyNameField = this->JEnv->GetFieldID(jMidiKeyNameClass, "keyName", "Ljava/lang/String;");
+	jfieldID keyNameField = env->GetFieldID(jMidiKeyNameClass, "keyName", "Ljava/lang/String;");
 	if (keyNameField == NULL) {
 		log("** ERROR: cannot find field-id keyName (Ljava/lang/String;)");
 		return false;
@@ -372,53 +372,53 @@ bool VSTV21ToPlug::getMidiKeyName (VstInt32 channel, MidiKeyName* keyName) {
 
 
 	//in parameter!
-	this->JEnv->SetIntField(jMidikeyNameObject, thisKeyNumberField, keyName->thisKeyNumber);
-	this->JEnv->SetIntField(jMidikeyNameObject, thisProgramIndexField, keyName->thisProgramIndex);
+	env->SetIntField(jMidikeyNameObject, thisKeyNumberField, keyName->thisKeyNumber);
+	env->SetIntField(jMidikeyNameObject, thisProgramIndexField, keyName->thisProgramIndex);
 	
-	mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getMidiKeyName", "(ILjvst/wrapper/valueobjects/MidiKeyName;)Z");
+	mid = env->GetMethodID(this->JavaPlugClass, "getMidiKeyName", "(ILjvst/wrapper/valueobjects/MidiKeyName;)Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getMidiKeyName(ILjvst/wrapper/valueobjects/MidiKeyName;)Z"); return false;}
 	
-	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid, channel, jMidikeyNameObject);
+	jboolean ret = env->CallBooleanMethod(this->JavaPlugObj, mid, channel, jMidikeyNameObject);
 	
 	//read out parameters
-	jstring jstr = (jstring)this->JEnv->GetObjectField(jMidikeyNameObject, keyNameField);
+	jstring jstr = (jstring)env->GetObjectField(jMidikeyNameObject, keyNameField);
 	if (jstr!=NULL) {
-		const char* str = this->JEnv->GetStringUTFChars(jstr, NULL);
+		const char* str = env->GetStringUTFChars(jstr, NULL);
 		strncpy (keyName->keyName, str, 63);
 		keyName->keyName[64] = 0;
-		this->JEnv->ReleaseStringUTFChars(jstr, str);
-		this->JEnv->DeleteLocalRef(jstr);
+		env->ReleaseStringUTFChars(jstr, str);
+		env->DeleteLocalRef(jstr);
 	}
 	
-	if (this->checkException()) return false;
+	if (this->checkException(env)) return false;
 
 	return ret!=0;
 }
 
 //-----------------------------------------------------------------------------------------
 bool VSTV21ToPlug::beginSetProgram () { 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "beginSetProgram", "()Z");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "beginSetProgram", "()Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method beginSetProgram()Z"); return false;}
 	
-	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid);
+	jboolean ret = env->CallBooleanMethod(this->JavaPlugObj, mid);
 	
-	if (this->checkException()) return false;
+	if (this->checkException(env)) return false;
 
 	return ret!=0;
 } 
 
 //-----------------------------------------------------------------------------------------
 bool VSTV21ToPlug::endSetProgram () { 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "endSetProgram", "()Z");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "endSetProgram", "()Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method endSetProgram()Z"); return false;}
 	
-	jboolean ret = this->JEnv->CallBooleanMethod(this->JavaPlugObj, mid);
+	jboolean ret = env->CallBooleanMethod(this->JavaPlugObj, mid);
 	
-	if (this->checkException()) return false;
+	if (this->checkException(env)) return false;
 
 	return ret!=0;
 }   

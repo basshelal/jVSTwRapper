@@ -50,14 +50,14 @@ VSTV23ToPlug::~VSTV23ToPlug () {
 
 //-----------------------------------------------------------------------------------------
 VstInt32 VSTV23ToPlug::setTotalSampleToProcess (VstInt32 value) {	
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "setTotalSampleToProcess", "(I)I");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setTotalSampleToProcess", "(I)I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method setTotalSampleToProcess(I)I"); return value;}
 	
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, value);
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid, value);
 	
-	this->checkException();
+	this->checkException(env);
 
 	return ret;
 } 
@@ -66,51 +66,51 @@ VstInt32 VSTV23ToPlug::setTotalSampleToProcess (VstInt32 value) {
 VstInt32 VSTV23ToPlug::getNextShellPlugin (char* name) { 
 	if (name==NULL) return 0;
 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "getNextShellPlugin", "(Ljava/lang/String;)I");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "getNextShellPlugin", "(Ljava/lang/String;)I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getNextShellPlugin(Ljava/lang/String;)I"); return -1;}
 
-	jstring str = this->JEnv->NewStringUTF("dummy - replace me with REAL name!");
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid, str);
+	jstring str = env->NewStringUTF("dummy - replace me with REAL name!");
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid, str);
 	
 	if (str!=NULL) {
-		const char* jstr = this->JEnv->GetStringUTFChars(str, NULL);
+		const char* jstr = env->GetStringUTFChars(str, NULL);
 		strncpy (name, jstr, 63);
-		this->JEnv->ReleaseStringUTFChars(str, jstr);
-		this->JEnv->DeleteLocalRef(str);
+		env->ReleaseStringUTFChars(str, jstr);
+		env->DeleteLocalRef(str);
 	} else ret = 0L;
 
 	
-	this->checkException();
+	this->checkException(env);
 
 	return ret;
 }
 
 //-----------------------------------------------------------------------------------------
 VstInt32 VSTV23ToPlug::startProcess () { 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "startProcess", "()I");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "startProcess", "()I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method startProcess()I"); return 0;}
 
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid);
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid);
 	
-	this->checkException();
+	this->checkException(env);
 
 	return ret;
 }	
 
 //-----------------------------------------------------------------------------------------
 VstInt32 VSTV23ToPlug::stopProcess () { 
-	this->ensureJavaThreadAttachment();
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	jmethodID mid = this->JEnv->GetMethodID(this->JavaPlugClass, "stopProcess", "()I");
+	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "stopProcess", "()I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method stopProcess()I"); return 0;}
 
-	jint ret = this->JEnv->CallIntMethod(this->JavaPlugObj, mid);
+	jint ret = env->CallIntMethod(this->JavaPlugObj, mid);
 	
-	this->checkException();
+	this->checkException(env);
 
 	return ret;	
 }	

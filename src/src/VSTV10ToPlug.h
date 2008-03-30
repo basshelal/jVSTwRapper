@@ -100,10 +100,10 @@ class VSTV10ToPlug : public AudioEffectX {
 #endif
 
 	protected:
-		void ensureJavaThreadAttachment();
-		bool checkException();
+		JNIEnv* ensureJavaThreadAttachment();
+		bool checkException(JNIEnv* env);
 
-		JNIEnv *JEnv;
+		//JNIEnv *JEnv;
 		JavaVM *Jvm;
 		jobject JavaPlugObj;
 		jclass JavaPlugClass;
@@ -112,10 +112,11 @@ class VSTV10ToPlug : public AudioEffectX {
 	private:
 		jmethodID ProcessMethodID;
 		jmethodID ProcessReplacingMethodID;
-		JNIEnv *ProcessJEnv;
-		JNIEnv *ProcessReplacingJEnv;
+		//JNIEnv *ProcessJEnv;
+		//JNIEnv *ProcessReplacingJEnv;
 		bool isProcessing;
 
+/*
 #ifdef WIN32
 		DWORD ProcessThreadID;
 		DWORD ProcessReplacingThreadID;
@@ -126,6 +127,7 @@ class VSTV10ToPlug : public AudioEffectX {
 		pthread_t ProcessReplacingThreadID;
 		pthread_t ThreadID;
 #endif		
+*/
 
 		//cached methods ids;
 		jmethodID GetParameterMethod;

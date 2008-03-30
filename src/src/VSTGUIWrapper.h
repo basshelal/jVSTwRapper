@@ -78,16 +78,17 @@ class VSTGUIWrapper : public AEffGUIEditor {
 #endif
 
 	protected:
-		bool checkException();
+		bool checkException(JNIEnv* env);
 
 
 	private:
-		void ensureJavaThreadAttachment();
+		JNIEnv* ensureJavaThreadAttachment();
 
 #if defined(WIN32) || defined(linux)
 		void detachWindow();
 		void undecorateJavaWindow();
 #endif
+/*
 #if defined(MACX) || defined(linux)
 		pthread_t ThreadID;
 #endif
@@ -95,6 +96,7 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		DWORD ThreadID;	
 #endif
 		JNIEnv *JEnv;
+*/
 		JavaVM *Jvm;
 		jobject JavaPlugObj;
 		jobject JavaPlugGUIObj;

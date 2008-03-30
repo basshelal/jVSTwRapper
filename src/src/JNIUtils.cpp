@@ -318,6 +318,17 @@ bool checkAndThrowException(JNIEnv *env) {
 }
 
 
+//-----------------------------------------------------------------------------
+JNIEnv* ensureJavaThreadAttachment(JavaVM* vm) {
+	JNIEnv* ret = NULL;
+	jint stat = vm->AttachCurrentThread((void**)&ret, NULL);
+	if (stat<0) log("** ERROR: attaching to native THREAD in VSTV10ToPlug Wrapper!");
+
+	//ultra important, if a pending exception isnt cleared, all following calls will fail...
+	checkException(ret);
+	return ret;
+}
+
 
 
 

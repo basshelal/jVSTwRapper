@@ -64,6 +64,7 @@ char *trim (char *string);
 char *replace(char *string, char *oldpiece, char *newpiece);
 bool checkException(JNIEnv *env);
 bool checkAndThrowException(JNIEnv *env);
+JNIEnv* ensureJavaThreadAttachment(JavaVM* vm);
 
 
 #ifdef WIN32
