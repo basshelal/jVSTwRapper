@@ -11,6 +11,7 @@
 #import <Foundation/Foundation.h>
 #import <jawt_md.h>
 #import <pthread.h>
+#include <unistd.h>
 
 #import "VSTGUIWrapperMAC.h"
 #import "VSTGUIWrapper.h"
@@ -23,7 +24,7 @@
 int initializeCocoa() {
 	//create anonymous autorelease pool
 	//this prevents the problem when loading NapkinGUI stuff
-	//this generally fixes the bug that a program bocks 
+	//this generally fixes the bug that a program blocks 
 	//when an image is loaded using awt methods.
 	//this is a known bug in apples jvm implementation
 	//comment this line out and load a gui that uses images... (e.g. napkinlaf)
@@ -86,21 +87,31 @@ void releaseInitializerLock() {
 }
 
 
+
+// objc stuff
 @interface VSTGUIWrapperMAC : NSObject {
+@public
+	NSLock *myLock;
+@protected
 	void*	object;
-	void*	parameter;	
+	void*	parameter;
+	void*	parameter2;	
     int		method;
 }
  
 -(void)setObject: (void*)obj;
 -(void)setParameter: (void*)param;
+-(void)setParameter2: (void*)param2;
 -(void)setMethod: (int)method;
 
 -(void)detachNewThread;
+-(void)lock;
 
 -(void)callback;
 -(void)callback2;
 @end
+
+
 
 void printAppKitThreadID() {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -111,21 +122,22 @@ void printAppKitThreadID() {
 	[pool  release];
 }
 
-int performOnAnotherThread(void* obj, void* param, int method, bool appKitThread) {
+void* performOnAnotherThread(void* obj, void* param, void* param2, int method, bool appKitThread) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	VSTGUIWrapperMAC *instance = [[[VSTGUIWrapperMAC alloc] init] retain];
 	
 	[instance setObject: obj];
 	[instance setParameter: param];
+	[instance setParameter2: param2];
 	[instance setMethod: method];
 	
 	if (appKitThread) {
-		if (false) { //*** Always sync! ***
-			log("perfoming call on Appkit main thread ASYNC");
+		if (false) { //ATTENTION: *** change to be ALWAYS sync! ***
+			log("perfoming ASYNC call on Appkit main thread");
 			[instance performSelectorOnMainThread:@selector(callback) withObject:nil waitUntilDone:NO];
 		}
 		else {
-			log("perfoming call on Appkit main thread SYNC");
+			log("perfoming SYNC call on Appkit main thread");
 			[instance performSelectorOnMainThread:@selector(callback) withObject:nil waitUntilDone:YES];
 		}
 	}
@@ -133,9 +145,31 @@ int performOnAnotherThread(void* obj, void* param, int method, bool appKitThread
 		[instance detachNewThread];
 	}
 	
-	[pool  release];
-	return 0;
+	[pool release];
+	return instance; //retain called before --> instance count should be 1, so instance* wont be garbage collected...
+					 //may need a cast to void* here... (see below for cast back to typed object, damn objc-c conversion stuff)
 }
+
+void waitForGUIInit(void* mac) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	VSTGUIWrapperMAC* instance = (VSTGUIWrapperMAC*)mac; //cast
+	
+	//log("starting the waiting cycle... thread=%i", pthread_self());
+	//while([instance getStatus]!=5) {
+		//usleep(1000*3000); //shaky, I know... wait a little so that the new thread is guaranteed to aquire the lock first
+		//log("next round %i %i", [instance getStatus], c++);
+	//}
+	//log("aquiring lock for instance");
+	//wait until the lock is given back by the gui thread, then continue
+	//[instance lock];
+	//log("instance locked");
+	
+	//lock was returned --> gui init is done now --> fine to exit now
+	//[instance release]; //opposite of retain
+	[pool  release];
+}
+
 
 
 /* Obj C implementation */
@@ -143,6 +177,8 @@ int performOnAnotherThread(void* obj, void* param, int method, bool appKitThread
 @implementation VSTGUIWrapperMAC
 -(id)init {
 	self = [super init];
+	myLock = [[NSLock alloc] init]; //initializing Mutex
+	
 	return self;
 }
 
@@ -152,6 +188,10 @@ int performOnAnotherThread(void* obj, void* param, int method, bool appKitThread
 
 -(void)setParameter: (void*)p {
 	parameter = p;
+}
+
+-(void)setParameter2: (void*)p {
+	parameter2 = p;
 }
 
 -(void)setMethod: (int)m {
@@ -166,12 +206,20 @@ int performOnAnotherThread(void* obj, void* param, int method, bool appKitThread
 	return parameter;
 }
 
+-(void*)getParameter2 {
+	return parameter2;
+}
+
 -(int)getMethod {
 	return method;
 }
 
+-(void)lock {
+	[myLock lock];
+}
+
 -(void)detachNewThread {
-	log("Spawning NEW thread");		
+	log("Spawning NEW thread, current thread=%i", pthread_self());		
 	[NSThread detachNewThreadSelector:@selector(callback) toTarget:self withObject:nil];
 }
 
@@ -186,10 +234,11 @@ int performOnAnotherThread(void* obj, void* param, int method, bool appKitThread
 		case GuiWrapperInitJavaSide: {
 			VSTGUIWrapper* wrap = (VSTGUIWrapper*)object;
 			
-			aquireInitializerLock(); //lock
-			wrap->initJavaSide((jclass)parameter);
-			releaseInitializerLock();
-			
+			//aquireInitializerLock(); //lock
+			//[myLock lock]; //aquire lock for this instance
+			wrap->initJavaSide();
+			//[myLock unlock]; //release lock for this instance (main thread blocks at this time --> tell it to continue now)
+			//releaseInitializerLock();
 			break;
 		}
 		case GuiWrapperOpen:  {
@@ -233,6 +282,8 @@ int performOnAnotherThread(void* obj, void* param, int method, bool appKitThread
 			break;
 		}
 	}
+	
+	log("Thread %i finishes", pthread_self());
 }
 
 @end

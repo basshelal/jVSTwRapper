@@ -23,8 +23,7 @@ enum MethodsToPerformOnThread {
 	GuiWrapperDummy
 };
 
-/*
-int performOnAnotherThread(void* obj, void* param, int method, bool mainThread);
+void* performOnAnotherThread(void* obj, void* param, void* param2, int method, bool appKitThread);
 void printAppKitThreadID();
 
 void aquireGlobalLock();
@@ -32,5 +31,7 @@ void releaseGlobalLock();
 
 void aquireInitializerLock();
 void releaseInitializerLock();
-*/
+
+void waitForGUIInit(void* instance);
+
 #endif

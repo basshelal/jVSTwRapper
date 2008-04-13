@@ -54,15 +54,15 @@
 class VSTGUIWrapper : public AEffGUIEditor {
 
 	public:
-		VSTGUIWrapper (AudioEffect *effect);
+		VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstring guiclazz);	
 		virtual ~VSTGUIWrapper ();
 
 		virtual bool open (void *ptr);
 		virtual void close ();
 		virtual bool getRect (ERect **ppRect);
-		
+
 		//Utility
-		int initJavaSide(jclass gui);	
+		int initJavaSide();	
 /*
 #ifdef MACX
 		bool wrappedOpen (void *ptr);
@@ -88,20 +88,14 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		void detachWindow();
 		void undecorateJavaWindow();
 #endif
-/*
-#if defined(MACX) || defined(linux)
-		pthread_t ThreadID;
-#endif
-#ifdef WIN32
-		DWORD ThreadID;	
-#endif
-		JNIEnv *JEnv;
-*/
+
 		JavaVM *Jvm;
 		jobject JavaPlugObj;
 		jobject JavaPlugGUIObj;
 		jclass JavaPlugGUIClass;
-
+		jstring JavaPlugGUIString;
+		
+		bool IsInitialized;
 		bool AttachWindow;
 };
 

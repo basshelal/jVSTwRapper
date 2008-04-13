@@ -30,7 +30,7 @@
 // Dll WinAPI entry
 // VSTi API entry
 //-
-// 2003,2004,2007 Daniel Martin, Gerard Roma
+// 2003,2004,2007,2008 Daniel Martin, Gerard Roma
 //-------------------------------------------------------------------------------------------------------
 
 #include "jVSTwRapperMAIN.h"
@@ -48,6 +48,7 @@
 	#include <sys/stat.h>
 	#include <sys/resource.h>
 	#include <pthread.h>
+	#include <unistd.h>
 
 	extern "C" {
 		#include <mach-o/dyld.h>
@@ -279,7 +280,6 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 		log("** ERROR loading java plugin, see log for details");
 		return NULL;
 	}
-	
 
 	if (cfg) delete cfg;
 	log("ALLES OK!"); 
@@ -430,11 +430,6 @@ void* startJava(void *nix) {
 
 leave:
 #ifdef MACX
-	//TODO: ASK Gerard why we need this ???
-	//I guess this wakes up the thread used to spawn the jvm thread
-	//without waking it up we would simply wait forever and never return from 
-	//startJavaThread
-	if (runLoop) CFRunLoopStop((CFRunLoopRef)runLoop);
 	return NULL; //NULL //man, this makes the whole result var unecessary...
 #endif
 #if defined(WIN32) || defined(linux)
@@ -446,22 +441,15 @@ leave:
 int loadPlugin() { 
 	int result = -1;
 	bool hasGUI = false;
-	jclass guiClass = NULL;
+	jclass guiRunnerClass = NULL;
 	ConfigFileReader *cfg = new ConfigFileReader();
 	char class_path[1024];
 
-	JNIEnv *env=NULL;
-	
+
 	//try to get an jni env from the loaded jvm
 	//on the mac, we might not be attached to the thread (the jvm was started)
-	//in another one. Attach to current thread
-	//this doesnt do any harm so we do it on windows as well
-	//(although not needed here...)
-	int res = GlobalJVM->AttachCurrentThread((void**)&env, NULL);
-	if (res < 0) {
-		log ("** ERROR: Attaching JVM to native thread!");
-		return -1;
-	}
+	//in another one. 
+	JNIEnv *env = ensureJavaThreadAttachment(GlobalJVM);
 
 
 	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
@@ -558,14 +546,14 @@ int loadPlugin() {
 
 	//test if we can load the GUI class
 	if (cfg->PluginUIClass!=NULL && IsLADSPALoaded==false) {
-		log("classloding gui class %s", cfg->PluginUIClass);
+		log("classloding gui class using the GUI Runner, GUI=%s", cfg->PluginUIClass);
 
 		//load gui using our own ClassLoader...
-		jstring gui = env->NewStringUTF(cfg->PluginUIClass);
+		jstring gui = env->NewStringUTF("jvst/wrapper/gui/VSTPluginGUIRunner");
 
-		guiClass = (jclass)env->CallStaticObjectMethod(manager, loadcl_mid, dllloc, gui, cp);
+		guiRunnerClass = (jclass)env->CallStaticObjectMethod(manager, loadcl_mid, dllloc, gui, cp);
 		if (checkException(env)) {
-			guiClass=NULL;
+			guiRunnerClass=NULL;
 			hasGUI=false;
 			log("* WARNING: Could not load GUI class (wrong name in .ini or exception in constructor?). Using Plugs default UI!");
 		}
@@ -575,30 +563,33 @@ int loadPlugin() {
 	if (checkException(env)) goto leave;
 
 	if(hasGUI) {
-		log("calling java guis init!");
+		log("calling java gui wrapper constructor");
 		//init gui wrapper
-		VSTGUIWrapper* guiWrapper = new VSTGUIWrapper(WrapperInstance);
+		jstring guiclazz = env->NewStringUTF(cfg->PluginUIClass);
+		VSTGUIWrapper* guiWrapper = new VSTGUIWrapper(WrapperInstance, guiRunnerClass ,guiclazz);
 		WrapperInstance->setEditor(guiWrapper);
-		int ret = -1;
-				
+		
 #if defined(WIN32) || defined(linux)
-		ret = guiWrapper->initJavaSide(guiClass);
+		//ret = guiWrapper->initJavaSide(guiRunnerClass, guiclazz);
 #endif
 #ifdef MACX
-		log("Current thread=%i, JavaVMThread=%i", pthread_self(), JavaVMThreadID);
-		ret = guiWrapper->initJavaSide(guiClass); //*** 
+		//log("Current thread=%i, JavaVMThread=%i", pthread_self(), JavaVMThreadID);
+		//ret = guiWrapper->initJavaSide(guiRunnerClass, guiclazz); //*** FIX: start on new thread! --> fixed below
+		
 		//perform this method in a new Thread
-		//ret = performOnAnotherThread(guiWrapper, guiClass, GuiWrapperInitJavaSide, false);		
+		//void* mac = performOnAnotherThread(guiWrapper, guiRunnerClass, guiclazz, GuiWrapperInitJavaSide, false);
+		/*Okay, any waiting here seems to block some runloop, java blocks as well and we have a deadlock
+		we definitely need to run 2 independent threads and never snyc them*/
+		//for savety, wait a little, maybe this helps the other thread to keep up a little better
+		//ret=0;
 #endif		
-
-		if (ret) goto leave;
 	}
 	else {
 		WrapperInstance->setEditor(NULL);
 		log("Plugin is NOT using a custom UI!");
 	}
 	
-	delete cfg;
+	if (cfg) delete cfg;
 	if (checkException(env)) goto leave;
 	
 	result=0;
@@ -725,7 +716,7 @@ BOOL WINAPI DllMain (HINSTANCE hInst, DWORD dwReason, LPVOID lpvReserved) {
 
 
 #ifdef MACX
-void sourceCallBack (  void *info  ) {}
+//void sourceCallBack (  void *info  ) {}
 
 int startJavaThread(){
 	//If there is a Java GUI class configured, then we need to initialize cocoa by hand
@@ -745,7 +736,6 @@ int startJavaThread(){
 	log("starting java thread");
 
 	/* Start the thread that runs the VM. */
-	CFRunLoopSourceContext sourceContext;
 	pthread_t vmthread;
 	
 	/* create a new pthread copying the stack size of the primordial pthread */ 
@@ -760,7 +750,7 @@ int startJavaThread(){
     pthread_attr_t thread_attr;
     pthread_attr_init(&thread_attr);
     pthread_attr_setscope(&thread_attr, PTHREAD_SCOPE_SYSTEM);
-    pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_JOINABLE);
     if (stack_size > 0) {
         pthread_attr_setstacksize(&thread_attr, stack_size);
     }	
@@ -772,34 +762,8 @@ int startJavaThread(){
 		return -1;
 	}
 	pthread_attr_destroy(&thread_attr);
-    
-	/* Create a a sourceContext to be used by our source that makes */
-    /* sure the CFRunLoop doesn't exit right away */
-	sourceContext.version = 0;
-    sourceContext.info = NULL;
-    sourceContext.retain = NULL;
-    sourceContext.release = NULL;
-    sourceContext.copyDescription = NULL;
-    sourceContext.equal = NULL;
-    sourceContext.hash = NULL;
-    sourceContext.schedule = NULL;
-    sourceContext.cancel = NULL;
-    sourceContext.perform = &sourceCallBack;
 	
-	/* Create the Source from the sourceContext */
-	CFRunLoopSourceRef sourceRef = CFRunLoopSourceCreate (NULL, 0, &sourceContext); 
-	
-	/* Use the constant kCFRunLoopCommonModes to add the source to the set of objects */ 
-    /* monitored by all the common modes */
-    CFRunLoopAddSource (CFRunLoopGetCurrent(),sourceRef,kCFRunLoopCommonModes); 	
-	
-	//get ref to stop the run loop later on (at the end of startJava())
-	//EventLoopRef eventLoop = GetCurrentEventLoop ();
-	//runLoop=GetCFRunLoopFromEventLoop(eventLoop);	
-    runLoop = CFRunLoopGetCurrent(); //This one fixed the infite block with the Amadeus II host!
-	
-	/* Park this thread in the runloop */
-	CFRunLoopRun();		
+	pthread_join(vmthread,NULL); //wait for jvm init thread to return
 
 	return 0;
 }

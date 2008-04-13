@@ -57,23 +57,25 @@
 
 
 
-VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect) 
+VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstring guiclazz) 
 	: AEffGUIEditor (effect) {
 
 	log("GUI wrapper init");
-
-	//this->ThreadID = 0;	
+	
 	this->Jvm = ((VSTV10ToPlug*)effect)->Jvm;
-	//this->JEnv = ((VSTV10ToPlug*)effect)->JEnv;
 	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;
+	this->JavaPlugGUIClass = guiRunnerClass;
+	this->JavaPlugGUIString = guiclazz;
+
+	this->IsInitialized=false;
 
 #if defined (WIN32) || defined(linux)
 	this->JavaWindowHandle = 0;
 
 	ConfigFileReader *cfg = new ConfigFileReader();
 	if(cfg!=NULL) {
-	  this->AttachWindow=(cfg->AttachToNativePluginWindow==1);
-	  delete cfg;
+		this->AttachWindow=(cfg->AttachToNativePluginWindow==1);
+		delete cfg;
 	}
 #endif
 #ifdef MACX
@@ -82,19 +84,26 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect)
 #endif
 }
 
+
 //-----------------------------------------------------------------------------
 bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	log("GUI wrapper getRect");
 	if(this->AttachWindow) {
 		JNIEnv* env = this->ensureJavaThreadAttachment();
 
+		if (this->IsInitialized==false) performOnAnotherThread(this, NULL, NULL, GuiWrapperInitJavaSide, false);
+
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "getWidth", "()I");
 		if (mid == NULL) log("** ERROR: cannot find GUI instance-method getWidth()I");
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 		jint width=env->CallIntMethod(this->JavaPlugGUIObj, mid);
 		this->checkException(env);
 
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 		mid = env->GetMethodID(this->JavaPlugGUIClass, "getHeight", "()I");
 		if (mid == NULL) log("** ERROR: cannot find GUI instance-method getHeight()I");
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 		jint height=env->CallIntMethod(this->JavaPlugGUIObj, mid);
 		this->checkException(env);
 
@@ -117,21 +126,23 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 VSTGUIWrapper::~VSTGUIWrapper () {
 	log("GUI wrapper destroy");
 	
-	JNIEnv* env = this->ensureJavaThreadAttachment();
+	if (this->IsInitialized==true) {
+		JNIEnv* env = this->ensureJavaThreadAttachment();
 	
-	//destroy() der gui aufrufen
-	//macx tends to block forever here...
-	//BUT WE SOLVE THIS ON THE JAVA SIDE!
-	jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "destroy", "()V");
-	if (mid == NULL) log("** ERROR: cannot find GUI instance-method destroy()V");
-	
-	env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+		//destroy() der gui aufrufen
+		//macx tends to block forever here...
+		//BUT WE SOLVE THIS ON THE JAVA SIDE!
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
+		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "destroy", "()V");
+		if (mid == NULL) log("** ERROR: cannot find GUI instance-method destroy()V");
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
+		env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+		this->checkException(env);
 
-	this->checkException(env);
-
-	//free global referencw
-	env->DeleteGlobalRef(this->JavaPlugGUIObj);
-
+		//free global reference
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
+		env->DeleteGlobalRef(this->JavaPlugGUIObj);
+	}
 	log("GUI Wrapper destroyed!");
 }
 
@@ -167,9 +178,18 @@ int errorHandler(Display *dp, XErrorEvent *e) {
 #endif
 
 
-
+//#ifndef MACX //remove open() and close() call from the mac impl for now
 bool VSTGUIWrapper::open (void *ptr) {
 	log("GUI wrapper open %p", ptr);
+	
+	// spawn new thread and call initJavaSide
+	if (this->IsInitialized==false) {
+		performOnAnotherThread(this, NULL, NULL, GuiWrapperInitJavaSide, false);
+		return true; //the new thread hopefully opens a window
+	}
+	
+	
+	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 	
 	//!!! always call this !!!
 	AEffGUIEditor::open(ptr);
@@ -190,11 +210,11 @@ bool VSTGUIWrapper::open (void *ptr) {
 	if (this->AttachWindow && ptr!=NULL) {  
 		log("attaching");
 		this->AttachWindow=false; //if something goes wrong, dont try again
-		jfieldID libraryOk = env->GetStaticFieldID(this->JavaPlugGUIClass, "libraryOk", "Z");	
+		jfieldID libraryOk = env->GetFieldID(this->JavaPlugGUIClass, "libraryOk", "Z");	
 		this->checkException(env);
 	   
 		if (libraryOk != NULL) {
-			jboolean lOk = env->GetStaticBooleanField(this->JavaPlugGUIClass,libraryOk);
+			jboolean lOk = env->GetBooleanField(this->JavaPlugGUIObj, libraryOk);
 			this->checkException(env);
 		   
 			if(lOk==JNI_TRUE) {  
@@ -250,8 +270,14 @@ bool VSTGUIWrapper::open (void *ptr) {
 		JAWT_X11DrawingSurfaceInfo* dsi_win;
 #endif
 		jint lock;				
-  	    // Get the drawing surface
-		ds = awt.GetDrawingSurface(env, this->JavaPlugGUIObj);
+  	    // Get the drawing surface (jframe)
+		jfieldID guiField = env->GetFieldID(this->JavaPlugGUIClass, "gui", "Ljvst/wrapper/VSTPluginGUIAdapter;");	
+		this->checkException(env);
+		jobject guiObject = env->GetObjectField(this->JavaPlugGUIObj, guiField);
+		this->checkException(env);
+		if (guiField==NULL || guiObject==NULL) log("** ERROR: guiField==NULL || guiObject==NULL");
+
+		ds = awt.GetDrawingSurface(env, guiObject);
 		if(ds != NULL){
 			log("obtained drawing surface");
 			// Lock the drawing surface
@@ -342,8 +368,10 @@ bool VSTGUIWrapper::open (void *ptr) {
 
 		
 	// Call Open
+	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
     jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
+	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 	env->CallVoidMethod(this->JavaPlugGUIObj, mid);
 
 
@@ -374,6 +402,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 	}
 #endif
 
+	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 	this->checkException(env);
 	return true;
 }
@@ -381,15 +410,19 @@ bool VSTGUIWrapper::open (void *ptr) {
 //-----------------------------------------------------------------------------
 void VSTGUIWrapper::close () {
 	log("closing GUI");
-
+	
+	if (this->IsInitialized==false) return;
+	
 	JNIEnv* env = this->ensureJavaThreadAttachment();
     
 #if defined(linux)
 	this->detachWindow(); //on linux, first detach, then close (seems more logical and work better here)
 #endif
     
+	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
 	jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
+	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
 	env->CallVoidMethod(this->JavaPlugGUIObj, mid);
 	bool error = this->checkException(env);
 
@@ -405,56 +438,69 @@ void VSTGUIWrapper::close () {
 	}
 #endif
 }
+//#endif //ifndef MACX (removes open() and close() implementations for now)
 
 
 
+// *** Performed on a DIFFERENT THREAD ***
+// starting this thread and initializing the AWT is done as late as possible in order to 
+// allow the test routines of the host (that only instantiate the plug, not the gui)
+// can run synchroneous and exit gracefully. is also much faster because the awt doesnt have to be initialized
 
-
+// KEEP IN MIND: a very bad behaving host may quickly init the gui, but then terminate immediately, 
+// leaving this thread running alone, and destroying THIS instance. 
+// -- sanity check each access of this and member vars
 //-----------------------------------------------------------------------------
-int VSTGUIWrapper::initJavaSide(jclass guiClass) {
+int VSTGUIWrapper::initJavaSide() {
+	if (this->IsInitialized==true) return -1;
+
 	log("GUI wrapper initJavaSide");
+	if (!this) return -1;
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 
-	if (guiClass==NULL) return -1;
-	this->JavaPlugGUIClass = guiClass;
-
 	log("WITHIN gui initjavaside");
+	log("Current thread=%i", pthread_self());
+	
+	log("creating instance of GUIRunner");
+	if (!this) return -1;
 	jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "<init>", "()V");	
 	if (mid == NULL) {
-		log("** ERROR: cannot find GUIs default contructor");
+		log("** ERROR: cannot find constructor of VSTPluginGUIRunner");
 		this->checkException(env); //print stack trace!
 		return -1;
 	}
-	if (this->checkException(env)) return -1;
-	
-	log("creating instance of GUI class");
 
+	log("instantiating GUIRunner");
+	if (!this) return -1;
 	this->JavaPlugGUIObj = env->NewObject(this->JavaPlugGUIClass, mid);
 	if (this->JavaPlugGUIObj == NULL) {
-		log("** ERROR: cannot create Java Plugin GUI Object");
+		log("** ERROR: cannot create VSTPluginGUIRunner Object");
 		this->checkException(env); //print stack trace!
 		return -1;
 	}
-
-	if (this->checkException(env)) return -1;
 	
+	if (!this) return -1;
 	//create global reference --> this obj is used accross different threads
 	this->JavaPlugGUIObj = env->NewGlobalRef(this->JavaPlugGUIObj);
-
-	if (this->checkException(env)) return -1;
-
-	log("calling GUI .init()");
-	//Java GUI Obj .init(effect e) aufrufen
-	mid = env->GetMethodID(this->JavaPlugGUIClass, "init", "(Ljvst/wrapper/VSTPluginAdapter;)V");
+	
+	
+	log("creating instance of GUI class using GUI Runner, also call open() when gui ready");
+	if (!this) return -1;
+	mid = env->GetMethodID(this->JavaPlugGUIClass, "loadVSTGUI", "(Ljava/lang/String;Ljvst/wrapper/VSTPluginAdapter;)V");	
 	if (mid == NULL) {
-		log("** ERROR: cannot find GUI instance-method init(Ljvst/wrapper/VSTPluginAdapter;)V");
+		log("** ERROR: cannot find loadVSTGUI in VSTPluginGUIRunner");
 		this->checkException(env); //print stack trace!
 		return -1;
-	}
-	env->CallVoidMethod(this->JavaPlugGUIObj, mid, this->JavaPlugObj);
+	}		
+	if (!this) return -1;
+	env->CallVoidMethod(this->JavaPlugGUIObj, mid, this->JavaPlugGUIString, this->JavaPlugObj);
+	if (this->checkException(env)) return -1;
+	
 
-	log("GUI initJavaSide OK!");
-
+	log("GUI initJavaSide OK -- ready for GUI calls!");
+	if (!this) return -1;
+	this->IsInitialized=true;
+	
 	if (this->checkException(env)) return -1;
 	else return 0;
 }
@@ -473,6 +519,7 @@ bool VSTGUIWrapper::checkException(JNIEnv* env) {
 #if defined(WIN32) || defined(linux)
 void VSTGUIWrapper::detachWindow() {
 	log("detaching java window from native win");
+	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
 
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 
