@@ -38,13 +38,6 @@ import jvst.wrapper.*;
  *@created    14. Oktober 2003
  */
 public interface VSTPluginGUI {
-  /**
-   *  Description of the Method
-   *
-   *@param  effect  Description of the Parameter
-   */
-  public void init(VSTPluginAdapter plugin);
-
 
   /**
    *  Description of the Method

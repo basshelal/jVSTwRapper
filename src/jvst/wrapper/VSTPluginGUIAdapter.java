@@ -30,16 +30,21 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
 import jvst.wrapper.gui.VSTPluginGUI;
+import jvst.wrapper.gui.VSTPluginGUIRunner;
 
 public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI {
 
-	// idea borrowed from apple developer connection
+	// borrowed from apple developer connection
 	public static final boolean RUNNING_MAC_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
-	public static boolean libraryOk = false;
-
-	public boolean WindowAttached;
-
-	public VSTPluginGUIAdapter() {
+	
+	public VSTPluginGUIRunner runner = null;
+	protected VSTPluginAdapter plugin = null;
+	
+	
+	public VSTPluginGUIAdapter(VSTPluginGUIRunner r, VSTPluginAdapter plugin) {
+		this.runner=r;
+		this.plugin=plugin;
+		
 		// center window
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = this.getSize();
@@ -48,34 +53,39 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 		if (frameSize.width > screenSize.width) frameSize.width = screenSize.width;
 		this.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 
-		// close behavior
-		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-
-		// IMPORTANT: hide window
-		this.hide(); // keep hide() to be backward compatible to 1.4!
-
 		// Prepare attaching window
-		WindowAttached = false;
-		if (!libraryOk) {
+		runner.WindowAttached = false;
+		if (!runner.libraryOk) {
 			// Load library for native-awt methods
 			try {
-				System.loadLibrary("jawt");
-				libraryOk = true;
+				if(!RUNNING_MAC_X) { //doesnt work on mac
+					System.loadLibrary("jawt");
+					runner.libraryOk = true;
+				}
 			} catch (Exception e) {
-				libraryOk = false;
+				runner.libraryOk = false;
+				log("caught exception while trying to load jawt, but thats not so bad, loading gui in a separate window then. exception below:");
+				e.printStackTrace();
 			} catch (Error e) {
 				// Maybe library is already loaded
 				//TODO: find a better way!
-				if (e.getMessage().indexOf("already loaded") != -1) libraryOk = true;
-				else libraryOk = false;
+				if (e.getMessage().indexOf("already loaded") != -1) runner.libraryOk = true;
+				else {
+					runner.libraryOk = false;
+					e.printStackTrace();
+				}
 			}
 		}
+		
+		// close behavior
+		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		//this.hide(); // keep hide() to be backward compatible to 1.4!
 
 		log("\nJAVA GUI Plugin intitialised properly!");
 	}
 
 	public void undecorate() {
-		if ((this.WindowAttached) && (!this.isUndecorated())) {
+		if ((runner.WindowAttached) && (!this.isUndecorated())) {
 			javax.swing.JFrame f = new javax.swing.JFrame();
 			f.pack();
 			this.dispose();
@@ -88,7 +98,7 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 			bounds.y = 0;
 			this.setBounds(bounds);
 		} 
-		else if ((!this.WindowAttached) && (this.isUndecorated())) {
+		else if ((!runner.WindowAttached) && (this.isUndecorated())) {
 			// Redecorate the window
 			javax.swing.JFrame f = new javax.swing.JFrame();
 			f.pack();
@@ -130,9 +140,9 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 		// macx implementation! It caused some hosts to block forever...
 		// TODO: check again now, the gui integration stuff has changed
 		// significantly on the mac
-		if (!RUNNING_MAC_X) {
+		//if (!RUNNING_MAC_X) {
 			this.dispose();
-		}
+		//}
 	}
 
 	// ***********************************************************************
