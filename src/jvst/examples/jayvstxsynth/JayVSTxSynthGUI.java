@@ -32,6 +32,7 @@ import javax.swing.event.*;
 import java.awt.*;
 
 import jvst.wrapper.*;
+import jvst.wrapper.gui.VSTPluginGUIRunner;
 
 
 public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListener {
@@ -60,18 +61,22 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
   protected static boolean DEBUG = false;
   
   
-  public JayVSTxSynthGUI() {
+  public JayVSTxSynthGUI(VSTPluginGUIRunner r, VSTPluginAdapter plug) {
+	super(r,plug);
     log("JayVSTxSynthGUI <init>");
 
     this.setTitle("JayVSTxSynth v0.7");
     this.setSize(350, 240);
     this.setResizable(false);
+    
+    this.pPlugin=plug;
+    this.init();
+    this.show();
   }
 
 
-  public void init(VSTPluginAdapter e) {
-    this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
-
+  public void init() {
+  
 	if (!DEBUG) {
 	    this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_VOLUME) * 100F));
 	    this.Freg1Slider = new JSlider(JSlider.HORIZONTAL, 1, 100, (int)(this.pPlugin.getParameter(JayVSTxSynthProgram.PARAM_ID_FREQ1) * 100F));
@@ -232,10 +237,8 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
   public static void main(String[] args) throws Exception {
 	DEBUG=true;
 	  
-    JayVSTxSynthGUI gui = new JayVSTxSynthGUI();
+    JayVSTxSynthGUI gui = new JayVSTxSynthGUI(null,null);
     gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    gui.init(null);
-    gui.open();
   }
 
 }

@@ -29,6 +29,9 @@ package jvst.examples.jayvstxsynth;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import jvst.wrapper.VSTPluginAdapter;
+import jvst.wrapper.gui.VSTPluginGUIRunner;
+
 import net.sourceforge.napkinlaf.NapkinLookAndFeel;
 
 
@@ -37,7 +40,8 @@ public class JayVSTxSynthNapkinGUI extends JayVSTxSynthGUI {
   private static final long serialVersionUID = 4234216957645164799L;
 
 
-  public JayVSTxSynthNapkinGUI() throws Exception {
+  public JayVSTxSynthNapkinGUI(VSTPluginGUIRunner r, VSTPluginAdapter plug) throws Exception {
+	 super(r,plug);
 	//throw exception that the user gets a message box with the 
 	//stack trace if something fails in the constructor here...
 	  	
@@ -58,9 +62,7 @@ public class JayVSTxSynthNapkinGUI extends JayVSTxSynthGUI {
   public static void main(String[] args) throws Exception {
 	DEBUG=true; 
 	  
-	JayVSTxSynthGUI gui = new JayVSTxSynthNapkinGUI();
-    gui.init(null);
-    gui.open();
+	JayVSTxSynthGUI gui = new JayVSTxSynthNapkinGUI(null,null);
   }
   
 }

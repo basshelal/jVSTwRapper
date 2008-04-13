@@ -45,6 +45,7 @@ import jvst.wrapper.VSTPluginGUIAdapter;
 import jvst.wrapper.gui.RotaryKnob;
 import jvst.wrapper.gui.RotaryKnobPlusText;
 import jvst.wrapper.gui.JSliderPlusText;
+import jvst.wrapper.gui.VSTPluginGUIRunner;
 
 //Created using Eclipse GUI Editor!
 public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListener {
@@ -72,9 +73,7 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
 	  
 	
 	
-	public void init(VSTPluginAdapter e) {
-	    this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
-
+	public void init() {
 		if (!DEBUG) {
 			//init gui with plugs parameters
 			this.volume.getSlider().setValue((int)this.pPlugin.getParameter(DreiNullDreiProgram.PARAM_ID_VOLUME));
@@ -359,10 +358,8 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
 	public static void main(String[] args) throws Throwable {
 		DEBUG=true;
 		
-	    DreiNullDreiGUI gui = new DreiNullDreiGUI();
+	    DreiNullDreiGUI gui = new DreiNullDreiGUI(null,null);
 	    gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    gui.init(null);
-	    gui.open();
 	}
 
 	/**
@@ -372,9 +369,12 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
 	 * @throws InstantiationException 
 	 * @throws Exception 
 	 */
-	public DreiNullDreiGUI() throws Exception {
-		super();
+	public DreiNullDreiGUI(VSTPluginGUIRunner r, VSTPluginAdapter plug) throws Exception {
+		super(r,plug);
+		this.pPlugin=plug;
 		initialize();
+		this.init();
+		show();
 		
 //		System.out.println("BASE!");
 //		 //make sure we use the defaul ui!

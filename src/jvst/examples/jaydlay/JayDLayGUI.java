@@ -33,6 +33,7 @@ import java.awt.*;
 
 import jvst.examples.dreinulldrei.DreiNullDreiGUI;
 import jvst.wrapper.*;
+import jvst.wrapper.gui.VSTPluginGUIRunner;
 
 
 public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
@@ -49,7 +50,8 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
   private VSTPluginAdapter pPlugin;
   protected static boolean DEBUG = false;
 
-  public JayDLayGUI() throws Exception {
+  public JayDLayGUI(VSTPluginGUIRunner r, VSTPluginAdapter plug) throws Exception {
+	super(r,plug);
     log("JayDLayGUI <init>");
     
     //make sure we use the defaul ui!
@@ -66,15 +68,17 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     this.setTitle("JayDLay v0.8");
     this.setSize(200, 200);
     this.setResizable(false);
+    
+    this.pPlugin = plug;
+    
+    this.init();
+    this.show();
   }
 
 
-  public void init(VSTPluginAdapter e) {
-    this.pPlugin = e;//remember reference to plugin in order to react to slider changes, ...
-    
-    
+  public void init() {    
     if (!DEBUG) {
-    	((JayDLay)e).gui=this; //tell the plug that it has a gui!
+    	((JayDLay)plugin).gui=this; //tell the plug that it has a gui!
     	
     	this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
     	this.FeedbackSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
@@ -126,7 +130,6 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     this.getContentPane().add(DelayBox);
     this.getContentPane().add(FeedbackBox);
     this.getContentPane().add(VolumeBox);
-      
   }
  
 
@@ -156,10 +159,8 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
   public static void main(String[] args) throws Throwable {
 	DEBUG=true;
 	
-    JayDLayGUI gui = new JayDLayGUI();
+    JayDLayGUI gui = new JayDLayGUI(null,null);
     gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    gui.init(null);
-    gui.open();
   }
   
 }

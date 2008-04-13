@@ -7,14 +7,18 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import jvst.wrapper.*;
+import jvst.wrapper.gui.VSTPluginGUIRunner;
 
 public class LiquinthVSTGUI extends VSTPluginGUIAdapter {
 	private LiquinthVST liquinth_vst;
 	private JSlider[] controllers;
 
-	public LiquinthVSTGUI() {
+	public LiquinthVSTGUI(VSTPluginGUIRunner r, VSTPluginAdapter plug) {
+		super(r,plug);
 		setTitle( LiquinthVST.VERSION );
-
+		liquinth_vst = ( LiquinthVST ) plug;
+		liquinth_vst.set_gui( this );
+		
 		JPanel main_panel = new JPanel( new GridBagLayout() );
 		main_panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
 
@@ -46,12 +50,10 @@ public class LiquinthVSTGUI extends VSTPluginGUIAdapter {
 
 		getContentPane().setLayout( new BorderLayout() );
 		getContentPane().add( main_panel, BorderLayout.CENTER );
+		
+		show();
 	}
 
-	public void init( VSTPluginAdapter vst_plugin_adapter ) {
-		liquinth_vst = ( LiquinthVST ) vst_plugin_adapter;
-		liquinth_vst.set_gui( this );
-	}
 
 	public void set_controller( int controller, int value ) {
 		if( controller >= 0 && controller < controllers.length ) {

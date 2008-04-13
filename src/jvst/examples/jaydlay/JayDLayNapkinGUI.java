@@ -29,6 +29,9 @@ package jvst.examples.jaydlay;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import jvst.wrapper.VSTPluginAdapter;
+import jvst.wrapper.gui.VSTPluginGUIRunner;
+
 import net.sourceforge.napkinlaf.NapkinLookAndFeel;
 
 public class JayDLayNapkinGUI extends JayDLayGUI {
@@ -38,7 +41,8 @@ public class JayDLayNapkinGUI extends JayDLayGUI {
 
 
 
-	public JayDLayNapkinGUI() throws Exception {
+	public JayDLayNapkinGUI(VSTPluginGUIRunner r, VSTPluginAdapter plug) throws Exception {
+		super(r,plug);
 		//throw exception that the user gets a message box with the 
 		//stack trace if something fails in the constructor here...
 		
@@ -58,9 +62,7 @@ public class JayDLayNapkinGUI extends JayDLayGUI {
 	public static void main(String[] args) throws Throwable {
 		DEBUG=true;
 		
-		JayDLayNapkinGUI gui = new JayDLayNapkinGUI();
-	    gui.init(null);
-	    gui.open();
+		JayDLayNapkinGUI gui = new JayDLayNapkinGUI(null,null);
 	}
 
 }

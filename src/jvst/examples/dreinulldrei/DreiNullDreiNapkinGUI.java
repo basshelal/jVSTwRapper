@@ -29,6 +29,9 @@ package jvst.examples.dreinulldrei;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import jvst.wrapper.VSTPluginAdapter;
+import jvst.wrapper.gui.VSTPluginGUIRunner;
+
 import net.sourceforge.napkinlaf.NapkinLookAndFeel;
 
 
@@ -38,7 +41,8 @@ public class DreiNullDreiNapkinGUI extends DreiNullDreiGUI {
 	private static final long serialVersionUID = -4934701250252694934L;
 
 	
-	public DreiNullDreiNapkinGUI() throws Exception {
+	public DreiNullDreiNapkinGUI(VSTPluginGUIRunner r, VSTPluginAdapter plug) throws Exception {
+		super(r,plug);
 		//throw exception that the user gets a message box with the 
 		//stack trace if something fails in the constructor here...
 		
@@ -58,8 +62,6 @@ public class DreiNullDreiNapkinGUI extends DreiNullDreiGUI {
 	public static void main(String[] args) throws Throwable {
 		DEBUG=true;
 		
-		DreiNullDreiGUI gui = new DreiNullDreiNapkinGUI();
-	    gui.init(null);
-	    gui.open();
+		DreiNullDreiGUI gui = new DreiNullDreiNapkinGUI(null,null);
 	}
 }

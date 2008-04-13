@@ -58,6 +58,9 @@ public class JayDLay extends VSTPluginAdapter {
     this.fDelay = this.fFeedBack = 0F;
     this.fOut = 1.0F;
 
+    
+    //this is bad practice and causes npes on the mac (threading issue)
+    //dont call gui stuff before the gui is initialized (which is not the case in the plug constructor)
     this.setProgram(0);
 
     //communicate with the host
@@ -189,6 +192,11 @@ public class JayDLay extends VSTPluginAdapter {
     this.setParameter(DelayProgram.PARAM_ID_FEEDBACK, dp.getFeedback());
     this.setParameter(DelayProgram.PARAM_ID_OUT, dp.getOut());
     
+    //only access gui elemts if the gui was fully initialized
+    //this is to prevent a threading issue on the mac that may cause a npe because the sliders 
+    //arent there yet (the constructor of the plugin is called, when the gui is not initialized yet)
+    //for thread savety on the mac, never call gui stuff in the constructor of the plugin
+    //init the gui defaults always when the gui is loaded, not when the plug is loaded. 
     if (gui!=null) {
 	    gui.DelaySlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
 	    gui.DelayText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
