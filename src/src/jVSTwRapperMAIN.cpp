@@ -152,8 +152,6 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	//creating log stream...
 	log_stream = fopen(log_location, "a");
 	if (log_stream==NULL) log("** ERROR: cant create log stream at '%s'", log_location);
-	//FILE *out_stream = freopen(log_location, "a", stdout);		//this caused an error in melodyne
-	//if (out_stream!=NULL) log("redirecting stdout stream OK");	//we dont need it anyways! 
 
 	log("\n***** START *****");
 
@@ -548,14 +546,14 @@ int loadPlugin() {
 	if (cfg->PluginUIClass!=NULL && IsLADSPALoaded==false) {
 		log("classloding gui class using the GUI Runner, GUI=%s", cfg->PluginUIClass);
 
-		//load gui using our own ClassLoader...
+		//load guirunner using our own ClassLoader...
 		jstring gui = env->NewStringUTF("jvst/wrapper/gui/VSTPluginGUIRunner");
 
 		guiRunnerClass = (jclass)env->CallStaticObjectMethod(manager, loadcl_mid, dllloc, gui, cp);
 		if (checkException(env)) {
 			guiRunnerClass=NULL;
 			hasGUI=false;
-			log("* WARNING: Could not load GUI class (wrong name in .ini or exception in constructor?). Using Plugs default UI!");
+			log("* WARNING: Could not load GUIRunner. Using Plug-ins default UI!");
 		}
 		else hasGUI = true;
 	}
@@ -566,23 +564,8 @@ int loadPlugin() {
 		log("calling java gui wrapper constructor");
 		//init gui wrapper
 		jstring guiclazz = env->NewStringUTF(cfg->PluginUIClass);
-		VSTGUIWrapper* guiWrapper = new VSTGUIWrapper(WrapperInstance, guiRunnerClass ,guiclazz);
-		WrapperInstance->setEditor(guiWrapper);
-		
-#if defined(WIN32) || defined(linux)
-		//ret = guiWrapper->initJavaSide(guiRunnerClass, guiclazz);
-#endif
-#ifdef MACX
-		//log("Current thread=%i, JavaVMThread=%i", pthread_self(), JavaVMThreadID);
-		//ret = guiWrapper->initJavaSide(guiRunnerClass, guiclazz); //*** FIX: start on new thread! --> fixed below
-		
-		//perform this method in a new Thread
-		//void* mac = performOnAnotherThread(guiWrapper, guiRunnerClass, guiclazz, GuiWrapperInitJavaSide, false);
-		/*Okay, any waiting here seems to block some runloop, java blocks as well and we have a deadlock
-		we definitely need to run 2 independent threads and never snyc them*/
-		//for savety, wait a little, maybe this helps the other thread to keep up a little better
-		//ret=0;
-#endif		
+		VSTGUIWrapper* guiWrapper = new VSTGUIWrapper(WrapperInstance, guiRunnerClass, guiclazz);
+		WrapperInstance->setEditor(guiWrapper);	
 	}
 	else {
 		WrapperInstance->setEditor(NULL);

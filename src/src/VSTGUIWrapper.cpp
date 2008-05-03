@@ -91,19 +91,26 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	if(this->AttachWindow) {
 		JNIEnv* env = this->ensureJavaThreadAttachment();
 
-		if (this->IsInitialized==false) performOnAnotherThread(this, NULL, NULL, GuiWrapperInitJavaSide, false);
+		if (this->IsInitialized==false) {
+#ifdef MACX
+			//well, mac window embedding isnt implemented, so we wont come to this point anyways...
+			performOnAnotherThread(this, NULL, NULL, GuiWrapperInitJavaSide, false);
+			return false;
+#else
+			initJavaSide();
+#endif
+		}
 
+		//sanity check
 		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
+		
 		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "getWidth", "()I");
 		if (mid == NULL) log("** ERROR: cannot find GUI instance-method getWidth()I");
-		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 		jint width=env->CallIntMethod(this->JavaPlugGUIObj, mid);
 		this->checkException(env);
 
-		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 		mid = env->GetMethodID(this->JavaPlugGUIClass, "getHeight", "()I");
 		if (mid == NULL) log("** ERROR: cannot find GUI instance-method getHeight()I");
-		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 		jint height=env->CallIntMethod(this->JavaPlugGUIObj, mid);
 		this->checkException(env);
 
@@ -132,15 +139,12 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 		//destroy() der gui aufrufen
 		//macx tends to block forever here...
 		//BUT WE SOLVE THIS ON THE JAVA SIDE!
-		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
 		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "destroy", "()V");
 		if (mid == NULL) log("** ERROR: cannot find GUI instance-method destroy()V");
-		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
 		env->CallVoidMethod(this->JavaPlugGUIObj, mid);
 		this->checkException(env);
 
 		//free global reference
-		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
 		env->DeleteGlobalRef(this->JavaPlugGUIObj);
 	}
 	log("GUI Wrapper destroyed!");
@@ -178,19 +182,25 @@ int errorHandler(Display *dp, XErrorEvent *e) {
 #endif
 
 
-//#ifndef MACX //remove open() and close() call from the mac impl for now
+
 bool VSTGUIWrapper::open (void *ptr) {
 	log("GUI wrapper open %p", ptr);
 	
-	// spawn new thread and call initJavaSide
 	if (this->IsInitialized==false) {
+#ifdef MACX
+		//well, mac window embedding isnt implemented, so we wont come to this point anyways...
 		performOnAnotherThread(this, NULL, NULL, GuiWrapperInitJavaSide, false);
-		return true; //the new thread hopefully opens a window
+		return true; //this way, we miss the first call to open()!
+					 //--> we fix this on the java side: last step of gui initilialization there is opening the gui
+#else
+		initJavaSide();
+		//can continue from here since we didnt start a new tread
+#endif
 	}
-	
-	
+
+	//sanity check
 	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
-	
+
 	//!!! always call this !!!
 	AEffGUIEditor::open(ptr);
 	JNIEnv* env = this->ensureJavaThreadAttachment();
@@ -402,7 +412,6 @@ bool VSTGUIWrapper::open (void *ptr) {
 	}
 #endif
 
-	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 	this->checkException(env);
 	return true;
 }
@@ -415,20 +424,12 @@ void VSTGUIWrapper::close () {
 	
 	JNIEnv* env = this->ensureJavaThreadAttachment();
     
-#if defined(linux)
-	this->detachWindow(); //on linux, first detach, then close (seems more logical and work better here)
-#endif
+	this->detachWindow(); //first detach, then close 
     
-	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
 	jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
-	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
 	env->CallVoidMethod(this->JavaPlugGUIObj, mid);
 	bool error = this->checkException(env);
-
-#if defined(WIN32) 
-	this->detachWindow(); //on windows do the other way round!
-#endif
 
 #if defined(WIN32) || defined(linux) 
 	if (error) {
@@ -438,7 +439,6 @@ void VSTGUIWrapper::close () {
 	}
 #endif
 }
-//#endif //ifndef MACX (removes open() and close() implementations for now)
 
 
 
@@ -449,7 +449,7 @@ void VSTGUIWrapper::close () {
 
 // KEEP IN MIND: a very bad behaving host may quickly init the gui, but then terminate immediately, 
 // leaving this thread running alone, and destroying THIS instance. 
-// -- sanity check each access of this and member vars
+// --> sanity check each access of 'this' and member vars
 //-----------------------------------------------------------------------------
 int VSTGUIWrapper::initJavaSide() {
 	if (this->IsInitialized==true) return -1;
@@ -459,7 +459,7 @@ int VSTGUIWrapper::initJavaSide() {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 
 	log("WITHIN gui initjavaside");
-	log("Current thread=%i", pthread_self());
+	//log("Current thread=%i", pthread_self());
 	
 	log("creating instance of GUIRunner");
 	if (!this) return -1;
@@ -467,6 +467,7 @@ int VSTGUIWrapper::initJavaSide() {
 	if (mid == NULL) {
 		log("** ERROR: cannot find constructor of VSTPluginGUIRunner");
 		this->checkException(env); //print stack trace!
+		effect->setEditor(NULL); //disable custom gui
 		return -1;
 	}
 
@@ -476,6 +477,7 @@ int VSTGUIWrapper::initJavaSide() {
 	if (this->JavaPlugGUIObj == NULL) {
 		log("** ERROR: cannot create VSTPluginGUIRunner Object");
 		this->checkException(env); //print stack trace!
+		effect->setEditor(NULL); //disable custom gui
 		return -1;
 	}
 	
@@ -490,11 +492,17 @@ int VSTGUIWrapper::initJavaSide() {
 	if (mid == NULL) {
 		log("** ERROR: cannot find loadVSTGUI in VSTPluginGUIRunner");
 		this->checkException(env); //print stack trace!
+		effect->setEditor(NULL); //disable custom gui
 		return -1;
 	}		
 	if (!this) return -1;
 	env->CallVoidMethod(this->JavaPlugGUIObj, mid, this->JavaPlugGUIString, this->JavaPlugObj);
-	if (this->checkException(env)) return -1;
+	if (this->checkException(env)) {
+		//error occured when loading gui class
+		log("* WARNING: An exception occurred when the gui class was loaded, goin back to stadard gui rendered by the host application");
+		effect->setEditor(NULL); //disable custom gui
+		return -1;
+	}
 	
 
 	log("GUI initJavaSide OK -- ready for GUI calls!");

@@ -47,11 +47,7 @@
 VSTV20ToPlug::VSTV20ToPlug (audioMasterCallback audioMaster, int progs, int parms, JavaVM *jvm) 
 	: VSTV10ToPlug (audioMaster, progs, parms, jvm) {
 
-
 		this->isProcessEventsCacheInitialised = false;
-
-		//this->ProcessEventsThreadID = 0;
-		//this->ProcessEventsJEnv = NULL;
 
 		//init cached fields
 		this->ProcessEventsMethodID = NULL;
@@ -657,29 +653,6 @@ bool VSTV20ToPlug::keysRequired () {
 
 
 VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
-
-/*
-#ifdef WIN32
-		DWORD threadID;
-		threadID = GetCurrentThreadId();
-		if (this->ProcessEventsThreadID != threadID) {
-			this->ProcessEventsThreadID = threadID;	
-#endif
-#if defined(MACX) || defined(linux)
-			pthread_t threadID;
-			threadID = pthread_self();		
-			if (!pthread_equal(threadID,this->ProcessEventsThreadID)){
-				this->ProcessEventsThreadID = threadID;
-#endif	
-		
-		
-
-		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessEventsJEnv, NULL);
-		if (stat<0) log("** ERROR: attaching to .processEvents() THREAD");
-
-		log("ProcessEvents ThreadID=%i", this->ProcessEventsThreadID);
-	}
-*/
 
 	if (this->isProcessEventsCacheInitialised==false) this->initProcessEventsCache();
 

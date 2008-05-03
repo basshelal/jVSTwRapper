@@ -70,16 +70,6 @@ class VSTV24ToPlug : public VSTV23ToPlug {
 
 	private:
 		jmethodID ProcessDoubleReplacingMethodID;
-/*
-		JNIEnv *ProcessDoubleReplacingJEnv;
-		
-#ifdef WIN32
-		DWORD ProcessDoubleReplacingThreadID;
-#endif
-#if defined(MACX) || defined(linux)
-		pthread_t ProcessDoubleReplacingThreadID;
-#endif
-*/
 };
 
 

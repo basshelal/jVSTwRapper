@@ -155,7 +155,7 @@ int log(char* data, ...) {
 				NULL, NULL, NULL, &response);
 #endif
 #ifdef linux
-			//if anybody knows a simple possibility to show a messagebox using Xlib, please let me know...
+			//if anybody knows a simple solution to show a messagebox using Xlib, please let me know...
 			//For now, the linux version has to live with log file output only
 #endif
 		}
@@ -587,7 +587,7 @@ int checkJVMVersionRequest(char* requestedJVMVersion) {
 
 #include <limits.h>
 
-
+//kindly provided by autotools
 char* find_exe_for_symbol (const void *symbol) {
 	#define SIZE PATH_MAX + 100
 	FILE *f;

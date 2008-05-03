@@ -58,50 +58,27 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 
 
 	this->Jvm = jvm;
-	//this->JavaPlugClass = effectClass;
 	
 	//init cached fields
 	this->JavaPlugObj = NULL;
 	this->ProcessMethodID = NULL;
 	this->ProcessReplacingMethodID = NULL;
-	//this->ProcessJEnv = NULL;
 	this->JavaFloatClass = NULL;
 
-	//this->ProcessReplacingJEnv = NULL;
-	//this->ProcessReplacingThreadID = 0;
-
-	//this->ProcessThreadID = 0;
-	//this->ThreadID = 0;
 	this->isProcessing=false; //fix to ensure that resume was called before process*
 	
-
-	/*
-	jint res = this->Jvm->GetEnv((void**)&this->JEnv, JNI_VERSION_1_2);
-	if (res < 0) {
-		log("** ERROR: getting Java env in Wrapper constructor");
-	}
-	*/
-
 	//init cached fields
 	GetParameterMethod = NULL;
 	SetParameterMethod = NULL;
 
 	chunkdata = NULL;
 	chunksize = 0;
-
-	//this->ensureJavaThreadAttachment();
  }
 
 //------------------------------------------------------------------------
 VSTV10ToPlug::~VSTV10ToPlug () {
 	log("Destroying Wrapper");	
 	JNIEnv* env = this->ensureJavaThreadAttachment();
-
-	/*
-	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "destroy", "()V");
-	if (mid == NULL) log("** ERROR: cannot find instance-method destroy()V");
-	env->CallVoidMethod(this->JavaPlugObj, mid);
-	*/
 
 	//Delete global reference
 	env->DeleteGlobalRef(this->JavaPlugObj);
@@ -424,28 +401,6 @@ void VSTV10ToPlug::setSampleRate(float sampleRt) {
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFrames) {
-/*
-#ifdef WIN32
-		DWORD threadID;
-		threadID = GetCurrentThreadId();
-		if (this->ProcessThreadID != threadID) {
-			this->ProcessThreadID = threadID;			
-#endif
-#if defined(MACX) || defined(linux)
-		pthread_t threadID;
-		threadID = pthread_self();		
-		if (!pthread_equal(threadID,this->ProcessThreadID)){
-			this->ProcessThreadID = threadID;
-#endif	
-	
-		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessJEnv, NULL);
-		if (stat<0) log("** ERROR: attaching to .process() THREAD");
-
-		log("Process ThreadID=%i", this->ProcessThreadID);
-	}
-
-	if (this->ProcessJEnv == NULL)this->ProcessJEnv = this->JEnv;	
-*/
 
 	if (!this->isProcessing) this->resume();
 
@@ -490,8 +445,6 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	}
 	env->CallVoidMethod(this->JavaPlugObj, this->ProcessMethodID, jinputs, joutputs, (jint)sampleFrames);
 
-	
-
 
 	//jetzt elemente von joutput nach output umkopieren...
 	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
@@ -517,28 +470,6 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 
 //---------------------------------------------------------------------------
 void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames) {
-
-/*
-#ifdef WIN32
-	DWORD threadID;
-	threadID = GetCurrentThreadId();
-	if (this->ProcessReplacingThreadID != threadID) {
-		this->ProcessReplacingThreadID = threadID;	
-#endif
-#if defined(MACX) || defined(linux)
-		pthread_t threadID;
-		threadID = pthread_self();
-		if (!pthread_equal(threadID,this->ProcessReplacingThreadID)){
-			this->ProcessReplacingThreadID = threadID;
-			
-#endif	
-	
-		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessReplacingJEnv, NULL);
-		if (stat<0) log("** ERROR: attaching to .processReplacing() THREAD");
-
-		log("ProcessReplacing ThreadID=%i", this->ProcessReplacingThreadID);
-	}
-*/
 
 	if (!this->isProcessing) this->resume();
 	

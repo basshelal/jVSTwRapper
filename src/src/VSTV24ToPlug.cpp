@@ -42,9 +42,6 @@ VSTV24ToPlug::VSTV24ToPlug (audioMasterCallback audioMaster, int progs, int parm
 	: VSTV23ToPlug (audioMaster, progs, parms, jvm) {
 
 	this->ProcessDoubleReplacingMethodID = NULL;
-	//this->ProcessDoubleReplacingJEnv = NULL;
-	//this->ProcessDoubleReplacingThreadID = 0;
-
 	this->JavaDoubleClass = NULL;
 }
 
@@ -98,27 +95,6 @@ VstInt32 VSTV24ToPlug::getNumMidiOutputChannels() {
 
 //-----------------------------------------------------------------------------------------
 void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, VstInt32 sampleFrames) {
-/*
-#ifdef WIN32
-	DWORD threadID;
-	threadID = GetCurrentThreadId();
-	if (this->ProcessDoubleReplacingThreadID != threadID) {
-		this->ProcessDoubleReplacingThreadID = threadID;
-#endif
-#if defined(MACX) || defined(linux)
-		pthread_t threadID;
-		threadID = pthread_self();
-		if (!pthread_equal(threadID,this->ProcessDoubleReplacingThreadID)){
-			this->ProcessDoubleReplacingThreadID = threadID;
-			
-#endif	
-	
-		jint stat = this->Jvm->AttachCurrentThread((void**)&this->ProcessDoubleReplacingJEnv, NULL);
-		if (stat<0) log("** ERROR: attaching to .processDoubleReplacing() THREAD");
-
-		log("ProcessDoubleReplacing ThreadID=%i", this->ProcessDoubleReplacingThreadID);
-	}
-*/
 
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 

@@ -26,6 +26,7 @@ enum MethodsToPerformOnThread {
 void* performOnAnotherThread(void* obj, void* param, void* param2, int method, bool appKitThread);
 void printAppKitThreadID();
 
+/*
 void aquireGlobalLock();
 void releaseGlobalLock();
 
@@ -33,5 +34,6 @@ void aquireInitializerLock();
 void releaseInitializerLock();
 
 void waitForGUIInit(void* instance);
+*/
 
 #endif

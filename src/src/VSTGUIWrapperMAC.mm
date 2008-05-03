@@ -61,7 +61,7 @@ OSStatus testme123() {
 	return noErr;
 }
 
-
+/*
 NSLock *globalLock = [[NSLock alloc] init]; //Global Mutex
 void aquireGlobalLock() {
 	log("aquiring GLOBAL lock in thread %i", pthread_self());
@@ -85,13 +85,11 @@ void releaseInitializerLock() {
 	[initializerLock unlock];
 	log("INITIALIZER lock RELEASED!");
 }
-
+*/
 
 
 // objc stuff
 @interface VSTGUIWrapperMAC : NSObject {
-@public
-	NSLock *myLock;
 @protected
 	void*	object;
 	void*	parameter;
@@ -105,7 +103,6 @@ void releaseInitializerLock() {
 -(void)setMethod: (int)method;
 
 -(void)detachNewThread;
--(void)lock;
 
 -(void)callback;
 -(void)callback2;
@@ -150,26 +147,6 @@ void* performOnAnotherThread(void* obj, void* param, void* param2, int method, b
 					 //may need a cast to void* here... (see below for cast back to typed object, damn objc-c conversion stuff)
 }
 
-void waitForGUIInit(void* mac) {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	VSTGUIWrapperMAC* instance = (VSTGUIWrapperMAC*)mac; //cast
-	
-	//log("starting the waiting cycle... thread=%i", pthread_self());
-	//while([instance getStatus]!=5) {
-		//usleep(1000*3000); //shaky, I know... wait a little so that the new thread is guaranteed to aquire the lock first
-		//log("next round %i %i", [instance getStatus], c++);
-	//}
-	//log("aquiring lock for instance");
-	//wait until the lock is given back by the gui thread, then continue
-	//[instance lock];
-	//log("instance locked");
-	
-	//lock was returned --> gui init is done now --> fine to exit now
-	//[instance release]; //opposite of retain
-	[pool  release];
-}
-
 
 
 /* Obj C implementation */
@@ -177,8 +154,6 @@ void waitForGUIInit(void* mac) {
 @implementation VSTGUIWrapperMAC
 -(id)init {
 	self = [super init];
-	myLock = [[NSLock alloc] init]; //initializing Mutex
-	
 	return self;
 }
 
@@ -214,10 +189,6 @@ void waitForGUIInit(void* mac) {
 	return method;
 }
 
--(void)lock {
-	[myLock lock];
-}
-
 -(void)detachNewThread {
 	log("Spawning NEW thread, current thread=%i", pthread_self());		
 	[NSThread detachNewThreadSelector:@selector(callback) toTarget:self withObject:nil];
@@ -235,49 +206,47 @@ void waitForGUIInit(void* mac) {
 			VSTGUIWrapper* wrap = (VSTGUIWrapper*)object;
 			
 			//aquireInitializerLock(); //lock
-			//[myLock lock]; //aquire lock for this instance
 			wrap->initJavaSide();
-			//[myLock unlock]; //release lock for this instance (main thread blocks at this time --> tell it to continue now)
 			//releaseInitializerLock();
 			break;
 		}
 		case GuiWrapperOpen:  {
 			VSTGUIWrapper* wrap = (VSTGUIWrapper*)object;
 
-			aquireInitializerLock(); //lock
+			//aquireInitializerLock(); //lock
 			//wrap->wrappedOpen(parameter);
-			releaseInitializerLock();
+			//releaseInitializerLock();
 			
 			break;
 		}
 		case GuiWrapperClose:  {
 			VSTGUIWrapper* wrap = (VSTGUIWrapper*)object;
 			
-			aquireInitializerLock(); //lock
+			//aquireInitializerLock(); //lock
 			//wrap->wrappedClose();
-			releaseInitializerLock();
+			//releaseInitializerLock();
 			
 			break;
 		}
 		case GuiWrapperDestroy:  {
 			VSTGUIWrapper* wrap = (VSTGUIWrapper*)object;
 			
-			aquireInitializerLock(); //actually, no need - just to be save!
+			//aquireInitializerLock(); //actually, no need - just to be save!
 			//wrap->wrappedDestroy(); 
-			releaseInitializerLock();
+			//releaseInitializerLock();
 			
 			break;
 		}
 		case GuiWrapperInitCocoa:  {
 		
-			aquireInitializerLock();
+			//aquireInitializerLock();
 			//this moves the awt-appkit thread off to another thread!
 			//init cocoa to be able to interop with it in carbon
 			if (initializeCocoa()==0) log("Cocoa initialized successfully on thread=%i", pthread_self());
 			else {
 				log("** Error while initilizing Cocoa");
 			}
-			releaseInitializerLock();
+			//releaseInitializerLock();
 			
 			break;
 		}
