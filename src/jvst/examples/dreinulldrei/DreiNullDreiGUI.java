@@ -374,19 +374,10 @@ public class DreiNullDreiGUI extends VSTPluginGUIAdapter implements ChangeListen
 		this.pPlugin=plug;
 		initialize();
 		this.init();
-		show();
-		
-//		System.out.println("BASE!");
-//		 //make sure we use the defaul ui!
-//	    //if there is another plugin loaded using a different Look and feel, we would 
-//	    //use that one because the LaF is a static property and we are running in the 
-//	    //same VM. 
-//	    
-//	    //So, I highly recommend setting a LaF in each of your plugins GUI constructors!!!
-//	    
-//	    UIManager.put("ClassLoader", null); //use the default classloader to load the system LaF
-//	    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-//	    SwingUtilities.updateComponentTreeUI(this);
+		//this is needed on the mac only, 
+	    //java guis are handled there in a pretty different way than on win/linux
+	    //XXX
+	    if (RUNNING_MAC_X) show();
 	}
 
 	/**

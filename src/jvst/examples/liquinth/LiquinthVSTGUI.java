@@ -51,7 +51,10 @@ public class LiquinthVSTGUI extends VSTPluginGUIAdapter {
 		getContentPane().setLayout( new BorderLayout() );
 		getContentPane().add( main_panel, BorderLayout.CENTER );
 		
-		show();
+		//this is needed on the mac only, 
+	    //java guis are handled there in a pretty different way than on win/linux
+	    //XXX
+	    if (RUNNING_MAC_X) show();
 	}
 
 

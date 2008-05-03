@@ -71,7 +71,11 @@ public class JayVSTxSynthGUI extends VSTPluginGUIAdapter implements ChangeListen
     
     this.pPlugin=plug;
     this.init();
-    this.show();
+    
+    //this is needed on the mac only, 
+    //java guis are handled there in a pretty different way than on win/linux
+    //XXX
+    if (RUNNING_MAC_X) this.show();
   }
 
 
