@@ -423,9 +423,9 @@ void VSTGUIWrapper::close () {
 	if (this->IsInitialized==false) return;
 	
 	JNIEnv* env = this->ensureJavaThreadAttachment();
-    
+#if defined(WIN32) || defined(linux) 
 	this->detachWindow(); //first detach, then close 
-    
+#endif
 	jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
 	env->CallVoidMethod(this->JavaPlugGUIObj, mid);
