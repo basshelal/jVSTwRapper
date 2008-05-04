@@ -43,6 +43,14 @@ VSTV24ToPlug::VSTV24ToPlug (audioMasterCallback audioMaster, int progs, int parm
 
 	this->ProcessDoubleReplacingMethodID = NULL;
 	this->JavaDoubleClass = NULL;
+
+	ProcessDoubleReplacingLastSampleFrames=0;
+	ProcessDoubleReplacingJInputs=NULL;
+	ProcessDoubleReplacingJOutputs=NULL;
+	for (int i=0;i<8;i++) {
+		ProcessDoubleReplacingInArrays[i]=NULL;
+		ProcessDoubleReplacingOutArrays[i]=NULL;
+	}
 }
 
 //-----------------------------------------------------------------------------------------
@@ -103,6 +111,75 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 		if (this->JavaDoubleClass == NULL) log("** ERROR: cannot find class [D");
 	}
 
+
+	if (ProcessDoubleReplacingLastSampleFrames!=sampleFrames) {
+		ProcessDoubleReplacingLastSampleFrames=sampleFrames;
+		
+		//delete old java arrays if existing
+		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+			if (ProcessDoubleReplacingInArrays[i]) env->DeleteLocalRef(ProcessDoubleReplacingInArrays[i]);
+		}
+		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+			if (ProcessDoubleReplacingOutArrays[i]) env->DeleteLocalRef(ProcessDoubleReplacingOutArrays[i]);
+		}
+		if (ProcessDoubleReplacingJInputs) env->DeleteLocalRef(ProcessDoubleReplacingJInputs);
+		if (ProcessDoubleReplacingJOutputs) env->DeleteLocalRef(ProcessDoubleReplacingJOutputs);
+
+		ProcessDoubleReplacingJInputs = env->NewObjectArray(this->getAeffect()->numInputs, JavaDoubleClass, NULL);
+		ProcessDoubleReplacingJOutputs = env->NewObjectArray(this->getAeffect()->numOutputs, JavaDoubleClass, NULL);
+		if (ProcessDoubleReplacingJInputs == NULL) log("** ERROR: out of memory! jinputs");
+		if (ProcessDoubleReplacingJOutputs == NULL) log("** ERROR: out of memory! joutputs");
+
+		//create new java float arrays of bufferSize
+		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+			ProcessDoubleReplacingInArrays[i]=env->NewDoubleArray(sampleFrames);
+		}
+		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+			ProcessDoubleReplacingOutArrays[i]=env->NewDoubleArray(sampleFrames);
+		}
+	}
+
+	jdouble *jval = NULL;
+	//copy c array to java array
+	for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+		//jval = env->GetFloatArrayElements(ProcessDoubleReplacingInArrays[i], NULL);
+		jval = (jdouble*)env->GetPrimitiveArrayCritical(ProcessDoubleReplacingInArrays[i], NULL);
+		memcpy(jval, inputs[i], sampleFrames * sizeof(double));
+		//env->ReleaseFloatArrayElements(ProcessDoubleReplacingInArrays[i], jval, 0); 
+		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingInArrays[i], jval, 0); 
+		env->SetObjectArrayElement(ProcessDoubleReplacingJInputs, i, ProcessDoubleReplacingInArrays[i]);
+	}
+	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+		//processReplacing replaces the output 
+		//--> do not copy output from native to java, no need for that since it is replaced anyways	
+		/*
+		jval = env->GetFloatArrayElements(ProcessDoubleReplacingOutArrays[i], NULL);
+		memcpy(jval, outputs[i], sampleFrames * sizeof(float));
+		env->ReleaseFloatArrayElements(ProcessDoubleReplacingOutArrays[i], jval, 0);
+		*/
+		env->SetObjectArrayElement(ProcessDoubleReplacingJOutputs, i, ProcessDoubleReplacingOutArrays[i]);
+	}
+
+
+	//call java method
+	if(this->ProcessDoubleReplacingMethodID == NULL) {
+		log("creating new processDoubleRplacing mid");
+		this->ProcessDoubleReplacingMethodID = env->GetMethodID(this->JavaPlugClass, "processDoubleReplacing", "([[D[[DI)V");
+		if (this->ProcessDoubleReplacingMethodID == NULL) log("** ERROR: cannot find effects .processDoubleReplacing(...)");
+	}
+	env->CallVoidMethod(this->JavaPlugObj, this->ProcessDoubleReplacingMethodID, ProcessDoubleReplacingJInputs, ProcessDoubleReplacingJOutputs, (jint)sampleFrames);
+
+	//copy java array to c array
+	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+		//jval = env->GetFloatArrayElements(ProcessReplacingOutArrays[i], NULL);
+		jval = (jdouble*)env->GetPrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], NULL);
+		memcpy(outputs[i], jval, sampleFrames * sizeof(double));
+		//env->ReleaseFloatArrayElements(ProcessDoubleReplacingOutArrays[i], jval, 0); //!!! use JNI_ABORT as last param? should be more efficient, we dont need the changes to jval to be copied back
+		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], jval, JNI_ABORT);  
+	}
+
+
+/*
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
 
@@ -159,6 +236,9 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 	//ARRAYS mit deletelocalref wieder zerstoeren...
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
+*/
+
+
 
 	::checkException(env);
 }

@@ -73,6 +73,22 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 
 	chunkdata = NULL;
 	chunksize = 0;
+
+	ProcessLastSampleFrames=0;
+	ProcessJInputs=NULL;
+	ProcessJOutputs=NULL;
+	for (int i=0;i<8;i++) {
+		ProcessInArrays[i]=NULL;	
+		ProcessOutArrays[i]=NULL;
+	}
+
+	ProcessReplacingLastSampleFrames=0;
+	ProcessReplacingJInputs=NULL;
+	ProcessReplacingJOutputs=NULL;
+	for (int i=0;i<8;i++) {
+		ProcessReplacingInArrays[i]=NULL;
+		ProcessReplacingOutArrays[i]=NULL;
+	}
  }
 
 //------------------------------------------------------------------------
@@ -411,6 +427,73 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F");
 	}
 
+
+	if (ProcessLastSampleFrames!=sampleFrames) {
+		ProcessLastSampleFrames=sampleFrames;
+		
+		//delete old java arrays if existed
+		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+			if (ProcessInArrays[i]) env->DeleteLocalRef(ProcessInArrays[i]);
+		}
+		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+			if (ProcessOutArrays[i]) env->DeleteLocalRef(ProcessOutArrays[i]);
+		}
+		if (ProcessJInputs) env->DeleteLocalRef(ProcessJInputs);
+		if (ProcessJOutputs) env->DeleteLocalRef(ProcessJOutputs);
+
+		ProcessJInputs = env->NewObjectArray(this->getAeffect()->numInputs, JavaFloatClass, NULL);
+		ProcessJOutputs = env->NewObjectArray(this->getAeffect()->numOutputs, JavaFloatClass, NULL);
+		if (ProcessJInputs == NULL) log("** ERROR: out of memory! jinputs");
+		if (ProcessJOutputs == NULL) log("** ERROR: out of memory! joutputs");
+
+		//create new java float arrays of bufferSize
+		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+			ProcessInArrays[i]=env->NewFloatArray(sampleFrames);
+		}
+		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+			ProcessOutArrays[i]=env->NewFloatArray(sampleFrames);
+		}
+	}
+
+	jfloat *jval;
+	//copy c array to java array
+	for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+		//jval = env->GetFloatArrayElements(ProcessInArrays[i], NULL);
+		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessInArrays[i], NULL);
+		memcpy(jval, inputs[i], sampleFrames * sizeof(float));
+		//env->ReleaseFloatArrayElements(ProcessInArrays[i], jval, 0);
+		env->ReleasePrimitiveArrayCritical(ProcessInArrays[i], jval, 0);
+		env->SetObjectArrayElement(ProcessJInputs, i, ProcessInArrays[i]);
+	}
+	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+		//jval = env->GetFloatArrayElements(ProcessOutArrays[i], NULL);
+		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessOutArrays[i], NULL);
+		memcpy(jval, outputs[i], sampleFrames * sizeof(float));
+		//env->ReleaseFloatArrayElements(ProcessOutArrays[i], jval, 0);
+		env->ReleasePrimitiveArrayCritical(ProcessOutArrays[i], jval, 0);
+		env->SetObjectArrayElement(ProcessJOutputs, i, ProcessOutArrays[i]);
+	}
+
+	//call java method
+	if(this->ProcessMethodID == NULL) {
+		log("creating new process mid");
+		this->ProcessMethodID = env->GetMethodID(this->JavaPlugClass, "process", "([[F[[FI)V");
+		if (this->ProcessMethodID == NULL) log("** ERROR: cannot find effects .process(...)");
+	}
+	env->CallVoidMethod(this->JavaPlugObj, this->ProcessMethodID, ProcessJInputs, ProcessJOutputs, (jint)sampleFrames);
+
+	//copy java array to c array
+	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+		//jval = env->GetFloatArrayElements(ProcessOutArrays[i], NULL);
+		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessOutArrays[i], NULL);
+		memcpy(outputs[i], jval, sampleFrames * sizeof(float));
+		//env->ReleaseFloatArrayElements(ProcessOutArrays[i], jval, JNI_ABORT); //!!! use JNI_ABORT as last param? should be more efficient, we dont need the changes to jval to be copied back
+		env->ReleasePrimitiveArrayCritical(ProcessOutArrays[i], jval, JNI_ABORT);
+	}
+
+//############################################################################################################
+
+/*
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
 
@@ -464,6 +547,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	//ARRAYS mit deletelocalref wieder zerstoeren...
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
+*/
 
 	::checkException(env);
 }
@@ -480,9 +564,79 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F");
 	}
 
+
+	if (ProcessReplacingLastSampleFrames!=sampleFrames) {
+		ProcessReplacingLastSampleFrames=sampleFrames;
+		
+		//delete old java arrays if existing
+		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+			if (ProcessReplacingInArrays[i]) env->DeleteLocalRef(ProcessReplacingInArrays[i]);
+		}
+		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+			if (ProcessReplacingOutArrays[i]) env->DeleteLocalRef(ProcessReplacingOutArrays[i]);
+		}
+		if (ProcessReplacingJInputs) env->DeleteLocalRef(ProcessReplacingJInputs);
+		if (ProcessReplacingJOutputs) env->DeleteLocalRef(ProcessReplacingJOutputs);
+
+		ProcessReplacingJInputs = env->NewObjectArray(this->getAeffect()->numInputs, JavaFloatClass, NULL);
+		ProcessReplacingJOutputs = env->NewObjectArray(this->getAeffect()->numOutputs, JavaFloatClass, NULL);
+		if (ProcessReplacingJInputs == NULL) log("** ERROR: out of memory! jinputs");
+		if (ProcessReplacingJOutputs == NULL) log("** ERROR: out of memory! joutputs");
+
+		//create new java float arrays of bufferSize
+		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+			ProcessReplacingInArrays[i]=env->NewFloatArray(sampleFrames);
+		}
+		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+			ProcessReplacingOutArrays[i]=env->NewFloatArray(sampleFrames);
+		}
+	}
+
+	jfloat *jval = NULL;
+	//copy c array to java array
+	for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
+		//jval = env->GetFloatArrayElements(ProcessReplacingInArrays[i], NULL);
+		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessReplacingInArrays[i], NULL);
+		memcpy(jval, inputs[i], sampleFrames * sizeof(float));
+		//env->ReleaseFloatArrayElements(ProcessReplacingInArrays[i], jval, 0); 
+		env->ReleasePrimitiveArrayCritical(ProcessReplacingInArrays[i], jval, 0); 
+		env->SetObjectArrayElement(ProcessReplacingJInputs, i, ProcessReplacingInArrays[i]);
+	}
+	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+		//processReplacing replaces the output 
+		//--> do not copy output from native to java, no need for that since it is replaced anyways	
+		/*
+		jval = env->GetFloatArrayElements(ProcessReplacingOutArrays[i], NULL);
+		memcpy(jval, outputs[i], sampleFrames * sizeof(float));
+		env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0);
+		*/
+		env->SetObjectArrayElement(ProcessReplacingJOutputs, i, ProcessReplacingOutArrays[i]);
+	}
+
+
+	//call java method
+	if(this->ProcessReplacingMethodID == NULL) {
+		log("creating new processRplacing mid");
+		this->ProcessReplacingMethodID = env->GetMethodID(this->JavaPlugClass, "processReplacing", "([[F[[FI)V");
+		if (this->ProcessReplacingMethodID == NULL) log("** ERROR: cannot find effects .processReplacing(...)");
+	}
+	env->CallVoidMethod(this->JavaPlugObj, this->ProcessReplacingMethodID, ProcessReplacingJInputs, ProcessReplacingJOutputs, (jint)sampleFrames);
+
+	//copy java array to c array
+	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
+		//jval = env->GetFloatArrayElements(ProcessReplacingOutArrays[i], NULL);
+		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessReplacingOutArrays[i], NULL);
+		memcpy(outputs[i], jval, sampleFrames * sizeof(float));
+		//env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0); //!!! use JNI_ABORT as last param? should be more efficient, we dont need the changes to jval to be copied back
+		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, JNI_ABORT);  
+	}
+
+
+//############################################################################################################
+/*
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
-
+	
 	jinputs = env->NewObjectArray(this->getAeffect()->numInputs, this->JavaFloatClass, NULL);
 	joutputs = env->NewObjectArray(this->getAeffect()->numOutputs, this->JavaFloatClass, NULL);
 	if (jinputs == NULL) log("** ERROR: out of memory! jinputs");
@@ -536,12 +690,10 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 	//ARRAYS mit deletelocalref wieder zerstoeren...
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
+*/
 
 	::checkException(env);
 }
-
-
-
 
 
 

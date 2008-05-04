@@ -728,7 +728,7 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 		}
 
 		env->SetObjectArrayElement(jevents, i, jevent);
-		env->DeleteLocalRef(jevent); //???
+		env->DeleteLocalRef(jevent); 
 	}
 
 	env->SetObjectField(this->VSTEventsObject, this->VSTEventsFieldEvents, jevents);

@@ -122,6 +122,18 @@ class VSTV10ToPlug : public AudioEffectX {
 		void* chunkdata;
 		long chunksize;
 
+		//cached array for process()
+		jobjectArray  ProcessJInputs;
+		jobjectArray  ProcessJOutputs;
+		jfloatArray ProcessInArrays[8];//max channels=8
+		jfloatArray ProcessOutArrays[8];
+		VstInt32 ProcessLastSampleFrames;
+
+		jobjectArray  ProcessReplacingJInputs;
+		jobjectArray  ProcessReplacingJOutputs;
+		jfloatArray ProcessReplacingInArrays[8];//max channels=8
+		jfloatArray ProcessReplacingOutArrays[8];
+		VstInt32 ProcessReplacingLastSampleFrames;
 };
 
 #endif

@@ -70,6 +70,12 @@ class VSTV24ToPlug : public VSTV23ToPlug {
 
 	private:
 		jmethodID ProcessDoubleReplacingMethodID;
+
+		jobjectArray  ProcessDoubleReplacingJInputs;
+		jobjectArray  ProcessDoubleReplacingJOutputs;
+		jdoubleArray ProcessDoubleReplacingInArrays[8];//max channels=8
+		jdoubleArray ProcessDoubleReplacingOutArrays[8];
+		VstInt32 ProcessDoubleReplacingLastSampleFrames;
 };
 
 
