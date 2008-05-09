@@ -662,6 +662,9 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 	env->SetIntField(this->VSTEventsObject, this->VSTEventsFieldReserved, events->reserved);
 
 	//create events array
+	//TODO: need to check if this array here can be reused (similar to the algorithm used in process() / processReplacing())
+	//      in order to prevent garbage collection. the way it is now, the event array is dereferenced after calling the 
+	//      java side, gc needs to clean it up. Reusing the array and the event objects would save a lot of GC runs...
 	jobjectArray jevents = env->NewObjectArray(events->numEvents, this->VSTEventClass, NULL);
 	if (jevents == NULL) {
 		log("** ERROR: out of memory! jevents");

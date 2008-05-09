@@ -461,16 +461,18 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		//jval = env->GetFloatArrayElements(ProcessInArrays[i], NULL);
 		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessInArrays[i], NULL);
 		memcpy(jval, inputs[i], sampleFrames * sizeof(float));
-		//env->ReleaseFloatArrayElements(ProcessInArrays[i], jval, 0);
 		env->ReleasePrimitiveArrayCritical(ProcessInArrays[i], jval, 0);
+		//env->ReleaseFloatArrayElements(ProcessInArrays[i], jval, 0);
+
 		env->SetObjectArrayElement(ProcessJInputs, i, ProcessInArrays[i]);
 	}
 	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
 		//jval = env->GetFloatArrayElements(ProcessOutArrays[i], NULL);
 		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessOutArrays[i], NULL);
-		memcpy(jval, outputs[i], sampleFrames * sizeof(float));
-		//env->ReleaseFloatArrayElements(ProcessOutArrays[i], jval, 0);
+		memcpy(jval, outputs[i], sampleFrames * sizeof(float));		
 		env->ReleasePrimitiveArrayCritical(ProcessOutArrays[i], jval, 0);
+		//env->ReleaseFloatArrayElements(ProcessOutArrays[i], jval, 0);
+
 		env->SetObjectArrayElement(ProcessJOutputs, i, ProcessOutArrays[i]);
 	}
 
@@ -598,18 +600,22 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		//jval = env->GetFloatArrayElements(ProcessReplacingInArrays[i], NULL);
 		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessReplacingInArrays[i], NULL);
 		memcpy(jval, inputs[i], sampleFrames * sizeof(float));
-		//env->ReleaseFloatArrayElements(ProcessReplacingInArrays[i], jval, 0); 
 		env->ReleasePrimitiveArrayCritical(ProcessReplacingInArrays[i], jval, 0); 
+		//env->ReleaseFloatArrayElements(ProcessReplacingInArrays[i], jval, 0); 
+
 		env->SetObjectArrayElement(ProcessReplacingJInputs, i, ProcessReplacingInArrays[i]);
 	}
 	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
 		//processReplacing replaces the output 
 		//--> do not copy output from native to java, no need for that since it is replaced anyways	
-		/*
-		jval = env->GetFloatArrayElements(ProcessReplacingOutArrays[i], NULL);
+		//--> well, do it anyways... fixes the hanging note problem...
+		
+		//jval = env->GetFloatArrayElements(ProcessReplacingOutArrays[i], NULL);
+		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessReplacingOutArrays[i], NULL);
 		memcpy(jval, outputs[i], sampleFrames * sizeof(float));
-		env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0);
-		*/
+		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, 0); 
+		//env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0);
+		
 		env->SetObjectArrayElement(ProcessReplacingJOutputs, i, ProcessReplacingOutArrays[i]);
 	}
 
