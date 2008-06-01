@@ -177,6 +177,8 @@ int errorHandler(Display *dp, XErrorEvent *e) {
 	text[1023]='\0';
 	log("**XError: code=%i, minor=%i, request=%i, ressource=%i, serial=%i, type=%i, text=%s",
 		e->error_code, e->minor_code, e->request_code, e->resourceid, e->serial, e->type, text);
+		
+	//TODO: maybe set this->AttachWindow to false if a bad window error occurs???
 	return 0;
 }
 #endif
@@ -348,14 +350,14 @@ bool VSTGUIWrapper::open (void *ptr) {
 					this->JavaWindowHandle=dsi_win->drawable;  //cast drawable to window! (is only a handle anyways...)
 					if (::GlobalDisplay==NULL) ::GlobalDisplay = dsi_win->display;   //init global var diplay
 					
-					//usleep(500); //wait a little to ensure that the x operation completes...
+					//usleep(1000*200); //wait a little to ensure that the x operation completes...
 					
 					//Set Parent Window
 					int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, frhwnd, 0, 0);
 					//int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
 					log("win reparent=%i", ret);
 					
-					//usleep(500); //wait a little to ensure that the x operation completes...
+					//usleep(1000*200); //wait a little to ensure that the x operation completes...
 #endif
 
 					// Free the drawing surface info
@@ -538,9 +540,9 @@ void VSTGUIWrapper::detachWindow() {
 		this->JavaWindowHandle=NULL;
 #endif
 #ifdef linux
-		//usleep(500); //wait a little to ensure that the x operation completes...
+		//usleep(1000*200); //wait a little to ensure that the x operation completes...
 		int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, DefaultRootWindow(::GlobalDisplay), 0, 0);
-		usleep(500); //wait a little to ensure that the x operation completes...
+		//usleep(1000*200); //wait a little to ensure that the x operation completes...
 		
 		log("remap=%i", ret);
 		this->JavaWindowHandle=0;
