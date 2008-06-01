@@ -428,6 +428,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	}
 
 
+#ifndef linux
 	if (ProcessLastSampleFrames!=sampleFrames) {
 		ProcessLastSampleFrames=sampleFrames;
 		
@@ -493,9 +494,9 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		env->ReleasePrimitiveArrayCritical(ProcessOutArrays[i], jval, JNI_ABORT);
 	}
 
+#else
 //############################################################################################################
 
-/*
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
 
@@ -549,7 +550,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	//ARRAYS mit deletelocalref wieder zerstoeren...
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
-*/
+#endif
 
 	::checkException(env);
 }
@@ -566,7 +567,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F");
 	}
 
-
+#ifndef linux
 	if (ProcessReplacingLastSampleFrames!=sampleFrames) {
 		ProcessReplacingLastSampleFrames=sampleFrames;
 		
@@ -636,10 +637,10 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		//env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0); //!!! use JNI_ABORT as last param? should be more efficient, we dont need the changes to jval to be copied back
 		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, JNI_ABORT);  
 	}
-
-
+	
+#else
 //############################################################################################################
-/*
+
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
 	
@@ -696,7 +697,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 	//ARRAYS mit deletelocalref wieder zerstoeren...
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
-*/
+#endif
 
 	::checkException(env);
 }
