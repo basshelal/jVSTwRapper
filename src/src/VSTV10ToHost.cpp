@@ -69,7 +69,7 @@ VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj) {
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setUniqueID(JNIEnv *env, jobject obj, jint id) {
-	log("setUniqueID");
+	log("setUniqueID=%X",id);
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->setUniqueID(id);
 }
@@ -81,7 +81,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setUniqueID(
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setNumInputs(JNIEnv *env, jobject obj, jint num) {
-	log("setNumInputs");
+	log("setNumInputs=%i", num);
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->setNumInputs(num);
 }
@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setNumInputs
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setNumOutputs(JNIEnv *env, jobject obj, jint num) {
-	log("setNumOutputs");
+	log("setNumOutputs=%i", num);
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL)WrapperInstance->setNumOutputs(num);
 }
