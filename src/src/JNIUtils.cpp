@@ -214,7 +214,7 @@ char *trim (char *string) {
 char *replace(char *string, char *oldpiece, char *newpiece) { 
    int str_index, newstr_index, oldpiece_index, end, new_len, old_len, cpy_len; 
    char *c; 
-   char newstring[4096]; 
+   char newstring[JVST_PATH_MAX]; 
 
 
    if ((c = (char *) strstr(string, oldpiece)) == NULL) 
@@ -354,7 +354,7 @@ char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey) {
 	HKEY	regKey;
 	DWORD	len; 
 	DWORD	dwType; 
-	char	javaLibLocation[512]; //value stored here
+	char	javaLibLocation[JVST_PATH_MAX]; //value stored here
 	
 
 	if (customRegKey!=NULL) {

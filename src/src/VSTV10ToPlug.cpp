@@ -45,7 +45,7 @@
 #endif
 
 
-extern char DllFileName[50];
+extern char DllFileName[JVST_FILE_MAX];
 
 
 //Impl of Host -> Plug calls

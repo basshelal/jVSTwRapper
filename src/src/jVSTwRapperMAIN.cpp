@@ -100,12 +100,12 @@ int loadPlugin();
 #endif
 
 //------------------------------------------------------------------------
-char DllLocation[512];
-char DllPath[512];
+char DllLocation[JVST_PATH_MAX];
+char DllPath[JVST_PATH_MAX];
 
 bool IsLADSPALoaded = false;
-char ConfigFileName[100];
-char LogFileName[100];
+char ConfigFileName[JVST_FILE_MAX];
+char LogFileName[JVST_FILE_MAX];
 audioMasterCallback audioMaster = NULL;
 FILE *log_stream = NULL;
 
@@ -144,9 +144,9 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	ConfigFileReader *cfg = new ConfigFileReader();
 	IsLogEnabled = cfg->IsLoggingEnabled;
 
-	char log_location[700];
-	strcpy(log_location, DllPath);
-	strcat(log_location, LogFileName);
+	char log_location[JVST_PATH_MAX];
+	strncpy(log_location, DllPath, JVST_PATH_MAX);
+	strncat(log_location, LogFileName, JVST_FILE_MAX);
 	log("log_location=%s", log_location);
 
 	//creating log stream...
@@ -299,7 +299,7 @@ void* startJava(void *nix) {
 	int result;
 	JavaVMInitArgs vm_args;
 	JavaVMOption options[6]; //assume the max number of options...
-	char java_path[1024]; //we need to add jVSTsYstem_bin.jar to the ClassPath of the Bootstrap ClassLoader!
+	char java_path[JVST_PATH_MAX]; //we need to add jVSTsYstem_bin.jar to the ClassPath of the Bootstrap ClassLoader!
 
 	
 	result = -1;
@@ -307,7 +307,7 @@ void* startJava(void *nix) {
 	ConfigFileReader *cfg = new ConfigFileReader();
 
 	strcpy(java_path, "-Djava.class.path=");
-	strcat(java_path, replace(cfg->SystemClassPath, "{WrapperPath}", DllPath));
+	strncat(java_path, replace(cfg->SystemClassPath, "{WrapperPath}", DllPath), JVST_PATH_MAX);
 
 	log("SystemPath=%s", java_path);
 	options[0].optionString = java_path;
@@ -441,7 +441,7 @@ int loadPlugin() {
 	bool hasGUI = false;
 	jclass guiRunnerClass = NULL;
 	ConfigFileReader *cfg = new ConfigFileReader();
-	char class_path[1024];
+	char class_path[JVST_PATH_MAX];
 
 
 	//try to get an jni env from the loaded jvm
@@ -451,7 +451,7 @@ int loadPlugin() {
 
 
 	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
-	strcpy(class_path, DllPath);
+	strncpy(class_path, DllPath, JVST_PATH_MAX);
 	
 #if defined(MACX) || defined(linux)
 	strcat(class_path, ":\0");
@@ -603,7 +603,7 @@ void calculatePaths() {
 		log("** ERROR: could not locate my own location! (/proc/self/maps missing?)");
 		return;
 	}	
-	strcpy(DllLocation, soPath);
+	strncpy(DllLocation, soPath, JVST_PATH_MAX);
 	log("DllLocation=%s", DllLocation);
 #endif
 
@@ -669,7 +669,7 @@ void calculatePaths() {
 
 	//DllPath
 	len = lastSlash - imagename - 1;
-	char tmp[1024];
+	char tmp[JVST_PATH_MAX];
 	strncpy(tmp, imagename, len);
 	tmp[len]='\0';
 	lastSlash = strrchr(tmp, '/');

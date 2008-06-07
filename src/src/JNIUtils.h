@@ -44,6 +44,10 @@
 #undef VST_FORCE_DEPRECATED
 #define VST_FORCE_DEPRECATED 0
 
+//string lengths
+#define JVST_PATH_MAX 5000
+#define JVST_FILE_MAX 200
+
 #if defined(MACX) || defined(linux)
 	//patch original JNIEXPORT to use -fvisibility=hidden compiler option 
 	//so that default visibility for symbols is "hidden"

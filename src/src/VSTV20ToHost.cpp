@@ -121,7 +121,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 	if (str==NULL) return ret;
 
 	const char* text = env->GetStringUTFChars(str, NULL);
-	strcpy(t, text);
+	strncpy(t, text,254);
 	env->ReleaseStringUTFChars(str, text);
     VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) ret = WrapperInstance->canHostDo(t);
@@ -395,7 +395,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostPr
 		(JNIEnv* env, jobject obj) {
 	
 	jstring ret = NULL;
-	char text[255];
+	char text[255]={'\0'};
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->getHostProductString(text);
 	if (WrapperInstance!=NULL) ret = env->NewStringUTF(text);
@@ -424,7 +424,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostVe
 		(JNIEnv* env, jobject obj) {
 
 	jstring ret = NULL;
-	char text[255];
+	char text[255]={'\0'};
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->getHostVendorString(text);
 	if (WrapperInstance!=NULL) ret = env->NewStringUTF(text);

@@ -42,15 +42,15 @@
 
 
 
-extern char DllPath[512];
-extern char ConfigFileName[100];
+extern char DllPath[JVST_PATH_MAX];
+extern char ConfigFileName[JVST_FILE_MAX];
 
 
 ConfigFileReader::ConfigFileReader() {
-	char ConfigFileLocation[700];
+	char ConfigFileLocation[JVST_PATH_MAX];
 
-	strcpy(ConfigFileLocation, DllPath);
-	strcat(ConfigFileLocation, ConfigFileName);
+	strncpy(ConfigFileLocation, DllPath, JVST_PATH_MAX);
+	strncat(ConfigFileLocation, ConfigFileName, JVST_FILE_MAX);
 	
 	//log(ConfigFileLocation);
 
