@@ -1,7 +1,7 @@
 Installing Java VST plugins on LINUX mini HOW-TO
 --------------------------------------------------
 
-NOTE: these steps are only required once! If you got JayDlay to work, any other plugin will 
+NOTE: these steps are only required once If you got JayDlay to work, any other plugin will 
       work too. 
 
 1. Make sure you have a JAVA_HOME environment variable that is set to the correct value
@@ -22,9 +22,11 @@ NOTE: these steps are only required once! If you got JayDlay to work, any other 
 3. *** CHECK YOUR CONFIGURATION *** 
    by executing "ldd jvstwrapper.so". Your configuration ONLY was successful when the output 
    of this call does NOT contain the text "=> not found" for ANY library that is listed in the output. 
-   (i.e. "ldd jvstwrapper.so | grep not found" returns zero lines!)	
+   (i.e. "ldd jvstwrapper.so | grep not" returns zero lines!)	
 	
-4. Fire up Jost, energyXT2 or any other VST host application and enjoy the JayDLay demo plugin!
+4. Fire up Jost, energyXT2, Renoise or any other VST host application and enjoy the JayDLay demo plugin!
+   Note: some hosts require a VST_PATH environment variable set to the directory where you stored your plugins (e.g. Renoise), 
+   others allow to configure this path in their Preferences dialog (e.g. energyXT2)
  
  
 If you see the following error in jvstwrapper_log.txt:
@@ -35,7 +37,7 @@ jvstwrapper.so file is. (e.g. execute "ln -s $JAVA_HOME/lib/i386/xawt/ axwt" in 
 
 
 	
-**** The following steps are for plugin development ONLY! ****
+**** The following steps are for plugin development ONLY ****
    
 5. Write your java plugin using the wrapper API.
 
@@ -45,7 +47,7 @@ jvstwrapper.so file is. (e.g. execute "ln -s $JAVA_HOME/lib/i386/xawt/ axwt" in 
    name as the .so file and is stored in the same directory.
    
 8. Look for problems. If you left IsLoggingEnabled=1 in the ini file, the log files will 
-	appear in the same directory as the plugin .so file is.
+   appear in the same directory as the plugin .so file is.
 
 
 LADSPA: jVSTwRapper now exposes your plugins as VST and LADSPA plugins at the same time. To use 
