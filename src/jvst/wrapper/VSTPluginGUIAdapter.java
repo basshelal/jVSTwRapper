@@ -46,13 +46,14 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 		this.plugin=plugin;
 		
 		// center window
+		/*
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = this.getSize();
-
 		if (frameSize.height > screenSize.height) frameSize.height = screenSize.height;
 		if (frameSize.width > screenSize.width) frameSize.width = screenSize.width;
 		this.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-
+		*/
+		
 		// Prepare attaching window
 		runner.WindowAttached = false;
 		if (!runner.libraryOk) {
@@ -135,7 +136,7 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 
 	public void destroy() {
 		this.log("GUI destroy");
-			this.dispose();
+		this.dispose();
 	}
 
 	// ***********************************************************************
