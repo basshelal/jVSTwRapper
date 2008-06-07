@@ -333,7 +333,7 @@ public class DreiNullDrei extends VSTPluginAdapter {
 
 
   public String getEffectName() { return "DreiNullDrei v0.6"; }
-  public String getVendorString() { return "http://jvstwrapper.sourceforge.net/"; }
+  public String getVendorString() { return "jVSTwRapper"; }
   public String getProductString() { return "DreiNullDrei"; }
   public int getNumPrograms() { return NUM_PROGRAMS; }
   public int getNumParams() { return DreiNullDreiProgram.NUM_PARAMS; }

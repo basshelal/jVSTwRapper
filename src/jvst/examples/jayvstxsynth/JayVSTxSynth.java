@@ -331,7 +331,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
   }
 
   public String getEffectName() { return "jVSTxSynth"; }
-  public String getVendorString() { return "http://jvstwrapper.sourceforge.net/"; }
+  public String getVendorString() { return "jVSTwRapper"; }
   public String getProductString() { return "jVSTxSynth"; }
   public int getNumPrograms() { return NUM_PROGRAMS; }
   public int getNumParams() { return JayVSTxSynthProgram.NUM_PARAMS; }

@@ -68,7 +68,7 @@ public class JayDLay extends VSTPluginAdapter {
     this.setNumOutputs(1);// mono output
     //this.hasVu(false); //deprecated as of vst2.4
     this.canProcessReplacing(true);//mandatory for vst 2.4!
-    this.setUniqueID(9876543);//random unique number registered at steinberg (4 byte)
+    this.setUniqueID('j'<<24 + 'D'<<16 +'l'<<8 +'a');//random unique number registered at steinberg (4 byte)
 
     this.canMono(true); 
 
@@ -119,7 +119,7 @@ public class JayDLay extends VSTPluginAdapter {
     return ret;
   }
 
-  public String getVendorString() { return "http://jvstwrapper.sourceforge.net/"; }
+  public String getVendorString() { return "jVSTwRapper"; }
 
   public int getPlugCategory() {
     log("getPlugCategory");
