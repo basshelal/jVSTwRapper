@@ -108,7 +108,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 
     this.isSynth(true);
 
-    this.setUniqueID(7842315);
+    this.setUniqueID('j'<<24 | 'X'<<16 | 's'<<8 | 'y');
 
     this.fPhase1 = this.fPhase2 = 0.f;
     this.fScaler = (float)((double)WAVE_SIZE / 44100.0D);	// we don't know the sample rate yet

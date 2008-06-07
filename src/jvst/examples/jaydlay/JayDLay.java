@@ -68,7 +68,7 @@ public class JayDLay extends VSTPluginAdapter {
     this.setNumOutputs(1);// mono output
     //this.hasVu(false); //deprecated as of vst2.4
     this.canProcessReplacing(true);//mandatory for vst 2.4!
-    this.setUniqueID('j'<<24 + 'D'<<16 +'l'<<8 +'a');//random unique number registered at steinberg (4 byte)
+    this.setUniqueID('j'<<24 | 'D'<<16 | 'l'<<8 | 'y');//random unique number registered at steinberg (4 byte)
 
     this.canMono(true); 
 

@@ -84,7 +84,7 @@ public class DreiNullDrei extends VSTPluginAdapter {
 
     this.isSynth(true);
 
-    this.setUniqueID(136578925);
+    this.setUniqueID('j'<<24 | 'D'<<16 | 'r'<<8 | 'e');
 
     this.srate = 44100f;
     this.vco_inc_dest = 440f / this.srate;
