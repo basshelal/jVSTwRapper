@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-<jar path="jVSTeXamples_bin.jar"/>
-<options buildIfNeeded="true" compress="true" descriptionLocation="/jvst_examples/jVSTeXamples.jardesc" exportErrors="true" exportWarnings="true" overwrite="false" saveDescription="true" useSourceFolders="false"/>
-<manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
-<sealing sealJar="false">
-<packagesToSeal/>
-<packagesToUnSeal/>
-</sealing>
-</manifest>
-<selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-<javaElement handleIdentifier="=jvst_examples/src&lt;jvst.examples.dreinulldrei"/>
-<javaElement handleIdentifier="=jvst_examples/src&lt;jvst.examples.jayvstxsynth"/>
-<javaElement handleIdentifier="=jvst_examples/src&lt;jvst.examples.jaydlay"/>
-<javaElement handleIdentifier="=jvst_examples/src&lt;jvst.examples.ddelay"/>
-</selectedElements>
+    <jar path="jVSTeXamples_bin.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/jvst_examples/jVSTeXamples.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=jvst_examples/src"/>
+    </selectedElements>
 </jardesc>
