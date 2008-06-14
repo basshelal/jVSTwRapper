@@ -1,7 +1,6 @@
 Liquinth VST (c)2007 mumart@gmail.com
 
 A relatively simple Java-based polysynth, using jVSTwRapper.
-To test using the included SAVIHost, launch jVSTwRapper.exe.
 Java 6 or later is required.
 
 To use the synth with other VST hosts, copy the following
