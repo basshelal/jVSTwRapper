@@ -425,13 +425,31 @@ void VSTGUIWrapper::close () {
 	if (this->IsInitialized==false) return;
 	
 	JNIEnv* env = this->ensureJavaThreadAttachment();
+
+//LINUX:
+//This is the not so nice solution (undecorated java window shows up briefly before hide() is called). 
+//However, this does work on energyXT2 and Renoise, with the restriction that the (java) call to hide() 
+//does not have any effect (dont know why...). This means that after close, the java window is detached, 
+//but is not hidden, e.g. it stays visible. 
 #if defined(WIN32) || defined(linux) 
 	this->detachWindow(); //first detach, then close 
 #endif
+
 	jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
 	env->CallVoidMethod(this->JavaPlugGUIObj, mid);
 	bool error = this->checkException(env);
+
+// LINUX: 
+// well, this would look best (the window is made invisible first, then the java win is detached from 
+// the native win. Thus no flickering of the java window occurs since detaching causes the java win to 
+// be displayed in undecorated form at its original location (upper left corner of the screen). 
+// However, this DOES NOT WORK in energyXT2 or Renoise. Somehow the java window gets corrupted 
+// and will never show up again when calling show();
+
+//#if defined(linux)
+//	this->detachWindow(); //first detach, then close 
+//#endif
 
 #if defined(WIN32) || defined(linux) 
 	if (error) {
