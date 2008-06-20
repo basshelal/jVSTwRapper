@@ -12,3 +12,7 @@ Mac OSX testing and gc fix / Many hints to solve java gui problems on OSX
 	
 Fix for threading bug (initially discovered on CubaseSX on Mac OSX)
 	Tim Hoffmann
+	
+VST-AU bridge - Seth kindly allows us to distribute a binary version of his VST-AU wrapper 
+together with the Mac OSX version of jVSTwRapper. 
+	Seth Kingsley (http://code.google.com/p/vstau/)
