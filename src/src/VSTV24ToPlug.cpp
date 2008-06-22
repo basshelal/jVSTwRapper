@@ -142,21 +142,28 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 	jdouble *jval = NULL;
 	//copy c array to java array
 	for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
-		//jval = env->GetFloatArrayElements(ProcessDoubleReplacingInArrays[i], NULL);
+		//jval = env->GetDoubleArrayElements(ProcessDoubleReplacingInArrays[i], NULL);
 		jval = (jdouble*)env->GetPrimitiveArrayCritical(ProcessDoubleReplacingInArrays[i], NULL);
 		memcpy(jval, inputs[i], sampleFrames * sizeof(double));
-		//env->ReleaseFloatArrayElements(ProcessDoubleReplacingInArrays[i], jval, 0); 
+		//env->ReleaseDoubleArrayElements(ProcessDoubleReplacingInArrays[i], jval, 0); 
 		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingInArrays[i], jval, 0); 
 		env->SetObjectArrayElement(ProcessDoubleReplacingJInputs, i, ProcessDoubleReplacingInArrays[i]);
 	}
 	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
 		//processReplacing replaces the output 
 		//--> do not copy output from native to java, no need for that since it is replaced anyways	
-		/*
-		jval = env->GetFloatArrayElements(ProcessDoubleReplacingOutArrays[i], NULL);
-		memcpy(jval, outputs[i], sampleFrames * sizeof(float));
-		env->ReleaseFloatArrayElements(ProcessDoubleReplacingOutArrays[i], jval, 0);
-		*/
+		//--> well, do it anyways... fixes the hanging note problem...
+		//next experiment: insert 0.0d for each double of the output array --> will be replaced by the plugin
+
+		//jval = env->GetDoubleArrayElements(ProcessDoubleReplacingOutArrays[i], NULL);
+		jval = (jdouble*)env->GetPrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], NULL);
+
+		//memcpy(jval, outputs[i], sampleFrames * sizeof(double));
+		memset(jval, 0, sampleFrames * sizeof(double)); //TODO: 0 may not be 0.0d at all plaforms? --> http://bytes.com/forum/thread222353.html
+		
+		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], jval, 0); 
+		//env->ReleaseFloatArrayElements(ProcessDoubleReplacingOutArrays[i], jval, 0);
+		
 		env->SetObjectArrayElement(ProcessDoubleReplacingJOutputs, i, ProcessDoubleReplacingOutArrays[i]);
 	}
 
@@ -171,7 +178,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 
 	//copy java array to c array
 	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-		//jval = env->GetFloatArrayElements(ProcessReplacingOutArrays[i], NULL);
+		//jval = env->GetFloatArrayElements(ProcessDoubleReplacingOutArrays[i], NULL);
 		jval = (jdouble*)env->GetPrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], NULL);
 		memcpy(outputs[i], jval, sampleFrames * sizeof(double));
 		//env->ReleaseFloatArrayElements(ProcessDoubleReplacingOutArrays[i], jval, 0); //!!! use JNI_ABORT as last param? should be more efficient, we dont need the changes to jval to be copied back
