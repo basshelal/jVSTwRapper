@@ -428,7 +428,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	}
 
 
-#ifndef linux
+//#ifndef linux
 	if (ProcessLastSampleFrames!=sampleFrames) {
 		ProcessLastSampleFrames=sampleFrames;
 		
@@ -494,6 +494,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		env->ReleasePrimitiveArrayCritical(ProcessOutArrays[i], jval, JNI_ABORT);
 	}
 
+/*
 #else
 //############################################################################################################
 
@@ -551,6 +552,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
 #endif
+*/
 
 	::checkException(env);
 }
@@ -567,7 +569,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F");
 	}
 
-#ifndef linux
+//#ifndef linux
 	if (ProcessReplacingLastSampleFrames!=sampleFrames) {
 		ProcessReplacingLastSampleFrames=sampleFrames;
 		
@@ -610,10 +612,14 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		//processReplacing replaces the output 
 		//--> do not copy output from native to java, no need for that since it is replaced anyways	
 		//--> well, do it anyways... fixes the hanging note problem...
+		//next experiment: insert 0.0f for each float of the output array --> will be replaced by the plugin
 		
 		//jval = env->GetFloatArrayElements(ProcessReplacingOutArrays[i], NULL);
 		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessReplacingOutArrays[i], NULL);
-		memcpy(jval, outputs[i], sampleFrames * sizeof(float));
+		
+		//memcpy(jval, outputs[i], sampleFrames * sizeof(float));
+		memset(jval, 0, sampleFrames * sizeof(float)); //TODO: 0 may not be 0.0f at all plaforms? --> http://bytes.com/forum/thread222353.html
+		
 		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, 0); 
 		//env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0);
 		
@@ -637,7 +643,8 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		//env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0); //!!! use JNI_ABORT as last param? should be more efficient, we dont need the changes to jval to be copied back
 		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, JNI_ABORT);  
 	}
-	
+
+/*
 #else
 //############################################################################################################
 
@@ -698,6 +705,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
 #endif
+*/
 
 	::checkException(env);
 }
