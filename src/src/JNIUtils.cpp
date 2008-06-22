@@ -120,7 +120,7 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 
 
 //------------------------------------------------------------------------
-int log(char* data, ...) {
+int log(const char* data, ...) {
     int retval = -1;
 	int isWarningOrError = 1;    
 	char message[9999];
