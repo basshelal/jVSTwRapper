@@ -31,7 +31,7 @@ debug:
 #	src/src/vstgui/vstgui.cpp src/src/ladspa/jLADSPAwRapperMAIN.cpp \
 
 #	the real thing is here...
-	g++ -o ./bin/jvstwrapper.so -shared -fPIC -g -ldl -lX11 -ljawt -lmawt \
+	g++ -o ./bin/jvstwrapper.so -shared -fPIC -g -Wall -ldl -lX11 -ljawt -lmawt \
  	-fvisibility=hidden -fvisibility-inlines-hidden \
 	-I/usr/include -I./src/src/public.sdk/vst2.x -I./src/src/ladspa -I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux -I./src/src/pluginterfaces/vst2.x -I./src/src \
