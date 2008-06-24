@@ -1,0 +1,26 @@
+
+Download the latest .zip file from http://sourceforge.net/project/showfiles.php?group_id=92192
+and extract it to this directory. 
+
+NOTE: you may need to rename the directory that is created from "jVSTwRapper_vXX" to "jVSTwRapper"
+
+The expected directory layout is as follows:
+
+.
+|   EXTRACT_JVSTWRAPPER_PLATFORM_ZIP_HERE.txt
+|   JayDLay.ini
+|   
+\---jVSTwRapper
+        AUTHORS.txt
+        ChangeLog.txt
+        fb.jpg
+        jVSTeXamples_bin.jar
+        jVSTeXamples_src.zip
+        jVSTsYstem_bin.jar
+        jVSTwRapper.dll
+        jVSTwRapper.ini
+        jVSTwRapper_bin.jar
+        jVSTwRapper_doc.zip
+        LICENSE.txt
+        README.html
+        style.css

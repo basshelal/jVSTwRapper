@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sourceforge.jvstwrapper</groupId>
+	<artifactId>JayDLay</artifactId>
+	<name>JayDLay</name>
+	<version>0.8</version>
+	
+<!--
+  <scm>
+    <connection>scm:svn:http://b0rx0r.googlecode.com/svn/trunk/b0rx0r</connection>
+    <developerConnection>scm:svn:https://b0rx0r.googlecode.com/svn/trunk/b0rx0r</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://code.google.com/p/b0rx0r/source/browse</url>
+  </scm>
+-->
+  
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+	
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.3</source>
+					<target>1.3</target>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>vstplugin_win.xml</descriptor>
+						<descriptor>vstplugin_osx.xml</descriptor>
+						<descriptor>vstplugin_linux.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>net.sourceforge.jvstwrapper</groupId>
+			<artifactId>jVSTwRapper</artifactId>
+			<version>0.9f</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.jvstwrapper</groupId>
+			<artifactId>jVSTsYstem</artifactId>
+			<version>0.9f</version>
+		</dependency> 
+		<dependency>
+			<groupId>net.sourceforge.napkinlaf</groupId>
+			<artifactId>napkinlaf</artifactId>
+			<version>1.0</version>
+		</dependency> 
+	</dependencies>
+</project>
