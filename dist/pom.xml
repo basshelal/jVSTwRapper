@@ -16,7 +16,7 @@
 -->
   
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>../src</sourceDirectory>
 	
 		<plugins>
 			<plugin>

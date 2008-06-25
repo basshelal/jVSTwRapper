@@ -15,7 +15,7 @@
 
 	<fileSets>
 		<fileSet>
-			<directory>dist/osx/jVSTwRapper/jvstwrapper.vst/</directory>
+			<directory>osx/jVSTwRapper/jvstwrapper.vst/</directory>
 			<outputDirectory>jaydlay.vst</outputDirectory>
 			<excludes>
 				<exclude>**/*.jar</exclude>
@@ -27,7 +27,7 @@
 		</fileSet>
 <!--		
 		<fileSet>
-			<directory>dist/osx/__MACOSX</directory>
+			<directory>osx/__MACOSX</directory>
 			<outputDirectory>__MACOSX</outputDirectory>
 			<useDefaultExcludes>false</useDefaultExcludes>
 		</fileSet>	
@@ -36,11 +36,11 @@
 
 	<files>
 		<file>
-			<source>dist/osx/Info.plist</source>
+			<source>osx/Info.plist</source>
 			<outputDirectory>jaydlay.vst/Contents/</outputDirectory>
 		</file>
 		<file>
-			<source>dist/osx/libjvstwrapper.jnilib.ini</source>
+			<source>osx/libjvstwrapper.jnilib.ini</source>
 			<outputDirectory>jaydlay.vst/Contents/Resources/</outputDirectory>
 		</file>
 	</files>
