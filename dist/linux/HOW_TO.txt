@@ -1,5 +1,5 @@
 
-Download the latest .zip file from http://sourceforge.net/project/showfiles.php?group_id=92192
+Download the latest .zip file for _linux_ from http://sourceforge.net/project/showfiles.php?group_id=92192
 and extract it to this directory. 
 
 NOTE: you may need to rename the directory that is created from "jVSTwRapper_vXX" to "jVSTwRapper"
@@ -7,7 +7,7 @@ NOTE: you may need to rename the directory that is created from "jVSTwRapper_vXX
 The expected directory layout is as follows:
 
 .
-|   EXTRACT_JVSTWRAPPER_PLATFORM_ZIP_HERE.txt
+|   HOW_TO.txt
 |   JayDLay.ini
 |   
 \---jVSTwRapper
