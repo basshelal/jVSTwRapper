@@ -75,6 +75,7 @@ class VSTGUIWrapper : public AEffGUIEditor {
 #endif
 #ifdef linux
 		Window JavaWindowHandle;
+		Window ParentWindow;
 #endif
 
 	protected:
@@ -87,6 +88,9 @@ class VSTGUIWrapper : public AEffGUIEditor {
 #if defined(WIN32) || defined(linux)
 		void detachWindow();
 		void undecorateJavaWindow();
+#endif
+#ifdef linux
+		Window getParentWindow(Display *d, Window w);
 #endif
 
 		JavaVM *Jvm;

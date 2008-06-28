@@ -82,6 +82,11 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 	//no window embedding on the mac for now...
 	this->AttachWindow=0;
 #endif
+#ifdef linux
+	Status s = XInitThreads();
+	log("XInitThreads()=%i", s);
+	this->ParentWindow = 0;
+#endif
 }
 
 
@@ -268,14 +273,14 @@ bool VSTGUIWrapper::open (void *ptr) {
 
 
 	if(isAttached) {
-        // Call Undecorate
+		// Call Undecorate
 		this->undecorateJavaWindow();
-
+		
 		//Try to attach the Window
 		log("Attaching Window");
 		JAWT_DrawingSurface* ds;
 		JAWT_DrawingSurfaceInfo* dsi;
-#ifdef WIN32
+#ifdef WIN32		
 		JAWT_Win32DrawingSurfaceInfo* dsi_win;
 #endif
 #ifdef linux
@@ -309,7 +314,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 					dsi_win = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
 #endif
 
-//#ifdef WIN32
+#ifdef WIN32
 					//Create Frame to embedd the java Frame
 					ERect* thissize;
 					this->getRect(&thissize);
@@ -321,7 +326,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 					if (frame!=NULL) delete frame;
 					frame = new CFrame (size, ptr, this);
 					
-#ifdef WIN32
+//#ifdef WIN32
 					HWND frhwnd=(HWND)frame->getSystemWindow();
 
 					//Get Java Window-Handle
@@ -344,20 +349,22 @@ bool VSTGUIWrapper::open (void *ptr) {
 					oldWndProcEdit = (WNDPROC)SetWindowLong ((HWND)frhwnd, GWL_WNDPROC, (long)WindowProcEdit);
 #endif
 #ifdef linux
-					Window frhwnd = (Window)frame->getSystemWindow(); 
-					
 					//Get Java Window-Handle
 					this->JavaWindowHandle=dsi_win->drawable;  //cast drawable to window! (is only a handle anyways...)
-					if (::GlobalDisplay==NULL) ::GlobalDisplay = dsi_win->display;   //init global var diplay
-					
-					//usleep(1000*200); //wait a little to ensure that the x operation completes...
-					
-					//Set Parent Window
+					::GlobalDisplay = dsi_win->display;   //init global var diplay
+								
+					//reparent
+					/*
+					Window frhwnd = (Window)frame->getSystemWindow(); 
 					int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, frhwnd, 0, 0);
-					//int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
-					log("win reparent=%i", ret);
+					*/
 					
-					//usleep(1000*200); //wait a little to ensure that the x operation completes...
+					//reparent
+					//Save current parent window
+					this->ParentWindow = getParentWindow(::GlobalDisplay, this->JavaWindowHandle);
+					log("Parent Window=%i", this->ParentWindow);
+					int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
+					log("win reparent=%i", ret);
 #endif
 
 					// Free the drawing surface info
@@ -557,13 +564,17 @@ void VSTGUIWrapper::detachWindow() {
 		SetParent(this->JavaWindowHandle,NULL);
 		this->JavaWindowHandle=NULL;
 #endif
-#ifdef linux
-		//usleep(1000*200); //wait a little to ensure that the x operation completes...
-		int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, DefaultRootWindow(::GlobalDisplay), 0, 0);
-		//usleep(1000*200); //wait a little to ensure that the x operation completes...
-		
+#ifdef linux	
+		//re-decorate window after reparent
+		//undecorateJavaWindow();
+
+		int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, XDefaultRootWindow(::GlobalDisplay), 0, 0);
+		//int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, this->ParentWindow, 0, 0);
 		log("remap=%i", ret);
 		this->JavaWindowHandle=0;
+		
+		//re-decorate window after reparent
+		//undecorateJavaWindow();
 #endif
 	}
 	if(frame!=NULL) {
@@ -587,6 +598,20 @@ void VSTGUIWrapper::undecorateJavaWindow() {
     if (midUndeco == NULL) log("** ERROR: cannot find GUI instance-method undecorate()V");
     env->CallVoidMethod(this->JavaPlugGUIObj, midUndeco);
     this->checkException(env);
+}
+#endif
+
+#ifdef linux
+Window VSTGUIWrapper::getParentWindow(Display *d, Window w) {
+    Window       root   = 0;
+    Window       parent = 0;
+    Window      *children;
+    unsigned int num_children;
+
+    if (XQueryTree(d, w, &root, &parent, &children, &num_children))
+        XFree(children);
+
+    return parent;
 }
 #endif
 
