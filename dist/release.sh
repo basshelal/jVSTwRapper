@@ -18,6 +18,8 @@ cp ../cvs2cl.pl .
 cd ..
 
 wget -O READ_ME.html http://jvstwrapper.sourceforge.net/index.html
+wget http://jvstwrapper.sourceforge.net/style.css
+wget http://jvstwrapper.sourceforge.net/fb.jpg
 
 mvn install
 mvn javadoc:jar
