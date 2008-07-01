@@ -63,6 +63,8 @@ public class RotaryKnob extends JComponent {
 	 * 
 	 * DKnob is a component similar to JSlider but with round "user interface",
 	 * a knob.
+	 * 
+	 * Original source is from http://www.dreamfabric.com/java/knob/knob.html
 	 */
 
 	public final static int DRAGTYPE_SIMPLE = 1;
