@@ -24,5 +24,17 @@ wget http://jvstwrapper.sourceforge.net/fb.jpg
 mvn install
 mvn javadoc:jar
 mvn package assembly:assembly
+
+echo Mac OSX only --> create custom folder icon
+ASSEMBLY_DIR=target/jVSTwRapper-Release-0.9g-osx.dir
+rm -f $ASSEMBLY_DIR/jvstwrapper.vst/Icon*
+/Developer/Tools/SetFile -a B $ASSEMBLY_DIR/jvstwrapper.vst
+sips -i $ASSEMBLY_DIR/jvstwrapper.vst/Contents/Resources/jvstwrapper.icns
+ditto $ASSEMBLY_DIR/jvstwrapper.vst/Contents/Resources/jvstwrapper.icns $ASSEMBLY_DIR/jvstwrapper.vst/Icon
+/Developer/Tools/SetFile -a V $ASSEMBLY_DIR/jvstwrapper.vst/Icon
+echo "file rename $ASSEMBLY_DIR/jvstwrapper.vst/Icon $ASSEMBLY_DIR/jvstwrapper.vst/Icon\r" | tclsh
+/Developer/Tools/SetFile -a C $ASSEMBLY_DIR/jvstwrapper.vst/
+
 mvn deploy
-#mvn release
+#mvn release:prepare
+#mvn release:perform
