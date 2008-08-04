@@ -28,6 +28,15 @@
     	<url>http://jvstwrapper.cvs.sourceforge.net/jvstwrapper/jvst_wrapper/</url>
   	</scm>
 	
+	<repositories>
+    	<repository>
+      		<id>jVSTwRapperRepo</id>
+      		<name>jVSTwRapper Repository</name>
+      		<url>http://jvstwrapper.sourceforge.net/maven2</url>
+      		<layout>default</layout>
+    	</repository>
+  	</repositories>
+  	
 	<modules>
 		<module>../../jvst_system</module>
 		<module>../../jvst_wrapper</module>
