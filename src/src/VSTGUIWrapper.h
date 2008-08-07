@@ -51,7 +51,7 @@
 #endif
 
 //-----------------------------------------------------------------------------
-class VSTGUIWrapper : public AEffGUIEditor {
+class VSTGUIWrapper : public AEffGUIEditor, public CControlListener {
 
 	public:
 		VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstring guiclazz);	
@@ -61,15 +61,11 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		virtual void close ();
 		virtual bool getRect (ERect **ppRect);
 
+		virtual void valueChanged (CDrawContext* context, CControl* control);
+
 		//Utility
 		int initJavaSide();	
-/*
-#ifdef MACX
-		bool wrappedOpen (void *ptr);
-		void wrappedClose ();
-		void wrappedDestroy();
-#endif
-*/
+
 #ifdef WIN32
 		HWND JavaWindowHandle;
 #endif
@@ -101,6 +97,11 @@ class VSTGUIWrapper : public AEffGUIEditor {
 		
 		bool IsInitialized;
 		bool AttachWindow;
+
+		
+		//VSTGUI stuff
+		COnOffButton *hButton;
+		CBitmap *hBackground;
 };
 
 #endif

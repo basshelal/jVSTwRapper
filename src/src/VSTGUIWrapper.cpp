@@ -57,6 +57,22 @@
 
 
 
+//-----------------------------------------------------------------------------
+// resource id's
+enum {
+	// bitmaps
+	kBackgroundID = 128,
+	kButtonID,
+
+	kButtonTag = 42,
+	
+	// positions
+	kButtonX = 228,
+	kButtonY = 13,
+};
+
+
+
 VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstring guiclazz) 
 	: AEffGUIEditor (effect) {
 
@@ -87,6 +103,17 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 	log("XInitThreads()=%i", s);
 	this->ParentWindow = 0;
 #endif
+
+	hBackground = NULL;
+	hButton = NULL;
+
+	// if we dont attach to the native window, display our logo and a 
+	// button to show/hide the java gui
+	if (this->AttachWindow==false) {
+		// load the background bitmap
+		hBackground = new CBitmap (kBackgroundID);
+	}
+
 }
 
 
@@ -127,8 +154,8 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	else {
 		rect.left   = 0;
 		rect.top    = 0;
-		rect.right  = 1; //maybe this fixes the fact that some hosts dont even call open() ?
-		rect.bottom = 1;
+		rect.right  = (short)hBackground->getWidth ();
+		rect.bottom = (short)hBackground->getHeight ();
 	}
 	*ppErect = &rect;
 	return true;
@@ -152,6 +179,11 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 		//free global reference
 		env->DeleteGlobalRef(this->JavaPlugGUIObj);
 	}
+
+	// free the background bitmap
+	if (hBackground) hBackground->forget ();
+	hBackground = 0;
+
 	log("GUI Wrapper destroyed!");
 }
 
@@ -385,8 +417,8 @@ bool VSTGUIWrapper::open (void *ptr) {
 	} //Attaching    
 #endif		
 
-		
-	// Call Open
+
+	// Call Open in the java side
 	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
     jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
 	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
@@ -422,8 +454,63 @@ bool VSTGUIWrapper::open (void *ptr) {
 #endif
 
 	this->checkException(env);
+
+
+	if (this->AttachWindow==false) {
+		// if something went wrong with the attaching process, or attaching is deactivated, 
+		// show a small gui here that allows to show/hide the java gui
+		
+		CRect size (0, 0, hBackground->getWidth(), hBackground->getHeight());
+		CFrame* lFrame = new CFrame (size, ptr, this);
+		lFrame->setBackground (hBackground);
+		
+		CBitmap* hButtonBG = new CBitmap (kButtonID);
+		size (kButtonX, kButtonY, kButtonX + hButtonBG->getWidth(), kButtonY + hButtonBG->getHeight()/2);
+		CPoint offset (0, 0);
+		hButton = new COnOffButton(size, this, kButtonTag, hButtonBG);
+		lFrame->addView (hButton);
+		
+		hButtonBG->forget();
+
+		frame=lFrame;
+	}
+
 	return true;
 }
+
+
+void VSTGUIWrapper::valueChanged (CDrawContext* context, CControl* control) {
+	log("Value Changed! tag=%i value=%f", control->getTag(), control->getValue());
+
+	long tag = control->getTag();
+
+	switch (tag) {
+	case kButtonTag:
+		float val = control->getValue();
+		JNIEnv* env = this->ensureJavaThreadAttachment();
+		if (val==1.0) {
+			//hide
+			if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
+			jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
+			if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
+			if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
+			env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+			this->checkException(env);
+		}
+		else {
+			//show
+			if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
+			jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
+			if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
+			if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return;
+			env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+			this->checkException(env);
+		}
+		break;
+	}
+}
+
+
 
 //-----------------------------------------------------------------------------
 void VSTGUIWrapper::close () {
