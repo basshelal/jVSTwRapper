@@ -107,13 +107,8 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 	hBackground = NULL;
 	hButton = NULL;
 
-	// if we dont attach to the native window, display our logo and a 
-	// button to show/hide the java gui
-	if (this->AttachWindow==false) {
-		// load the background bitmap
-		hBackground = new CBitmap (kBackgroundID);
-	}
-
+	// load the background bitmap --> only used if attachwindow==false
+	hBackground = new CBitmap (kBackgroundID);
 }
 
 
@@ -154,8 +149,8 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 	else {
 		rect.left   = 0;
 		rect.top    = 0;
-		rect.right  = (short)hBackground->getWidth ();
-		rect.bottom = (short)hBackground->getHeight ();
+		rect.right  = (short)hBackground->getWidth();
+		rect.bottom = (short)hBackground->getHeight();
 	}
 	*ppErect = &rect;
 	return true;
@@ -346,7 +341,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 					dsi_win = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
 #endif
 
-#ifdef WIN32
+//#ifdef WIN32
 					//Create Frame to embedd the java Frame
 					ERect* thissize;
 					this->getRect(&thissize);
@@ -358,7 +353,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 					if (frame!=NULL) delete frame;
 					frame = new CFrame (size, ptr, this);
 					
-//#ifdef WIN32
+#ifdef WIN32
 					HWND frhwnd=(HWND)frame->getSystemWindow();
 
 					//Get Java Window-Handle
