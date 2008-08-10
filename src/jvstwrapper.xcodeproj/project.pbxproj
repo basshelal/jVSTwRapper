@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		84C66D190E4F9B69009C9989 /* bmp00128.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 84C66D170E4F9B68009C9989 /* bmp00128.bmp */; };
+		84C66D1A0E4F9B69009C9989 /* bmp00129.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 84C66D180E4F9B68009C9989 /* bmp00129.bmp */; };
 		C3B572360BD8815A00846E41 /* jLADSPAwRapperMAIN.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3B572340BD8815A00846E41 /* jLADSPAwRapperMAIN.cpp */; };
 		C3C3AEB40B6247C100C0F71B /* PkgInfo in Resources */ = {isa = PBXBuildFile; fileRef = C3C3AE9D0B6244AC00C0F71B /* PkgInfo */; };
 		C3C3AED90B62683000C0F71B /* jvstwrapper.icns in Resources */ = {isa = PBXBuildFile; fileRef = C3C3AED80B62683000C0F71B /* jvstwrapper.icns */; };
@@ -43,6 +45,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		84C66D170E4F9B68009C9989 /* bmp00128.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = bmp00128.bmp; path = src/bmp00128.bmp; sourceTree = "<group>"; };
+		84C66D180E4F9B68009C9989 /* bmp00129.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = bmp00129.bmp; path = src/bmp00129.bmp; sourceTree = "<group>"; };
 		8D01CCD10486CAD60068D4B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C3B572340BD8815A00846E41 /* jLADSPAwRapperMAIN.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = jLADSPAwRapperMAIN.cpp; sourceTree = "<group>"; };
 		C3B572350BD8815A00846E41 /* ladspa.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ladspa.h; sourceTree = "<group>"; };
@@ -161,6 +165,8 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				84C66D170E4F9B68009C9989 /* bmp00128.bmp */,
+				84C66D180E4F9B68009C9989 /* bmp00129.bmp */,
 				C3C3AED80B62683000C0F71B /* jvstwrapper.icns */,
 				C3C3AE9D0B6244AC00C0F71B /* PkgInfo */,
 				8D01CCD10486CAD60068D4B7 /* Info.plist */,
@@ -346,6 +352,8 @@
 				C3C70FE60B4582F900DA1076 /* libjvstwrapper.jnilib.ini in Resources */,
 				C3C3AEB40B6247C100C0F71B /* PkgInfo in Resources */,
 				C3C3AED90B62683000C0F71B /* jvstwrapper.icns in Resources */,
+				84C66D190E4F9B69009C9989 /* bmp00128.bmp in Resources */,
+				84C66D1A0E4F9B69009C9989 /* bmp00129.bmp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,10 +415,7 @@
 		4FADC23808B4156C00ABE55E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = i386;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
@@ -447,7 +452,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/VST/";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,

@@ -235,8 +235,10 @@ bool VSTGUIWrapper::open (void *ptr) {
 #ifdef MACX
 		//well, mac window embedding isnt implemented, so we wont come to this point anyways...
 		performOnAnotherThread(this, NULL, NULL, GuiWrapperInitJavaSide, false);
-		return true; //this way, we miss the first call to open()!
-					 //--> we fix this on the java side: last step of gui initilialization there is opening the gui
+		//return true; //commented, because this also skips the creation of the VSTGUI part --> empty ui on first open()
+		
+		//this way, we miss the first call to open()!
+		//--> we fix this on the java side: last step of gui initilialization there is opening the gui
 #else
 		initJavaSide();
 		//can continue from here since we didnt start a new tread
@@ -244,7 +246,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 	}
 
 	//sanity check
-	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
+	//if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
 
 	//!!! always call this !!!
 	AEffGUIEditor::open(ptr);
@@ -424,12 +426,14 @@ bool VSTGUIWrapper::open (void *ptr) {
 #endif		
 
 
-	// Call Open in the java side
-	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
-    jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
-	if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
-	if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
-	env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+	if (this->IsInitialized==true) {
+		// Call Open in the java side
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
+		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
+		if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
+		if(this==NULL || this->JavaPlugGUIObj==NULL || this->JavaPlugGUIClass==NULL) return false;
+		env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+	}
 
 
 #if defined(WIN32) || defined(linux)
@@ -460,7 +464,6 @@ bool VSTGUIWrapper::open (void *ptr) {
 #endif
 
 	this->checkException(env);
-
 
 	if (this->AttachWindow==false) {
 		// if something went wrong with the attaching process, or attaching is deactivated, 

@@ -38,7 +38,8 @@
 
 #include <jni.h>
 
-#if defined(WIN32) || defined(MACX)
+//MACX is defined by vstgui.h!
+#if defined(WIN32) || defined(__MACH__)
 	#include "vstgui/vstgui.h"
 #else
 	#include "vstgui_linux/vstgui.h"
