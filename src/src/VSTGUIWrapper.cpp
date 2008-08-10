@@ -53,17 +53,21 @@
 #endif
 #ifdef linux
 	#include <unistd.h>
+	
+	// images
+	#include "background.xpm"
+	#include "button.xpm"
 #endif
 
 
 
 //-----------------------------------------------------------------------------
-// resource id's
 enum {
-	// bitmaps
+	// resource id's
 	kBackgroundID = 128,
 	kButtonID,
 
+	// tags
 	kButtonTag = 42,
 	
 	// positions
@@ -71,6 +75,13 @@ enum {
 	kButtonY = 13,
 };
 
+#ifdef linux
+	CResTable xpmResources = {
+		{kBackgroundID, background_xpm},
+		{kButtonID,     button_xpm},
+		{0,             0}
+	};
+#endif
 
 
 VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstring guiclazz) 
@@ -203,7 +214,7 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 #ifdef linux
 	Display *GlobalDisplay = NULL;
 	
-int errorHandler(Display *dp, XErrorEvent *e) {
+int xErrorHandler(Display *dp, XErrorEvent *e) {
 	char text[1024];
 	XGetErrorText(dp, e->error_code, text, sizeof(text));
 	text[1023]='\0';
@@ -242,7 +253,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 	
 #ifdef linux
 	//install error handler to be notified if anything goes wrong in the win embedding code...
-	XSetErrorHandler(errorHandler);
+	XSetErrorHandler(xErrorHandler);
 #endif
 
 #if defined(WIN32) || defined(linux)
@@ -341,7 +352,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 					dsi_win = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
 #endif
 
-//#ifdef WIN32
+#ifdef WIN32 //TODO: move a few lines further down, when linux VSTGUI finally works
 					//Create Frame to embedd the java Frame
 					ERect* thissize;
 					this->getRect(&thissize);
@@ -353,7 +364,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 					if (frame!=NULL) delete frame;
 					frame = new CFrame (size, ptr, this);
 					
-#ifdef WIN32
+//#ifdef WIN32 
 					HWND frhwnd=(HWND)frame->getSystemWindow();
 
 					//Get Java Window-Handle
@@ -462,6 +473,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 		CBitmap* hButtonBG = new CBitmap (kButtonID);
 		size (kButtonX, kButtonY, kButtonX + hButtonBG->getWidth(), kButtonY + hButtonBG->getHeight()/2);
 		CPoint offset (0, 0);
+		
 		hButton = new COnOffButton(size, this, kButtonTag, hButtonBG);
 		lFrame->addView (hButton);
 		

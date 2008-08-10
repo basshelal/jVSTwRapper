@@ -38,7 +38,11 @@
 
 #include <jni.h>
 
-#include "vstgui/vstgui.h"
+#if defined(WIN32) || defined(MACX)
+	#include "vstgui/vstgui.h"
+#else
+	#include "vstgui_linux/vstgui.h"
+#endif
 
 #if defined(MACX) || defined(linux)
 	#include <pthread.h>
@@ -49,6 +53,7 @@
   	//#include <X11/Xatom.h>
   	#undef KeyPress
 #endif
+
 
 //-----------------------------------------------------------------------------
 class VSTGUIWrapper : public AEffGUIEditor, public CControlListener {
