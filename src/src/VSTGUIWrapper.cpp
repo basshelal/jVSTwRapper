@@ -490,6 +490,8 @@ bool VSTGUIWrapper::open (void *ptr) {
 
 
 void VSTGUIWrapper::valueChanged (CDrawContext* context, CControl* control) {
+	if (this->IsInitialized==false) return;
+
 	log("Value Changed! tag=%i value=%f", control->getTag(), control->getValue());
 
 	long tag = control->getTag();
