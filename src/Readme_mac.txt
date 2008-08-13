@@ -1,4 +1,4 @@
-Writing VST plugins in Java on the Mac mini HOW-TO
+Writing VST Plugins in Java on the Mac -- Mini How-To
 --------------------------------------------------
 
 1. Write your plugin using the wrapper api.
@@ -18,13 +18,37 @@ Writing VST plugins in Java on the Mac mini HOW-TO
    Resources directory and the MacOS directory inside the .vst bundle
 
 
+
+Wrapping you jVSTwRapper VST plugin as Audio Unit (AU)
+--------------------------------------------------------------
+
+1. Install (i.e. copy the bundle) your jVSTwRapper VST plugin 
+   to /Library/Audio/Plug-Ins/VST/ or ~/Library/Audio/Plug-Ins/VST/
+
+2. Start the "VSTAU Manager" application, find you plugin in the list and click "install". 
+   This will create a wrapper AU plugin for the selected VST plug. 
+
+3. You can find the created AU plugin -- named "OriginalVSTPluginName (VSTAU)" -- 
+   in ~/Library/Audio/Plug-Ins/Components/ 
+
+4. To distribute your plugin as AU, you *** need to ship the VST version as well *** 
+   -- the AU version is only a wrapper that loads the VST version when started. 
+   So, to distribute your plugin add both, the VST and the AU version 
+   to a single archive. To install, simply copy both bundles to the folders /VST or /Components 
+   in either /Library/Audio/Plug-Ins/ or ~/Library/Audio/Plug-Ins/
+
+--> You may also try this process with the jVST sample plugins that ship with the 
+    jVSTwRapper download to see how it works
+
+
+
 NOTE:
 ------
-*** Note that Java GUIs require at least Java 1.5.0_07 (Mac OSX 10.4.8 or higher) to be installed on your system ***
+*** Java GUIs require at least Java 1.5.0_07 (Mac OSX 10.4.8 or higher) to be installed on your system ***
 Use 'java -version' in a terminal window to check your version, and 'Software Update' to install 
 if you have a lower version.
 
-Please report to the forum any host that causes problems with Java GUIs. I will include them
+Please report to the forum any host application that causes problems with Java GUIs. I will include them
 in my tests. 
 
 

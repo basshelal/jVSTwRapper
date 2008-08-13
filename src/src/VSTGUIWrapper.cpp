@@ -480,7 +480,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 		hButton = new COnOffButton(size, this, kButtonTag, hButtonBG);
 		lFrame->addView (hButton);
 		
-		hButtonBG->forget();
+		//hButtonBG->forget();
 
 		frame=lFrame;
 	}
