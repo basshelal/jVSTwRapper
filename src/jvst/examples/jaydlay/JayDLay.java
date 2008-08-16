@@ -186,32 +186,22 @@ public class JayDLay extends VSTPluginAdapter {
   public void setProgram(int index) {
     DelayProgram dp = this.programs[index];
 
+    //log("setProgram index=" + index);
+    
     this.currentProgram = index;
 
     this.setParameter(DelayProgram.PARAM_ID_DELAY, dp.getDelay());
     this.setParameter(DelayProgram.PARAM_ID_FEEDBACK, dp.getFeedback());
     this.setParameter(DelayProgram.PARAM_ID_OUT, dp.getOut());
     
-    //only access gui elemts if the gui was fully initialized
-    //this is to prevent a threading issue on the mac that may cause a npe because the sliders 
-    //arent there yet (the constructor of the plugin is called, when the gui is not initialized yet)
-    //for thread savety on the mac, never call gui stuff in the constructor of the plugin
-    //init the gui defaults always when the gui is loaded, not when the plug is loaded. 
-    if (gui!=null && gui.DelaySlider!=null) { //gui.DelaySlider is the last slider in the initilalisation sequence
-	    gui.DelaySlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
-	    gui.DelayText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
-	    
-	    gui.FeedbackSlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
-	    gui.FeedbackText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
-	    
-	    gui.VolumeSlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
-	    gui.VolumeText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_OUT)); 
-    }
+    this.updateGUI();
   }
 
   public void setParameter(int index, float value) {
     DelayProgram dp = this.programs[this.currentProgram];
 
+    //log("setParameter index=" + index + " value=" + value);
+    
     switch (index) {
         case DelayProgram.PARAM_ID_DELAY:
           this.setDelay(value);
@@ -225,6 +215,8 @@ public class JayDLay extends VSTPluginAdapter {
           dp.setOut(value);
           break;
     }
+    
+    this.updateGUI();
   }
 
   public String getEffectName() {
@@ -340,6 +332,26 @@ public class JayDLay extends VSTPluginAdapter {
     //this.cursor = 0;
     this.delay = (int)(fdelay * (float)(size - 1));
   }
+  
+  
+  private void updateGUI() {
+	//only access gui elemts if the gui was fully initialized
+	//this is to prevent a threading issue on the mac that may cause a npe because the sliders 
+	//arent there yet (the constructor of the plugin is called, when the gui is not initialized yet)
+	//for thread savety on the mac, never call gui stuff in the constructor of the plugin
+	//init the gui defaults always when the gui is loaded, not when the plug is loaded. 
+	if (gui!=null && gui.DelaySlider!=null) { //gui.DelaySlider is the last slider in the initilalisation sequence
+	    gui.DelaySlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
+	    gui.DelayText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
+	    
+	    gui.FeedbackSlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
+	    gui.FeedbackText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
+	    
+	    gui.VolumeSlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
+	    gui.VolumeText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_OUT)); 
+	}
+  }
+  
 }
 
 
