@@ -77,11 +77,12 @@ enum {
 
 #ifdef linux
 	CResTable xpmResources = {
-		{kBackgroundID, background_xpm},
-		{kButtonID,     button_xpm},
+		{kBackgroundID, (char**) background_xpm},
+		{kButtonID,     (char**) button_xpm},
 		{0,             0}
 	};
 #endif
+
 
 
 VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstring guiclazz) 
@@ -170,13 +171,13 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 //-----------------------------------------------------------------------------
 VSTGUIWrapper::~VSTGUIWrapper () {
 	log("GUI wrapper destroy");
-	
+
+#ifndef MACX	
 	if (this->IsInitialized==true) {
 		JNIEnv* env = this->ensureJavaThreadAttachment();
-	
+
 		//destroy() der gui aufrufen
 		//macx tends to block forever here...
-		//BUT WE SOLVE THIS ON THE JAVA SIDE!
 		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "destroy", "()V");
 		if (mid == NULL) log("** ERROR: cannot find GUI instance-method destroy()V");
 		env->CallVoidMethod(this->JavaPlugGUIObj, mid);
@@ -185,6 +186,7 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 		//free global reference
 		env->DeleteGlobalRef(this->JavaPlugGUIObj);
 	}
+#endif
 
 	// free the background bitmap
 	if (hBackground) hBackground->forget ();
@@ -458,7 +460,10 @@ bool VSTGUIWrapper::open (void *ptr) {
 			this->undecorateJavaWindow(); //call undecorate (this now redecorates the window)
 	
 			//Call open again
+			jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "open", "()V");
+			if (mid == NULL) log("** ERROR: cannot find GUI instance-method open()V");
 	 	    env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+	 	    this->checkException(env);
 		}
 	}
 #endif
@@ -469,20 +474,27 @@ bool VSTGUIWrapper::open (void *ptr) {
 		// if something went wrong with the attaching process, or attaching is deactivated, 
 		// show a small gui here that allows to show/hide the java gui
 		
+		log("creating custom view...");
 		CRect size (0, 0, hBackground->getWidth(), hBackground->getHeight());
-		CFrame* lFrame = new CFrame (size, ptr, this);
-		lFrame->setBackground (hBackground);
 		
+		log("new cframe");
+		CFrame* lFrame = new CFrame (size, ptr, this);
+		//frame = new CFrame (size, ptr, this);
+		log("cframe OK!");
+
+		lFrame->setBackground (hBackground);
+		//frame->setBackground (hBackground);
+
 		CBitmap* hButtonBG = new CBitmap (kButtonID);
 		size (kButtonX, kButtonY, kButtonX + hButtonBG->getWidth(), kButtonY + hButtonBG->getHeight()/2);
-		CPoint offset (0, 0);
-		
 		hButton = new COnOffButton(size, this, kButtonTag, hButtonBG);
 		lFrame->addView (hButton);
+		//frame->addView (hButton);
 		
-		//hButtonBG->forget();
+		hButtonBG->forget();
 
 		frame=lFrame;
+		log("custom view ready!");
 	}
 
 	return true;

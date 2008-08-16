@@ -1,5 +1,5 @@
 /* XPM */
-static char *background_xpm[] = {
+static const char *background_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "300 55 256 2",
 "   c black",

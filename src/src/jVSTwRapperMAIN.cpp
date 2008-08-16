@@ -443,12 +443,10 @@ int loadPlugin() {
 	ConfigFileReader *cfg = new ConfigFileReader();
 	char class_path[JVST_PATH_MAX];
 
-
 	//try to get an jni env from the loaded jvm
 	//on the mac, we might not be attached to the thread (the jvm was started)
 	//in another one. 
 	JNIEnv *env = ensureJavaThreadAttachment(GlobalJVM);
-
 
 	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
 	strncpy(class_path, DllPath, JVST_PATH_MAX);
