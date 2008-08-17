@@ -163,13 +163,16 @@ void VSTV10ToPlug::getProgramName (char *name) {
 //------------------------------------------------------------------------
 void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
 //Workaround for energyXT: Don't call setParameter from setParameterAutomated
+// Disabled for now: prevented param automation from working, i.e. calls to setParameterAutomated() 
+// didnt end up calling setParameter (what they should do)
+/*
 #ifdef WIN32
 	if(this->ToHostThread!=GetCurrentThreadId()) {		
 #endif
 #if defined(MACX) || defined(linux)
 	if(this->ToHostThread!=pthread_self()) {
 #endif
-
+*/
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	
 	if (this->SetParameterMethod==NULL) {
@@ -180,7 +183,7 @@ void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
 	env->CallVoidMethod(this->JavaPlugObj, this->SetParameterMethod, (jint)index, (jfloat)value);
 
 	this->checkException(env);
-	}
+//	}
 }
 
 //------------------------------------------------------------------------
