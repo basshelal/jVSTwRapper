@@ -145,15 +145,18 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     
     if (!DEBUG) {
 	    if (sl == this.VolumeSlider) {
-	      this.pPlugin.setParameter(DelayProgram.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
+	      //this.pPlugin.setParameter(DelayProgram.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
+	      this.pPlugin.setParameterAutomated(DelayProgram.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
 	      this.VolumeText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
 	    }
 	    else if (sl == this.FeedbackSlider) {
-	      this.pPlugin.setParameter(DelayProgram.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
+	      //this.pPlugin.setParameter(DelayProgram.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
+	      this.pPlugin.setParameterAutomated(DelayProgram.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
 	      this.FeedbackText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
 	    }
 	    else if (sl == this.DelaySlider) {
-	      this.pPlugin.setParameter(DelayProgram.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));
+	      //this.pPlugin.setParameter(DelayProgram.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));
+	      this.pPlugin.setParameterAutomated(DelayProgram.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));
 	      this.DelayText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
 	    }
     }
