@@ -366,11 +366,11 @@
 			Name="Config Files"
 			>
 			<File
-				RelativePath=".\src\conf\jVSTwRapper.ini"
+				RelativePath=".\src\conf\jvstwrapper_linux.ini"
 				>
 			</File>
 			<File
-				RelativePath=".\src\conf\jvstwrapper_linux.ini"
+				RelativePath=".\src\conf\jVSTwRapper_win.ini"
 				>
 			</File>
 			<File
@@ -500,6 +500,10 @@
 		</Filter>
 		<File
 			RelativePath=".\src\jVSTwRapper.def"
+			>
+		</File>
+		<File
+			RelativePath=".\src\jVSTwRapper.rc"
 			>
 		</File>
 	</Files>

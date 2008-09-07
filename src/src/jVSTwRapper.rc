@@ -5,5 +5,5 @@
 // Bitmap
 //
 
-128                     BITMAP  DISCARDABLE     "background.bmp"
-129                     BITMAP  DISCARDABLE     "button.bmp"
+128                     BITMAP  DISCARDABLE     "bmp00128.bmp"
+129                     BITMAP  DISCARDABLE     "bmp00129.bmp"
