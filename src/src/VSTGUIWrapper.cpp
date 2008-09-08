@@ -81,6 +81,9 @@ enum {
 		{kButtonID,     (char**) button_xpm},
 		{0,             0}
 	};
+	
+	//Global display --> defined by VSTGUI
+	extern Display* display;
 #endif
 
 
@@ -113,7 +116,9 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 #ifdef linux
 	Status s = XInitThreads();
 	log("XInitThreads()=%i", s);
-	this->ParentWindow = 0;
+	//this->ParentWindow = 0;
+	this->JavaDisplay=NULL;
+		
 #endif
 
 	hBackground = NULL;
@@ -213,15 +218,14 @@ LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 	return CallWindowProc (oldWndProcEdit, hwnd, message, wParam, lParam);
 }
 #endif
+
 #ifdef linux
-	Display *GlobalDisplay = NULL;
-	
 int xErrorHandler(Display *dp, XErrorEvent *e) {
 	char text[1024];
 	XGetErrorText(dp, e->error_code, text, sizeof(text));
 	text[1023]='\0';
-	log("**XError: code=%i, minor=%i, request=%i, ressource=%i, serial=%i, type=%i, text=%s",
-		e->error_code, e->minor_code, e->request_code, e->resourceid, e->serial, e->type, text);
+	log("**XError: display=%p, code=%i, minor=%i, request=%i, ressource=%i, serial=%i, type=%i, text=%s",
+		dp, e->error_code, e->minor_code, e->request_code, e->resourceid, e->serial, e->type, text);
 		
 	//TODO: maybe set this->AttachWindow to false if a bad window error occurs???
 	return 0;
@@ -305,7 +309,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 		DestroyWindow(GetParent((HWND)ptr));
 #endif
 #ifdef linux
-		/* Not implemented on Linux! (no way to obtain a ref to the diplay at this time...) */
+		/* Not implemented on Linux! */
 		//if (::GlobalDisplay!=NULL) 
 			//XDestroyWindow(::GlobalDisplay, (Window)ptr);
 			//XUnmapWindow(::GlobalDisplay, (Window)ptr);
@@ -356,7 +360,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 					dsi_win = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
 #endif
 
-#ifdef WIN32 //TODO: move a few lines further down, when linux VSTGUI finally works
+#ifdef WIN32 
 					//Create Frame to embedd the java Frame
 					ERect* thissize;
 					this->getRect(&thissize);
@@ -393,19 +397,21 @@ bool VSTGUIWrapper::open (void *ptr) {
 #ifdef linux
 					//Get Java Window-Handle
 					this->JavaWindowHandle=dsi_win->drawable;  //cast drawable to window! (is only a handle anyways...)
-					::GlobalDisplay = dsi_win->display;   //init global var diplay
-								
-					//reparent
+					this->JavaDisplay = dsi_win->display;   
+					log("Java Display = %p", this->JavaDisplay);
+					
+					//reparent					
+					int ret = XReparentWindow (this->JavaDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
+					//int ret = XReparentWindow (::display, this->JavaWindowHandle, (Window)ptr, 0, 0);
+					
+					//old reparent
 					/*
-					Window frhwnd = (Window)frame->getSystemWindow(); 
-					int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, frhwnd, 0, 0);
+					//Save current parent window in order to be able to restore it on close()
+					this->ParentWindow = getParentWindow(::display, this->JavaWindowHandle);
+					log("Parent Window=%i", this->ParentWindow);
+					int ret = XReparentWindow (::display, this->JavaWindowHandle, (Window)ptr, 0, 0);
 					*/
 					
-					//reparent
-					//Save current parent window
-					this->ParentWindow = getParentWindow(::GlobalDisplay, this->JavaWindowHandle);
-					log("Parent Window=%i", this->ParentWindow);
-					int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
 					log("win reparent=%i", ret);
 #endif
 
@@ -424,7 +430,9 @@ bool VSTGUIWrapper::open (void *ptr) {
 		} 
 		else log("**Error: Unable to retrieve the drawing surface!");
 		
-	} //Attaching    
+		//TODO: maybe move linux reparenting stuff to this line here
+		
+	} //isAttached   
 #endif		
 
 
@@ -437,6 +445,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 		env->CallVoidMethod(this->JavaPlugGUIObj, mid);
 	}
 
+	//TODO: or even to this line here
 
 #if defined(WIN32) || defined(linux)
 	//Check exceptions in open, if exception, then unattach immediately
@@ -679,8 +688,8 @@ void VSTGUIWrapper::detachWindow() {
 		//re-decorate window after reparent
 		//undecorateJavaWindow();
 
-		int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, XDefaultRootWindow(::GlobalDisplay), 0, 0);
-		//int ret = XReparentWindow (::GlobalDisplay, this->JavaWindowHandle, this->ParentWindow, 0, 0);
+		int ret = XReparentWindow (this->JavaDisplay, this->JavaWindowHandle, XDefaultRootWindow(this->JavaDisplay), 0, 0);
+		//int ret = XReparentWindow (this->JavaDisplay, this->JavaWindowHandle, this->ParentWindow, 0, 0);
 		log("remap=%i", ret);
 		this->JavaWindowHandle=0;
 		

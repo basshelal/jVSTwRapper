@@ -250,3 +250,28 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 	::checkException(env);
 }
  
+
+ 
+ #ifdef linux
+ 
+ 	//Global display --> defined by VSTGUI
+	extern Display* display;
+	
+	//workaround to access the display on linux
+	//-----------------------------------------------------------------------------------------
+	VstInt32 VSTV24ToPlug::dispatcher (VstInt32 opCode, VstInt32 index, VstInt32 value, void *ptr, float opt) {
+	    int result = 0;
+	
+	    switch (opCode) {
+	   		case effEditOpen:
+	   			log("Opened Display = %p", value);
+	        	if (display == 0) {
+	           		display = (Display*) value;
+	        	}
+	        	log("Native Display = %p", display);
+	    	default:
+	        	result = AudioEffectX::dispatcher (opCode, index, value, ptr, opt);
+	    }
+	    return result;
+	}
+#endif

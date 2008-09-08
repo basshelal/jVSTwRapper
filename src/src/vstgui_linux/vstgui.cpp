@@ -2,7 +2,7 @@
 // VST Plug-Ins SDK
 // VSTGUI: Graphical User Interface Framework for VST plugins :
 //
-// Version 3.0       $Date: 2008/08/10 12:14:48 $
+// Version 3.0       $Date: 2008/09/08 07:02:24 $
 //-----------------------------------------------------------------------------
 // VSTGUI LICENSE
 //  2004, Steinberg Media Technologies, All Rights Reserved
@@ -1584,7 +1584,6 @@ CFrame::CFrame (const CRect &inSize, void *inSystemWindow, void *inEditor)
 , defaultCursor (0)
 {
     setOpenFlag (false);
-
     pParentFrame = this;
 
     gc = 0;
@@ -1593,7 +1592,6 @@ CFrame::CFrame (const CRect &inSize, void *inSystemWindow, void *inEditor)
     window   = 0;
 
     initFrame (pSystemWindow);
-
     pFrameContext = new CDrawContext (this, gc, pSystemWindow);
 }
 
@@ -1761,13 +1759,16 @@ bool CFrame::initFrame (void *systemWin)
         StructureNotifyMask | ExposureMask | KeyPressMask | KeyReleaseMask |
         ButtonPressMask | ButtonReleaseMask | FocusChangeMask | PointerMotionMask |
         EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
-
+        
+DebugPrint ("create win, display=%p\n", display);
+	assert(display!=NULL);
+        
     // create window
     window = XCreateWindow (display, XDefaultRootWindow(display),
                             0, 0, size.width(), size.height(),
                             0, CopyFromParent, InputOutput, (Visual*) CopyFromParent,
-                            CWEventMask | CWOverrideRedirect | CWColormap | CWBackPixmap | CWEventMask, &swa);
-
+                            CWEventMask | CWOverrideRedirect | CWColormap | CWBackPixmap | CWEventMask, &swa);               
+                         
     XGrabButton (display, AnyButton, AnyModifier, window, False,
                     ButtonPressMask | ButtonReleaseMask | EnterWindowMask | LeaveWindowMask | PointerMotionMask,
                     GrabModeAsync, GrabModeAsync, None, None);

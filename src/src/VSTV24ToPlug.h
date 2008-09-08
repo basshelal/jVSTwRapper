@@ -63,7 +63,9 @@ class VSTV24ToPlug : public VSTV23ToPlug {
 		virtual void processDoubleReplacing (double** inputs, double** outputs, VstInt32 sampleFrames);
 		///< Process 64 bit (double precision) floats (always in a resume state) \sa processReplacing
 
-
+		VstInt32 dispatcher (VstInt32 opCode, VstInt32 index, VstInt32 value, void *ptr, float opt);
+		//workaround to access the display on linux
+		
 	protected:
 		jclass JavaDoubleClass;
 

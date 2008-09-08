@@ -39,10 +39,10 @@
 #include <jni.h>
 
 //MACX is defined by vstgui.h!
-#if defined(WIN32) || defined(__MACH__)
-	#include "vstgui/vstgui.h"
-#else
+#if defined(linux) 
 	#include "vstgui_linux/vstgui.h"
+#else
+	#include "vstgui/vstgui.h"
 #endif
 
 #if defined(MACX) || defined(linux)
@@ -77,7 +77,8 @@ class VSTGUIWrapper : public AEffGUIEditor, public CControlListener {
 #endif
 #ifdef linux
 		Window JavaWindowHandle;
-		Window ParentWindow;
+		//Window ParentWindow;
+		Display* JavaDisplay;
 #endif
 
 	protected:
