@@ -1,11 +1,11 @@
-/* 
+/*
  * jVSTwRapper - The Java way into VST world!
- * 
- * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface. 
- * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments 
+ *
+ * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface.
+ * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments
  * plus user interfaces with the Java Programming Language. 3 Demo Plugins(+src) are included!
- * 
- * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net] 
+ *
+ * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net]
  * 					   and many others, see CREDITS.txt
  *
  *
@@ -55,17 +55,19 @@ class VSTV24ToPlug : public VSTV23ToPlug {
 		virtual bool setProcessPrecision (VstInt32 precision);
 		///< Set floating-point precision used for processing (32 or 64 bit)
 
-		virtual VstInt32 getNumMidiInputChannels();			
+		virtual VstInt32 getNumMidiInputChannels();
 		///< Return number of MIDI input channels
-		virtual VstInt32 getNumMidiOutputChannels();			
+		virtual VstInt32 getNumMidiOutputChannels();
 		///< Return number of MIDI output channels
 
 		virtual void processDoubleReplacing (double** inputs, double** outputs, VstInt32 sampleFrames);
 		///< Process 64 bit (double precision) floats (always in a resume state) \sa processReplacing
 
+#ifdef linux
 		VstInt32 dispatcher (VstInt32 opCode, VstInt32 index, VstInt32 value, void *ptr, float opt);
 		//workaround to access the display on linux
-		
+#endif
+
 	protected:
 		jclass JavaDoubleClass;
 
