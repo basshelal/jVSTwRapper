@@ -1,11 +1,11 @@
-/* 
+/*
  * jVSTwRapper - The Java way into VST world!
- * 
- * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface. 
- * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments 
+ *
+ * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface.
+ * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments
  * plus user interfaces with the Java Programming Language. 3 Demo Plugins(+src) are included!
- * 
- * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net] 
+ *
+ * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net]
  * 					   and many others, see CREDITS.txt
  *
  *
@@ -46,11 +46,11 @@ VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj) {
 	jclass plugclass=env->GetObjectClass(obj);
 	jfieldID fid = env->GetFieldID(plugclass, "WrapperInstance", "J");
 	if (fid == NULL) {
-		log("** ERROR: cannot find effects WrappeInstance");		
+		log("** ERROR: cannot find effects WrappeInstance");
 		checkAndThrowException(env);
 		return 0;
 	}
-	jlong wri=env->GetLongField(obj,fid);	
+	jlong wri=env->GetLongField(obj,fid);
 	if (checkAndThrowException(env)) return 0;
 	return (VSTV24ToPlug*)wri;
 }
@@ -243,9 +243,9 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_getBlockSize
  * Signature: (IF)V
  */
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setParameterAutomated(JNIEnv *env, jobject obj, jint index, jfloat value) {
-	log("setParameterAutomated");
+	//log("setParameterAutomated");
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
-	
+
 #ifdef WIN32
 	//Workaround for energyXT: Save Thread for setParameterAutomated
 	WrapperInstance->ToHostThread=GetCurrentThreadId();
@@ -253,7 +253,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setParameter
 #if defined(MACX) || defined(linux)
 	WrapperInstance->ToHostThread=pthread_self();
 #endif
-	
+
 	if (WrapperInstance!=NULL) WrapperInstance->setParameterAutomated(index, value);
 
     WrapperInstance->ToHostThread=0;
@@ -292,7 +292,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_getCurrentUn
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_masterIdle(JNIEnv *env, jobject obj) {
-	log("masterIdle");
+	//log("masterIdle");
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->masterIdle();
 }
