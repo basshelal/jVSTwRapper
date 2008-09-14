@@ -28,17 +28,21 @@ Wrapping you jVSTwRapper VST plugin as Audio Unit (AU)
 2. Start the "VSTAU Manager" application, find you plugin in the list and click "install". 
    This will create a wrapper AU plugin for the selected VST plug. 
 
-3. You can find the created AU plugin -- named "OriginalVSTPluginName (VSTAU)" -- 
+3. You can find the created AU plugin -- named "YourOriginalVSTPluginName (VSTAU)" -- 
    in ~/Library/Audio/Plug-Ins/Components/ 
 
-4. To distribute your plugin as AU, you *** need to ship the VST version as well *** 
+4. To distribute your plugin as AU, you need to *** SHIP THE VST VERSION OS WELL *** 
    -- the AU version is only a wrapper that loads the VST version when started. 
    So, to distribute your plugin add both, the VST and the AU version 
-   to a single archive. To install, simply copy both bundles to the folders /VST or /Components 
-   in either /Library/Audio/Plug-Ins/ or ~/Library/Audio/Plug-Ins/
+   to a single archive. To install from this archive, simply copy both bundles to the 
+   folders /VST or /Components in either /Library/Audio/Plug-Ins/ or ~/Library/Audio/Plug-Ins/
 
---> You may also try this process with the jVST sample plugins that ship with the 
-    jVSTwRapper download to see how it works
+--> You may want try this process first, using the jVST example plugins that ship with the 
+    jVSTwRapper download to see how it works.
+    
+--> A fully automated process that generates binaries of you plugin for all 3 supported 
+	platforms (linux, windows, osx) just by executing one (maven-) command 
+	(again, supported on every platform), can be found here: http://jvstwrapper.sourceforge.net/#multi
 
 
 
