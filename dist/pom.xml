@@ -70,12 +70,12 @@
 		<dependency>
 			<groupId>net.sourceforge.jvstwrapper</groupId>
 			<artifactId>jVSTwRapper</artifactId>
-			<version>0.9f</version>
+			<version>0.9g</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.jvstwrapper</groupId>
 			<artifactId>jVSTsYstem</artifactId>
-			<version>0.9f</version>
+			<version>0.9g</version>
 		</dependency> 
 		<dependency>
 			<groupId>net.sourceforge.napkinlaf</groupId>
