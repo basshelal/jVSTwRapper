@@ -1,11 +1,11 @@
-/* 
+/*
  * jVSTwRapper - The Java way into VST world!
- * 
- * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface. 
- * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments 
+ *
+ * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface.
+ * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments
  * plus user interfaces with the Java Programming Language. 3 Demo Plugins(+src) are included!
- * 
- * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net] 
+ *
+ * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net]
  * 					   and many others, see CREDITS.txt
  *
  *
@@ -27,7 +27,7 @@
 //-------------------------------------------------------------------------------------------------------
 // VSTi Java Wrapper
 //-
-// A JNI Wrapper 
+// A JNI Wrapper
 // for Java as the language to write VSTi Plugins
 //-------------------------------------------------------------------------------------------------------
 
@@ -36,9 +36,9 @@
 
 
 //Impl of Host -> Plug calls
-//Native -> Java 
+//Native -> Java
 //-----------------------------------------------------------------------------
-VSTV24ToPlug::VSTV24ToPlug (audioMasterCallback audioMaster, int progs, int parms, JavaVM *jvm) 
+VSTV24ToPlug::VSTV24ToPlug (audioMasterCallback audioMaster, int progs, int parms, JavaVM *jvm)
 	: VSTV23ToPlug (audioMaster, progs, parms, jvm) {
 
 	this->ProcessDoubleReplacingMethodID = NULL;
@@ -60,46 +60,46 @@ VSTV24ToPlug::~VSTV24ToPlug () {
 
 
 //-----------------------------------------------------------------------------------------
-bool VSTV24ToPlug::setProcessPrecision (VstInt32 precision) {	
+bool VSTV24ToPlug::setProcessPrecision (VstInt32 precision) {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setProcessPrecision", "(I)Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method setProcessPrecision(I)Z"); return false;}
-	
+
 	jboolean ret = env->CallBooleanMethod(this->JavaPlugObj, mid, precision);
-	
+
 	if (this->checkException(env)) return false;
 
 	return ret!=0;
-} 
+}
 
 //-----------------------------------------------------------------------------------------
-VstInt32 VSTV24ToPlug::getNumMidiInputChannels() {	
+VstInt32 VSTV24ToPlug::getNumMidiInputChannels() {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "getNumMidiInputChannels", "()I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getNumMidiInputChannels()I"); return false;}
-	
+
 	jint ret = env->CallIntMethod(this->JavaPlugObj, mid);
-	
+
 	this->checkException(env);
 
 	return ret;
-} 			
+}
 
 //-----------------------------------------------------------------------------------------
-VstInt32 VSTV24ToPlug::getNumMidiOutputChannels() {	
+VstInt32 VSTV24ToPlug::getNumMidiOutputChannels() {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "getNumMidiOutputChannels", "()I");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method getNumMidiOutputChannels()I"); return false;}
-	
+
 	jint ret = env->CallIntMethod(this->JavaPlugObj, mid);
-	
+
 	this->checkException(env);
 
 	return ret;
-} 
+}
 
 //-----------------------------------------------------------------------------------------
 void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, VstInt32 sampleFrames) {
@@ -111,10 +111,12 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 		if (this->JavaDoubleClass == NULL) log("** ERROR: cannot find class [D");
 	}
 
+#if 1
+// Code donated by Normen Hansen: significantly reduces GC activity
 
 	if (ProcessDoubleReplacingLastSampleFrames!=sampleFrames) {
 		ProcessDoubleReplacingLastSampleFrames=sampleFrames;
-		
+
 		//delete old java arrays if existing
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
 			if (ProcessDoubleReplacingInArrays[i]) env->DeleteLocalRef(ProcessDoubleReplacingInArrays[i]);
@@ -145,13 +147,13 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 		//jval = env->GetDoubleArrayElements(ProcessDoubleReplacingInArrays[i], NULL);
 		jval = (jdouble*)env->GetPrimitiveArrayCritical(ProcessDoubleReplacingInArrays[i], NULL);
 		memcpy(jval, inputs[i], sampleFrames * sizeof(double));
-		//env->ReleaseDoubleArrayElements(ProcessDoubleReplacingInArrays[i], jval, 0); 
-		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingInArrays[i], jval, 0); 
+		//env->ReleaseDoubleArrayElements(ProcessDoubleReplacingInArrays[i], jval, 0);
+		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingInArrays[i], jval, 0);
 		env->SetObjectArrayElement(ProcessDoubleReplacingJInputs, i, ProcessDoubleReplacingInArrays[i]);
 	}
 	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-		//processReplacing replaces the output 
-		//--> do not copy output from native to java, no need for that since it is replaced anyways	
+		//processReplacing replaces the output
+		//--> do not copy output from native to java, no need for that since it is replaced anyways
 		//--> well, do it anyways... fixes the hanging note problem...
 		//next experiment: insert 0.0d for each double of the output array --> will be replaced by the plugin
 
@@ -159,11 +161,12 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 		jval = (jdouble*)env->GetPrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], NULL);
 
 		//memcpy(jval, outputs[i], sampleFrames * sizeof(double));
-		memset(jval, 0, sampleFrames * sizeof(double)); //TODO: 0 may not be 0.0d at all plaforms? --> http://bytes.com/forum/thread222353.html
-		
-		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], jval, 0); 
+		memset(jval, 0, sampleFrames * sizeof(double));
+		//TODO: 0 may not be 0.0d at all platforms? --> http://bytes.com/forum/thread222353.html
+
+		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], jval, 0);
 		//env->ReleaseFloatArrayElements(ProcessDoubleReplacingOutArrays[i], jval, 0);
-		
+
 		env->SetObjectArrayElement(ProcessDoubleReplacingJOutputs, i, ProcessDoubleReplacingOutArrays[i]);
 	}
 
@@ -182,11 +185,13 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 		jval = (jdouble*)env->GetPrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], NULL);
 		memcpy(outputs[i], jval, sampleFrames * sizeof(double));
 		//env->ReleaseFloatArrayElements(ProcessDoubleReplacingOutArrays[i], jval, 0); //!!! use JNI_ABORT as last param? should be more efficient, we dont need the changes to jval to be copied back
-		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], jval, JNI_ABORT);  
+		env->ReleasePrimitiveArrayCritical(ProcessDoubleReplacingOutArrays[i], jval, JNI_ABORT);
 	}
 
+#else
+//############################################################################################################
+// old version
 
-/*
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
 
@@ -198,13 +203,13 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 	for (int i=0; i<this->getAeffect()->numInputs; i++) {
 		double* in = inputs[i];
 		jdoubleArray darr = env->NewDoubleArray(sampleFrames);
-		
+
 		env->SetDoubleArrayRegion(darr, 0, sampleFrames, in);
         env->SetObjectArrayElement(jinputs, i, darr);
         env->DeleteLocalRef(darr);
 	}
 
-	//processDoubleReplacing replaces the output 
+	//processDoubleReplacing replaces the output
 	//--> send emtpy output (do not copy output from native to java)
 	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		//create empty float array
@@ -233,35 +238,34 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 
 		jout = (jdoubleArray)env->GetObjectArrayElement(joutputs, i);
 		jval = env->GetDoubleArrayElements(jout, NULL);
-		
+
 		memcpy(out, jval, sampleFrames * sizeof(double));
-		
+
 		env->ReleaseDoubleArrayElements(jout, jval, 0);
 		env->DeleteLocalRef(jout);
 	}
-	
+
 	//ARRAYS mit deletelocalref wieder zerstoeren...
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
-*/
-
+#endif
 
 
 	::checkException(env);
 }
- 
 
- 
+
+
  #ifdef linux
- 
+
  	//Global display --> defined by VSTGUI
 	extern Display* display;
-	
+
 	//workaround to access the display on linux
 	//-----------------------------------------------------------------------------------------
 	VstInt32 VSTV24ToPlug::dispatcher (VstInt32 opCode, VstInt32 index, VstInt32 value, void *ptr, float opt) {
 	    int result = 0;
-	
+
 	    switch (opCode) {
 	   		case effEditOpen:
 	   			log("Opened Display = %p", value);

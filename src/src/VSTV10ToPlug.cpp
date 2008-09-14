@@ -1,11 +1,11 @@
-/* 
+/*
  * jVSTwRapper - The Java way into VST world!
- * 
- * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface. 
- * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments 
+ *
+ * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface.
+ * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments
  * plus user interfaces with the Java Programming Language. 3 Demo Plugins(+src) are included!
- * 
- * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net] 
+ *
+ * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net]
  * 					   and many others, see CREDITS.txt
  *
  *
@@ -27,7 +27,7 @@
 //-------------------------------------------------------------------------------------------------------
 // VSTi Java Wrapper
 //-
-// A simple JNI Wrapper 
+// A simple JNI Wrapper
 // for Java as the language to write VSTi Plugins
 //-
 // 2003,2004 Daniel Martin, Gerard Roma
@@ -49,7 +49,7 @@ extern char DllFileName[JVST_FILE_MAX];
 
 
 //Impl of Host -> Plug calls
-//Native -> Java 
+//Native -> Java
 //-----------------------------------------------------------------------------
 VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parms, JavaVM *jvm)
 	: AudioEffectX (audioMaster, progs, parms) {
@@ -58,7 +58,7 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 
 
 	this->Jvm = jvm;
-	
+
 	//init cached fields
 	this->JavaPlugObj = NULL;
 	this->ProcessMethodID = NULL;
@@ -66,7 +66,7 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 	this->JavaFloatClass = NULL;
 
 	this->isProcessing=false; //fix to ensure that resume was called before process*
-	
+
 	//init cached fields
 	GetParameterMethod = NULL;
 	SetParameterMethod = NULL;
@@ -78,7 +78,7 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 	ProcessJInputs=NULL;
 	ProcessJOutputs=NULL;
 	for (int i=0;i<8;i++) {
-		ProcessInArrays[i]=NULL;	
+		ProcessInArrays[i]=NULL;
 		ProcessOutArrays[i]=NULL;
 	}
 
@@ -93,7 +93,7 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 
 //------------------------------------------------------------------------
 VSTV10ToPlug::~VSTV10ToPlug () {
-	log("Destroying Wrapper");	
+	log("Destroying Wrapper");
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 
 	//Delete global reference
@@ -101,7 +101,7 @@ VSTV10ToPlug::~VSTV10ToPlug () {
 
 	if(chunkdata!=NULL) { free(chunkdata); chunkdata = NULL; chunksize=0; }
 
-	//hier wird nur gewartet bis der haupt jvm thread der einzigste 
+	//hier wird nur gewartet bis der haupt jvm thread der einzigste
 	//java thread ist. die jvm wird aber trotzdem nicht entladen...
 	//Jvm->DestroyJavaVM();
 }
@@ -111,7 +111,7 @@ void VSTV10ToPlug::setProgram (VstInt32 program) {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setProgram", "(I)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setProgram(I)V");
-	
+
 	env->CallVoidMethod(this->JavaPlugObj, mid, (jint)program);
 
 	this->checkException(env);
@@ -121,7 +121,7 @@ VstInt32 VSTV10ToPlug::getProgram () {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "getProgram", "()I");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getProgram()I");
-	
+
 	return env->CallIntMethod(this->JavaPlugObj, mid);
 
 	this->checkException(env);
@@ -134,7 +134,7 @@ void VSTV10ToPlug::setProgramName (char *name) {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setProgramName", "(Ljava/lang/String;)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setProgramName(Ljava/lang/String;)V");
-	
+
 	jstring arg = env->NewStringUTF(name);
 
 	env->CallVoidMethod(this->JavaPlugObj, mid, arg);
@@ -149,7 +149,7 @@ void VSTV10ToPlug::getProgramName (char *name) {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "getProgramName", "()Ljava/lang/String;");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getProgramName(Ljava/lang/String;)V");
-	
+
 	jstring ret = (jstring)env->CallObjectMethod(this->JavaPlugObj, mid);
 	if (ret==NULL) { strcpy (name, ""); return;}
 
@@ -163,23 +163,23 @@ void VSTV10ToPlug::getProgramName (char *name) {
 //------------------------------------------------------------------------
 void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
 //Workaround for energyXT: Don't call setParameter from setParameterAutomated
-// Disabled for now: prevented param automation from working, i.e. calls to setParameterAutomated() 
+// Disabled for now: prevented param automation from working, i.e. calls to setParameterAutomated()
 // didnt end up calling setParameter (what they should do)
 /*
 #ifdef WIN32
-	if(this->ToHostThread!=GetCurrentThreadId()) {		
+	if(this->ToHostThread!=GetCurrentThreadId()) {
 #endif
 #if defined(MACX) || defined(linux)
 	if(this->ToHostThread!=pthread_self()) {
 #endif
 */
 	JNIEnv* env = this->ensureJavaThreadAttachment();
-	
+
 	if (this->SetParameterMethod==NULL) {
 		this->SetParameterMethod = env->GetMethodID(this->JavaPlugClass, "setParameter", "(IF)V");
 		if (this->SetParameterMethod == NULL) log("** ERROR: cannot find instance-method setParameter(IF)V");
 	}
-	
+
 	env->CallVoidMethod(this->JavaPlugObj, this->SetParameterMethod, (jint)index, (jfloat)value);
 
 	this->checkException(env);
@@ -196,10 +196,10 @@ float VSTV10ToPlug::getParameter (VstInt32 index)   {
 	}
 
 	jfloat ret = env->CallFloatMethod(this->JavaPlugObj, this->GetParameterMethod, (jint)index);
-	
+
 	this->checkException(env);
-	
-	return (float)ret;	
+
+	return (float)ret;
 }
 
 //------------------------------------------------------------------------
@@ -256,15 +256,15 @@ void VSTV10ToPlug::getParameterLabel (VstInt32 index, char *label) {
 //------------------------------------------------------------------------
 void VSTV10ToPlug::suspend () {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
-	
-	//call to overwritten method, this is done in all steinberg sample plugs, 
+
+	//call to overwritten method, this is done in all steinberg sample plugs,
 	//so we do it too...
 	AudioEffectX::suspend();
-	
+
 	// Called when Plugin is switched to Off
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "suspend", "()V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method suspend()V");
-	
+
 	env->CallVoidMethod(this->JavaPlugObj, mid);
 
 	this->checkException(env);
@@ -272,32 +272,32 @@ void VSTV10ToPlug::suspend () {
 	this->isProcessing=false;
 }
 
-//------------------------------------------------------------------------	
+//------------------------------------------------------------------------
 void VSTV10ToPlug::resume () {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
-	
+
 	this->isProcessing=true;
-	
+
 	// Called when Plugin is switched to On
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "resume", "()V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method resume()V");
-	
+
 	env->CallVoidMethod(this->JavaPlugObj, mid);
 
 	this->checkException(env);
 
-	//call to overwritten method, this is done in all steinberg sample plugs, 
+	//call to overwritten method, this is done in all steinberg sample plugs,
 	//so we do it too...
 	AudioEffectX::resume();
-}	
+}
 
 //------------------------------------------------------------------------
 void VSTV10ToPlug::open() {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
-	
+
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "open", "()V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method open()V");
-	
+
 	env->CallVoidMethod(this->JavaPlugObj, mid);
 
 	this->checkException(env);
@@ -306,10 +306,10 @@ void VSTV10ToPlug::open() {
 //------------------------------------------------------------------------
 void VSTV10ToPlug::close() {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
-	
+
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "close", "()V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method close()V");
-	
+
 	env->CallVoidMethod(this->JavaPlugObj, mid);
 
 	this->checkException(env);
@@ -320,7 +320,7 @@ float VSTV10ToPlug::getVu() {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "getVu", "()F");
 	if (mid == NULL) log("** ERROR: cannot find instance-method getVu()F");
-	
+
 	jfloat ret =  env->CallFloatMethod(this->JavaPlugObj, mid);
 
 	this->checkException(env);
@@ -347,12 +347,12 @@ VstInt32 VSTV10ToPlug::getChunk(void** data, bool isPreset) {
     env->DeleteLocalRef(barr);
 
 	jint data_len = env->CallIntMethod(this->JavaPlugObj, mid, jdata, (jboolean)isPreset);
-	
+
 	//jetzt elemente von jdata[][] nach **data umkopieren...
 	//for (int i=0; i<data_len; i++) {
 	for (int i=0; i<env->GetArrayLength(jdata) ; i++) {
 		if(chunksize!=data_len){
-			if(chunkdata!=NULL) free(chunkdata); 
+			if(chunkdata!=NULL) free(chunkdata);
 			chunkdata=malloc(data_len*sizeof(jbyte));
 			chunksize=data_len;
 		}
@@ -363,13 +363,13 @@ VstInt32 VSTV10ToPlug::getChunk(void** data, bool isPreset) {
 
 		jdat = (jbyteArray)env->GetObjectArrayElement(jdata, i);
 		jval = env->GetByteArrayElements(jdat, NULL);
-			
+
 		memcpy(dat, jval, data_len * sizeof(jbyte));
-		
+
 		env->ReleaseByteArrayElements(jdat, jval, 0);
 		env->DeleteLocalRef(jdat);
 	}
-	
+
 	this->checkException(env);
 
 	return data_len*sizeof(jbyte);
@@ -401,7 +401,7 @@ void VSTV10ToPlug::setBlockSize(VstInt32 blockSz) {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setBlockSize", "(I)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setBlockSize(I)V");
-	
+
 	env->CallVoidMethod(this->JavaPlugObj, mid, blockSz);
 
 	this->checkException(env);
@@ -412,7 +412,7 @@ void VSTV10ToPlug::setSampleRate(float sampleRt) {
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setSampleRate", "(F)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setSampleRate(F)V");
-	
+
 	env->CallVoidMethod(this->JavaPlugObj, mid, sampleRt);
 
 	this->checkException(env);
@@ -424,17 +424,19 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	if (!this->isProcessing) this->resume();
 
 	JNIEnv* env = this->ensureJavaThreadAttachment();
-		
+
 	if(this->JavaFloatClass == NULL) {
 		this->JavaFloatClass = env->FindClass("[F");
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F");
 	}
 
 
-//#ifndef linux
+#if 1
+// Code donated by Normen Hansen: significantly reduces GC activity
+
 	if (ProcessLastSampleFrames!=sampleFrames) {
 		ProcessLastSampleFrames=sampleFrames;
-		
+
 		//delete old java arrays if existed
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
 			if (ProcessInArrays[i]) env->DeleteLocalRef(ProcessInArrays[i]);
@@ -473,7 +475,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
 		//jval = env->GetFloatArrayElements(ProcessOutArrays[i], NULL);
 		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessOutArrays[i], NULL);
-		memcpy(jval, outputs[i], sampleFrames * sizeof(float));		
+		memcpy(jval, outputs[i], sampleFrames * sizeof(float));
 		env->ReleasePrimitiveArrayCritical(ProcessOutArrays[i], jval, 0);
 		//env->ReleaseFloatArrayElements(ProcessOutArrays[i], jval, 0);
 
@@ -497,9 +499,10 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 		env->ReleasePrimitiveArrayCritical(ProcessOutArrays[i], jval, JNI_ABORT);
 	}
 
-/*
+
 #else
 //############################################################################################################
+// old version
 
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
@@ -512,7 +515,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	for (int i=0; i<this->getAeffect()->numInputs; i++) {
 		float* in = inputs[i];
 		jfloatArray farr = env->NewFloatArray(sampleFrames);
-		
+
 		env->SetFloatArrayRegion(farr, 0, sampleFrames, in);
         env->SetObjectArrayElement(jinputs, i, farr);
         env->DeleteLocalRef(farr);
@@ -521,7 +524,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		float* out = outputs[i];
 		jfloatArray farr = env->NewFloatArray(sampleFrames);
-	
+
 		env->SetFloatArrayRegion(farr, 0, sampleFrames, out);
 		env->SetObjectArrayElement(joutputs, i, farr);
 		env->DeleteLocalRef(farr);
@@ -544,18 +547,18 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 
 		jout = (jfloatArray)env->GetObjectArrayElement(joutputs, i);
 		jval = env->GetFloatArrayElements(jout, NULL);
-		
+
 		memcpy(out, jval, sampleFrames * sizeof(float));
-		
+
 		env->ReleaseFloatArrayElements(jout, jval, 0);
 		env->DeleteLocalRef(jout);
 	}
-	
+
 	//ARRAYS mit deletelocalref wieder zerstoeren...
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
 #endif
-*/
+
 
 	::checkException(env);
 }
@@ -564,7 +567,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames) {
 
 	if (!this->isProcessing) this->resume();
-	
+
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 
 	if(this->JavaFloatClass == NULL) {
@@ -572,10 +575,12 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F");
 	}
 
-//#ifndef linux
+#if 1
+// Code donated by Normen Hansen: significantly reduces GC activity
+
 	if (ProcessReplacingLastSampleFrames!=sampleFrames) {
 		ProcessReplacingLastSampleFrames=sampleFrames;
-		
+
 		//delete old java arrays if existing
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
 			if (ProcessReplacingInArrays[i]) env->DeleteLocalRef(ProcessReplacingInArrays[i]);
@@ -606,26 +611,27 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		//jval = env->GetFloatArrayElements(ProcessReplacingInArrays[i], NULL);
 		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessReplacingInArrays[i], NULL);
 		memcpy(jval, inputs[i], sampleFrames * sizeof(float));
-		env->ReleasePrimitiveArrayCritical(ProcessReplacingInArrays[i], jval, 0); 
-		//env->ReleaseFloatArrayElements(ProcessReplacingInArrays[i], jval, 0); 
+		env->ReleasePrimitiveArrayCritical(ProcessReplacingInArrays[i], jval, 0);
+		//env->ReleaseFloatArrayElements(ProcessReplacingInArrays[i], jval, 0);
 
 		env->SetObjectArrayElement(ProcessReplacingJInputs, i, ProcessReplacingInArrays[i]);
 	}
 	for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-		//processReplacing replaces the output 
-		//--> do not copy output from native to java, no need for that since it is replaced anyways	
+		//processReplacing replaces the output
+		//--> do not copy output from native to java, no need for that since it is replaced anyways
 		//--> well, do it anyways... fixes the hanging note problem...
 		//next experiment: insert 0.0f for each float of the output array --> will be replaced by the plugin
-		
+
 		//jval = env->GetFloatArrayElements(ProcessReplacingOutArrays[i], NULL);
 		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessReplacingOutArrays[i], NULL);
-		
+
 		//memcpy(jval, outputs[i], sampleFrames * sizeof(float));
-		memset(jval, 0, sampleFrames * sizeof(float)); //TODO: 0 may not be 0.0f at all plaforms? --> http://bytes.com/forum/thread222353.html
-		
-		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, 0); 
+		memset(jval, 0, sampleFrames * sizeof(float));
+		//TODO: 0 may not be 0.0f at all platforms? --> http://bytes.com/forum/thread222353.html
+
+		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, 0);
 		//env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0);
-		
+
 		env->SetObjectArrayElement(ProcessReplacingJOutputs, i, ProcessReplacingOutArrays[i]);
 	}
 
@@ -644,16 +650,17 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 		jval = (jfloat*)env->GetPrimitiveArrayCritical(ProcessReplacingOutArrays[i], NULL);
 		memcpy(outputs[i], jval, sampleFrames * sizeof(float));
 		//env->ReleaseFloatArrayElements(ProcessReplacingOutArrays[i], jval, 0); //!!! use JNI_ABORT as last param? should be more efficient, we dont need the changes to jval to be copied back
-		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, JNI_ABORT);  
+		env->ReleasePrimitiveArrayCritical(ProcessReplacingOutArrays[i], jval, JNI_ABORT);
 	}
 
-/*
+
 #else
 //############################################################################################################
+// old version
 
 	jobjectArray  jinputs;
 	jobjectArray  joutputs;
-	
+
 	jinputs = env->NewObjectArray(this->getAeffect()->numInputs, this->JavaFloatClass, NULL);
 	joutputs = env->NewObjectArray(this->getAeffect()->numOutputs, this->JavaFloatClass, NULL);
 	if (jinputs == NULL) log("** ERROR: out of memory! jinputs");
@@ -662,13 +669,13 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 	for (int i=0; i<this->getAeffect()->numInputs; i++) {
 		float* in = inputs[i];
 		jfloatArray farr = env->NewFloatArray(sampleFrames);
-		
+
 		env->SetFloatArrayRegion(farr, 0, sampleFrames, in);
         env->SetObjectArrayElement(jinputs, i, farr);
         env->DeleteLocalRef(farr);
 	}
 
-	//processReplacing replaces the output 
+	//processReplacing replaces the output
 	//--> send emtpy output (do not copy output from native to java)
 	for (int i=0; i<this->getAeffect()->numOutputs; i++) {
 		//create empty float array
@@ -697,18 +704,18 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 
 		jout = (jfloatArray)env->GetObjectArrayElement(joutputs, i);
 		jval = env->GetFloatArrayElements(jout, NULL);
-		
+
 		memcpy(out, jval, sampleFrames * sizeof(float));
-		
+
 		env->ReleaseFloatArrayElements(jout, jval, 0);
 		env->DeleteLocalRef(jout);
 	}
-	
+
 	//ARRAYS mit deletelocalref wieder zerstoeren...
 	env->DeleteLocalRef(jinputs);
 	env->DeleteLocalRef(joutputs);
 #endif
-*/
+
 
 	::checkException(env);
 }
@@ -739,7 +746,7 @@ int VSTV10ToPlug::initJavaSide(jclass effectClass) {
 	if (this->checkException(env)) return -1;
 
 	this->JavaPlugObj = env->NewObject(this->JavaPlugClass, mid,wri);
-	if (this->JavaPlugObj == NULL) {	
+	if (this->JavaPlugObj == NULL) {
 		log("** ERROR: cannot instantiate Java Plugin Object, \nException occured in constructor?\nPlease look at the generated LOG files.");
 		this->checkException(env); //print stack trace!
 		return -1;
@@ -777,7 +784,7 @@ int VSTV10ToPlug::initJavaSide(jclass effectClass) {
 	}
 	num = env->CallIntMethod(this->JavaPlugObj, mid);
 	this->getAeffect()->numParams = num;
-	this->numParams = num;	
+	this->numParams = num;
 
 
 	log("Plugin initJavaSide ok!");
@@ -797,5 +804,5 @@ void VSTV10ToPlug::setNumParams(VstInt32 num){
 
 
 bool VSTV10ToPlug::checkException(JNIEnv* env) {
-	return ::checkException(env);	
+	return ::checkException(env);
 }
