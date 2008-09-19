@@ -1,5 +1,5 @@
 Writing VST Plugins in Java on the Mac -- Mini How-To
---------------------------------------------------
+------------------------------------------------------
 
 1. Write your plugin using the wrapper api.
 
@@ -17,10 +17,14 @@ Writing VST Plugins in Java on the Mac -- Mini How-To
 5. Look for problems. If you left IsLoggingEnabled=1 in the ini file, the log files will appear in the 
    Resources directory and the MacOS directory inside the .vst bundle
 
+--> A fully automated process that generates binaries of you plugin for all 3 supported 
+	platforms (linux, windows, osx) just by executing one (maven-) command 
+	(again, supported on every platform), can be found here: http://jvstwrapper.sourceforge.net/#multi
 
 
-Wrapping you jVSTwRapper VST plugin as Audio Unit (AU)
---------------------------------------------------------------
+
+Creating an Audio Unit (AU) version of your jVSTwRapper VST plugin 
+--------------------------------------------------------------------
 
 1. Install (i.e. copy the bundle) your jVSTwRapper VST plugin 
    to /Library/Audio/Plug-Ins/VST/ or ~/Library/Audio/Plug-Ins/VST/
@@ -32,19 +36,14 @@ Wrapping you jVSTwRapper VST plugin as Audio Unit (AU)
    in ~/Library/Audio/Plug-Ins/Components/ 
 
 4. To distribute your plugin as AU, you need to *** SHIP THE VST VERSION OS WELL *** 
-   -- the AU version is only a wrapper that loads the VST version when started. 
+   -- the AU version is a wrapper that loads the VST version when started. 
    So, to distribute your plugin add both, the VST and the AU version 
-   to a single archive. To install from this archive, simply copy both bundles to the 
-   folders /VST or /Components in either /Library/Audio/Plug-Ins/ or ~/Library/Audio/Plug-Ins/
-
---> You may want try this process first, using the jVST example plugins that ship with the 
-    jVSTwRapper download to see how it works.
-    
---> A fully automated process that generates binaries of you plugin for all 3 supported 
-	platforms (linux, windows, osx) just by executing one (maven-) command 
-	(again, supported on every platform), can be found here: http://jvstwrapper.sourceforge.net/#multi
-
-
+   to a single archive to download. To install from this archive, simply copy both bundles to the 
+   folders /VST or /Components in either /Library/Audio/Plug-Ins/ or ~/Library/Audio/Plug-Ins/ (I.e. 
+   the .component bundle goes to either /Library/Audio/Plug-Ins/Components/ or 
+   ~/Library/Audio/Plug-Ins/Components/ and the .vst bundle goes to /Library/Audio/Plug-Ins/VST/ or 
+   ~/Library/Audio/Plug-Ins/VST/. You can freely choose between both versions.)
+ 
 
 NOTE:
 ------
