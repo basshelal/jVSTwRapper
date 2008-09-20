@@ -47,6 +47,17 @@ extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 //**********************************************
 
 
+
+// XXX: BUG: TODO:	The reference to the TimeInfoObject is global, so, if there is more than one 
+//					plugin running at the same time, races might occur and 
+//					the TimeInfo a plugin receives gets mixed up (all plugins get the information 
+//					written by the last writer). 
+//
+//					Solution: cache the TimeInfoObject at the java side, so that every plugin instance
+//					has its own, private copy of the instance and there is no global one.
+//
+//					If anyone implements this, please send the patch to daniel309@users.sourceforge.net
+
 //cached fieds
 //******************************
 
@@ -630,6 +641,7 @@ void InitTimeInfoCache(JNIEnv* env) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTTimeInfo");
 		return;
 	}
+	TimeInfoClass = (jclass) env->NewGlobalRef(TimeInfoClass);
 
 
 	//Call JAVA Konstruktor
@@ -729,16 +741,21 @@ void InitEventsCache(JNIEnv* env) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTEvents");
 		return;
 	}
+	VSTEventsClass = (jclass) env->NewGlobalRef(VSTEventsClass);
+
 	VSTEventClass = env->FindClass("jvst/wrapper/valueobjects/VSTEvent");		
 	if (VSTEventClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTEvent");
 		return;
 	}
+	VSTEventClass = (jclass) env->NewGlobalRef(VSTEventClass);
+
 	MidiEventClass = env->FindClass("jvst/wrapper/valueobjects/VSTMidiEvent");		
 	if (MidiEventClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTMidiEvent");
 		return;
 	}
+	MidiEventClass = (jclass) env->NewGlobalRef(MidiEventClass);
 
 
 	EventsFieldEvents = env->GetFieldID(VSTEventsClass, "events", "[Ljvst/wrapper/valueobjects/VSTEvent;");
