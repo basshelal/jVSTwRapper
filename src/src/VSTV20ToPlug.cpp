@@ -762,6 +762,7 @@ bool VSTV20ToPlug::processVariableIo ( VstVariableIo* varIo) {
 
 	if(this->JavaFloatClass == NULL) {
 		this->JavaFloatClass = env->FindClass("[F");
+		this->JavaFloatClass = (jclass) env->NewGlobalRef(this->JavaFloatClass);
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F in VarIo");
 	}
 
@@ -1133,22 +1134,27 @@ void VSTV20ToPlug::initProcessEventsCache () {
 		log("** ERROR: cannot find instance-method processEvents(Ljvst/wrapper/valueobjects/VSTEvents;)I");  
 		return;
 	}
+
 	this->VSTEventsClass = env->FindClass("jvst/wrapper/valueobjects/VSTEvents");		
 	if (this->VSTEventsClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTEvents");
 		return;
 	}
+	this->VSTEventsClass = (jclass) env->NewGlobalRef(this->VSTEventsClass);
+
 	this->VSTEventClass = env->FindClass("jvst/wrapper/valueobjects/VSTEvent");		
 	if (this->VSTEventClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTEvent");
 		return;
 	}
+	this->VSTEventClass = (jclass) env->NewGlobalRef(this->VSTEventClass);
+
 	this->VSTMidiEventClass = env->FindClass("jvst/wrapper/valueobjects/VSTMidiEvent");		
 	if (this->VSTMidiEventClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTMidiEvent");
 		return;
 	}
-
+	this->VSTMidiEventClass = (jclass) env->NewGlobalRef(this->VSTMidiEventClass);
 
 
 	//Call VSTEvents JAVA Konstruktor
@@ -1272,6 +1278,7 @@ void VSTV20ToPlug::initVarIoCache () {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTVariableIO");
 		return;
 	}
+	this->VarIoClass = (jclass) env->NewGlobalRef(this->VarIoClass);
 
 
 	//Call VarIo JAVA Konstruktor
@@ -1347,6 +1354,8 @@ void VSTV20ToPlug::initSpeakerCache() {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTSpeakerArrangement");
 		return;
 	}
+	this->jSpeakerArrClass = (jclass) env->NewGlobalRef(this->jSpeakerArrClass);
+
 
 	//Call JAVA Konstruktor
 	jmethodID mid = env->GetMethodID(this->jSpeakerArrClass, "<init>", "()V");
@@ -1374,6 +1383,8 @@ void VSTV20ToPlug::initSpeakerCache() {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTSpeakerProperties");
 		return;
 	}	
+	this->jSpeakerPropsClass = (jclass) env->NewGlobalRef(this->jSpeakerPropsClass);
+
 	this->SpeakerPropsConstructor = env->GetMethodID(this->jSpeakerPropsClass, "<init>", "()V");
 	if (this->SpeakerPropsConstructor == NULL) {
 		log("** ERROR: cannot find default contructor for VSTSpeakerProperties!");

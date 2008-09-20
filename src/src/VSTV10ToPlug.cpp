@@ -427,6 +427,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 
 	if(this->JavaFloatClass == NULL) {
 		this->JavaFloatClass = env->FindClass("[F");
+		this->JavaFloatClass = (jclass) env->NewGlobalRef(this->JavaFloatClass);
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F");
 	}
 
@@ -586,6 +587,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 
 	if(this->JavaFloatClass == NULL) {
 		this->JavaFloatClass = env->FindClass("[F");
+		this->JavaFloatClass = (jclass) env->NewGlobalRef(this->JavaFloatClass);
 		if (this->JavaFloatClass == NULL) log("** ERROR: cannot find class [F");
 	}
 
@@ -761,7 +763,8 @@ int VSTV10ToPlug::initJavaSide(jclass effectClass) {
 
 
 	if(effectClass==NULL) return -1;
-	this->JavaPlugClass = effectClass;
+	//Create global reference --> use this object accross different threads
+	this->JavaPlugClass = (jclass) env->NewGlobalRef(effectClass);
 
     jlong wri=((jlong)((long)this));
 	//JAVA Konstruktor

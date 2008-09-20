@@ -108,6 +108,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 
 	if(this->JavaDoubleClass == NULL) {
 		this->JavaDoubleClass = env->FindClass("[D");
+		this->JavaDoubleClass = (jclass) env->NewGlobalRef(this->JavaDoubleClass);
 		if (this->JavaDoubleClass == NULL) log("** ERROR: cannot find class [D");
 	}
 
