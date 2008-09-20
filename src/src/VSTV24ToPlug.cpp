@@ -119,25 +119,39 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 
 		//delete old java arrays if existing
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
-			if (ProcessDoubleReplacingInArrays[i]) env->DeleteLocalRef(ProcessDoubleReplacingInArrays[i]);
+			//if (ProcessDoubleReplacingInArrays[i]) env->DeleteLocalRef(ProcessDoubleReplacingInArrays[i]);
+			if (ProcessDoubleReplacingInArrays[i]) env->DeleteGlobalRef(ProcessDoubleReplacingInArrays[i]);
 		}
 		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-			if (ProcessDoubleReplacingOutArrays[i]) env->DeleteLocalRef(ProcessDoubleReplacingOutArrays[i]);
+			//if (ProcessDoubleReplacingOutArrays[i]) env->DeleteLocalRef(ProcessDoubleReplacingOutArrays[i]);
+			if (ProcessDoubleReplacingOutArrays[i]) env->DeleteGlobalRef(ProcessDoubleReplacingOutArrays[i]);
 		}
-		if (ProcessDoubleReplacingJInputs) env->DeleteLocalRef(ProcessDoubleReplacingJInputs);
-		if (ProcessDoubleReplacingJOutputs) env->DeleteLocalRef(ProcessDoubleReplacingJOutputs);
+		//if (ProcessDoubleReplacingJInputs) env->DeleteLocalRef(ProcessDoubleReplacingJInputs);
+		//if (ProcessDoubleReplacingJOutputs) env->DeleteLocalRef(ProcessDoubleReplacingJOutputs);
+		if (ProcessDoubleReplacingJInputs) env->DeleteGlobalRef(ProcessDoubleReplacingJInputs);
+		if (ProcessDoubleReplacingJOutputs) env->DeleteGlobalRef(ProcessDoubleReplacingJOutputs);
 
 		ProcessDoubleReplacingJInputs = env->NewObjectArray(this->getAeffect()->numInputs, JavaDoubleClass, NULL);
 		ProcessDoubleReplacingJOutputs = env->NewObjectArray(this->getAeffect()->numOutputs, JavaDoubleClass, NULL);
 		if (ProcessDoubleReplacingJInputs == NULL) log("** ERROR: out of memory! jinputs");
 		if (ProcessDoubleReplacingJOutputs == NULL) log("** ERROR: out of memory! joutputs");
 
+		//create global refs
+		ProcessDoubleReplacingJInputs = (jobjectArray) env->NewGlobalRef(ProcessDoubleReplacingJInputs);
+		ProcessDoubleReplacingJOutputs = (jobjectArray) env->NewGlobalRef(ProcessDoubleReplacingJOutputs);
+
 		//create new java float arrays of bufferSize
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
-			ProcessDoubleReplacingInArrays[i]=env->NewDoubleArray(sampleFrames);
+			//ProcessDoubleReplacingInArrays[i]=env->NewDoubleArray(sampleFrames);
+			jdoubleArray localref = env->NewDoubleArray(sampleFrames);
+			if (localref == NULL) log("** ERROR: out of memory! inarrays localref");
+			ProcessDoubleReplacingInArrays[i]= (jdoubleArray) env->NewGlobalRef(localref);
 		}
 		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-			ProcessDoubleReplacingOutArrays[i]=env->NewDoubleArray(sampleFrames);
+			//ProcessDoubleReplacingOutArrays[i]=env->NewDoubleArray(sampleFrames);
+			jdoubleArray localref = env->NewDoubleArray(sampleFrames);
+			if (localref == NULL) log("** ERROR: out of memory! outarrays localref");
+			ProcessDoubleReplacingOutArrays[i]= (jdoubleArray) env->NewGlobalRef(localref);
 		}
 	}
 

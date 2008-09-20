@@ -439,25 +439,39 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 
 		//delete old java arrays if existed
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
-			if (ProcessInArrays[i]) env->DeleteLocalRef(ProcessInArrays[i]);
+			//if (ProcessInArrays[i]) env->DeleteLocalRef(ProcessInArrays[i]);
+			if (ProcessInArrays[i]) env->DeleteGlobalRef(ProcessInArrays[i]);
 		}
 		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-			if (ProcessOutArrays[i]) env->DeleteLocalRef(ProcessOutArrays[i]);
+			//if (ProcessOutArrays[i]) env->DeleteLocalRef(ProcessOutArrays[i]);
+			if (ProcessOutArrays[i]) env->DeleteGlobalRef(ProcessOutArrays[i]);
 		}
-		if (ProcessJInputs) env->DeleteLocalRef(ProcessJInputs);
-		if (ProcessJOutputs) env->DeleteLocalRef(ProcessJOutputs);
+		//if (ProcessJInputs) env->DeleteLocalRef(ProcessJInputs);
+		//if (ProcessJOutputs) env->DeleteLocalRef(ProcessJOutputs);
+		if (ProcessJInputs) env->DeleteGlobalRef(ProcessJInputs);
+		if (ProcessJOutputs) env->DeleteGlobalRef(ProcessJOutputs);
 
 		ProcessJInputs = env->NewObjectArray(this->getAeffect()->numInputs, JavaFloatClass, NULL);
 		ProcessJOutputs = env->NewObjectArray(this->getAeffect()->numOutputs, JavaFloatClass, NULL);
 		if (ProcessJInputs == NULL) log("** ERROR: out of memory! jinputs");
 		if (ProcessJOutputs == NULL) log("** ERROR: out of memory! joutputs");
+		
+		//create global refs
+		ProcessJInputs = (jobjectArray) env->NewGlobalRef(ProcessJInputs);
+		ProcessJOutputs = (jobjectArray) env->NewGlobalRef(ProcessJOutputs);
 
 		//create new java float arrays of bufferSize
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
-			ProcessInArrays[i]=env->NewFloatArray(sampleFrames);
+			//ProcessInArrays[i]=env->NewFloatArray(sampleFrames);
+			jfloatArray localref = env->NewFloatArray(sampleFrames);
+			if (localref == NULL) log("** ERROR: out of memory! inarrays localref");
+			ProcessInArrays[i]= (jfloatArray) env->NewGlobalRef(localref);
 		}
 		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-			ProcessOutArrays[i]=env->NewFloatArray(sampleFrames);
+			//ProcessOutArrays[i]=env->NewFloatArray(sampleFrames);
+			jfloatArray localref = env->NewFloatArray(sampleFrames);
+			if (localref == NULL) log("** ERROR: out of memory! outarrays localref");
+			ProcessOutArrays[i]= (jfloatArray) env->NewGlobalRef(localref);
 		}
 	}
 
@@ -583,25 +597,40 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 
 		//delete old java arrays if existing
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
-			if (ProcessReplacingInArrays[i]) env->DeleteLocalRef(ProcessReplacingInArrays[i]);
+			//if (ProcessReplacingInArrays[i]) env->DeleteLocalRef(ProcessReplacingInArrays[i]);
+			if (ProcessReplacingInArrays[i]) env->DeleteGlobalRef(ProcessReplacingInArrays[i]);
 		}
 		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-			if (ProcessReplacingOutArrays[i]) env->DeleteLocalRef(ProcessReplacingOutArrays[i]);
+			//if (ProcessReplacingOutArrays[i]) env->DeleteLocalRef(ProcessReplacingOutArrays[i]);
+			if (ProcessReplacingOutArrays[i]) env->DeleteGlobalRef(ProcessReplacingOutArrays[i]);
 		}
-		if (ProcessReplacingJInputs) env->DeleteLocalRef(ProcessReplacingJInputs);
-		if (ProcessReplacingJOutputs) env->DeleteLocalRef(ProcessReplacingJOutputs);
+		//if (ProcessReplacingJInputs) env->DeleteLocalRef(ProcessReplacingJInputs);
+		//if (ProcessReplacingJOutputs) env->DeleteLocalRef(ProcessReplacingJOutputs);
+		if (ProcessReplacingJInputs) env->DeleteGlobalRef(ProcessReplacingJInputs);
+		if (ProcessReplacingJOutputs) env->DeleteGlobalRef(ProcessReplacingJOutputs);
 
 		ProcessReplacingJInputs = env->NewObjectArray(this->getAeffect()->numInputs, JavaFloatClass, NULL);
 		ProcessReplacingJOutputs = env->NewObjectArray(this->getAeffect()->numOutputs, JavaFloatClass, NULL);
 		if (ProcessReplacingJInputs == NULL) log("** ERROR: out of memory! jinputs");
 		if (ProcessReplacingJOutputs == NULL) log("** ERROR: out of memory! joutputs");
 
+		//create global refs
+		ProcessReplacingJInputs = (jobjectArray) env->NewGlobalRef(ProcessReplacingJInputs);
+		ProcessReplacingJOutputs = (jobjectArray) env->NewGlobalRef(ProcessReplacingJOutputs);
+
+
 		//create new java float arrays of bufferSize
 		for (int i = 0; (i < this->getAeffect()->numInputs) && (i<8); i++) {
-			ProcessReplacingInArrays[i]=env->NewFloatArray(sampleFrames);
+			//ProcessReplacingInArrays[i]=env->NewFloatArray(sampleFrames);
+			jfloatArray localref = env->NewFloatArray(sampleFrames);
+			if (localref == NULL) log("** ERROR: out of memory! inarrays localref");
+			ProcessReplacingInArrays[i]= (jfloatArray) env->NewGlobalRef(localref);
 		}
 		for (int i = 0; (i < this->getAeffect()->numOutputs) && (i<8); i++) {
-			ProcessReplacingOutArrays[i]=env->NewFloatArray(sampleFrames);
+			//ProcessReplacingOutArrays[i]=env->NewFloatArray(sampleFrames);
+			jfloatArray localref = env->NewFloatArray(sampleFrames);
+			if (localref == NULL) log("** ERROR: out of memory! outarrays localref");
+			ProcessReplacingOutArrays[i]= (jfloatArray) env->NewGlobalRef(localref);
 		}
 	}
 
