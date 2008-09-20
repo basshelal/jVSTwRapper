@@ -92,10 +92,11 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 	: AEffGUIEditor (effect) {
 
 	log("GUI wrapper init");
-	JNIEnv* env = this->ensureJavaThreadAttachment();
-
+	
 	this->Jvm = ((VSTV10ToPlug*)effect)->Jvm;
 	this->JavaPlugObj = ((VSTV10ToPlug*)effect)->JavaPlugObj;
+
+	JNIEnv* env = this->ensureJavaThreadAttachment();
 	this->JavaPlugGUIClass = (jclass) env->NewGlobalRef(guiRunnerClass);
 	this->JavaPlugGUIString = (jstring) env->NewGlobalRef(guiclazz);
 
