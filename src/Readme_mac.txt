@@ -29,7 +29,7 @@ Creating an Audio Unit (AU) version of your jVSTwRapper VST plugin
 1. Install (i.e. copy the bundle) your jVSTwRapper VST plugin 
    to /Library/Audio/Plug-Ins/VST/ or ~/Library/Audio/Plug-Ins/VST/
 
-2. Start the "VSTAU Manager" application, find you plugin in the list and click "install". 
+2. Start the "VSTAU Manager" application, find your plugin in the list and click "install". 
    This will create a wrapper AU plugin for the selected VST plug. 
 
 3. You can find the created AU plugin -- named "YourOriginalVSTPluginName (VSTAU)" -- 
@@ -42,7 +42,7 @@ Creating an Audio Unit (AU) version of your jVSTwRapper VST plugin
    folders /VST or /Components in either /Library/Audio/Plug-Ins/ or ~/Library/Audio/Plug-Ins/ (I.e. 
    the .component bundle goes to either /Library/Audio/Plug-Ins/Components/ or 
    ~/Library/Audio/Plug-Ins/Components/ and the .vst bundle goes to /Library/Audio/Plug-Ins/VST/ or 
-   ~/Library/Audio/Plug-Ins/VST/. You can freely choose between both versions.)
+   ~/Library/Audio/Plug-Ins/VST/. You can freely choose between both folders.)
  
 
 NOTE:
