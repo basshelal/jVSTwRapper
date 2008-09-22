@@ -115,7 +115,7 @@ void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, Vs
 #if 1
 // Code donated by Normen Hansen: significantly reduces GC activity
 
-	if (ProcessDoubleReplacingLastSampleFrames!=sampleFrames) {
+	if (ProcessDoubleReplacingLastSampleFrames<sampleFrames) {
 		ProcessDoubleReplacingLastSampleFrames=sampleFrames;
 
 		//delete old java arrays if existing

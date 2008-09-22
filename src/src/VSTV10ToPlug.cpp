@@ -435,7 +435,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 #if 1
 // Code donated by Normen Hansen: significantly reduces GC activity
 
-	if (ProcessLastSampleFrames!=sampleFrames) {
+	if (ProcessLastSampleFrames<sampleFrames) {
 		ProcessLastSampleFrames=sampleFrames;
 
 		//delete old java arrays if existed
@@ -594,7 +594,7 @@ void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 s
 #if 1
 // Code donated by Normen Hansen: significantly reduces GC activity
 
-	if (ProcessReplacingLastSampleFrames!=sampleFrames) {
+	if (ProcessReplacingLastSampleFrames<sampleFrames) {
 		ProcessReplacingLastSampleFrames=sampleFrames;
 
 		//delete old java arrays if existing
