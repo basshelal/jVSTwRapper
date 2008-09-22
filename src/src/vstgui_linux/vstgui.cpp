@@ -2,7 +2,7 @@
 // VST Plug-Ins SDK
 // VSTGUI: Graphical User Interface Framework for VST plugins :
 //
-// Version 3.0       $Date: 2008/09/08 07:02:24 $
+// Version 3.0       $Date: 2008/09/22 21:51:45 $
 //-----------------------------------------------------------------------------
 // VSTGUI LICENSE
 //  2004, Steinberg Media Technologies, All Rights Reserved
@@ -1759,8 +1759,11 @@ bool CFrame::initFrame (void *systemWin)
         StructureNotifyMask | ExposureMask | KeyPressMask | KeyReleaseMask |
         ButtonPressMask | ButtonReleaseMask | FocusChangeMask | PointerMotionMask |
         EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
-        
+
+#if DEBUG
 DebugPrint ("create win, display=%p\n", display);
+#endif
+
 	assert(display!=NULL);
         
     // create window
