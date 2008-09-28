@@ -14,7 +14,7 @@
 
 	<files>
 		<file>
-			<source>linux/jVSTwRapper/jVSTwRapper.so</source>
+			<source>linux/jVSTwRapper/jvstwrapper.so</source>
 			<outputDirectory></outputDirectory>
 			<destName>JayDLay.so</destName>
 		</file>
