@@ -19,7 +19,8 @@
 		<repository>
 			<id>jvstwrapper-repo</id>
 			<name>jVSTwRapper Repository</name>
-			<url>scp://shell.sourceforge.net/home/groups/j/jv/jvstwrapper/htdocs/maven2/</url>
+			<!--<url>scpexe://web.sourceforge.net/groups/j/jv/jvstwrapper/htdocs/maven2/</url>-->
+			<url>scp://web.sourceforge.net/groups/j/jv/jvstwrapper/htdocs/maven2/</url>
 		</repository>
 	</distributionManagement>
 	
