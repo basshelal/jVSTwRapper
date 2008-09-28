@@ -17,15 +17,18 @@ cp ../cvs2cl.pl .
 
 cd ..
 
+rm READ_ME.html
+rm ChangeLog.txt*
+rm style.css*
+rm fb.jpg*
 wget -O READ_ME.html http://jvstwrapper.sourceforge.net/index.html
 wget http://jvstwrapper.sourceforge.net/style.css
 wget http://jvstwrapper.sourceforge.net/fb.jpg
 
-mvn install
-mvn javadoc:jar
-mvn package assembly:assembly
+mvn install javadoc:jar package assembly:assembly
 
 echo Mac OSX only --> create custom folder icon
+
 ASSEMBLY_DIR=target/jVSTwRapper-Release-0.9g-osx.dir
 rm -f $ASSEMBLY_DIR/jvstwrapper.vst/Icon*
 /Developer/Tools/SetFile -a B $ASSEMBLY_DIR/jvstwrapper.vst
@@ -35,6 +38,10 @@ ditto $ASSEMBLY_DIR/jvstwrapper.vst/Contents/Resources/jvstwrapper.icns $ASSEMBL
 echo "file rename $ASSEMBLY_DIR/jvstwrapper.vst/Icon $ASSEMBLY_DIR/jvstwrapper.vst/Icon\r" | tclsh
 /Developer/Tools/SetFile -a C $ASSEMBLY_DIR/jvstwrapper.vst/
 
-mvn deploy
+#mvn deploy
+
+echo 
+echo "*** Dont forget to create and copy jvstwrapper.component to $ASSEMBLY_DIR ***"
+
 #mvn release:prepare
 #mvn release:perform
