@@ -27,9 +27,7 @@ wget http://jvstwrapper.sourceforge.net/fb.jpg
 
 mvn install javadoc:jar package assembly:assembly
 
-#mvn deploy
-
-echo -n "Dont forget to update the mvn repo at http://jvstwrapper.sf.net/maven2"
+mvn deploy
 
 #mvn release:prepare
 #mvn release:perform

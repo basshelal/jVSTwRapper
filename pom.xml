@@ -32,8 +32,7 @@
 	<distributionManagement>
 		<repository>
 			<id>jvstwrapper-repo</id>
-			<name>jVSTwRapper Repository</name>
-			<url>scp://shell.sourceforge.net/home/groups/j/jv/jvstwrapper/htdocs/maven2/</url>
+			<url>scp://web.sourceforge.net/home/groups/j/jv/jvstwrapper/htdocs/maven2/</url>
 		</repository>
 	</distributionManagement>
   
@@ -49,18 +48,6 @@
 					<target>1.4</target>
 				</configuration>
 			</plugin>
-			
-			<!-- 
-			<plugin>
-		    	<groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-scm-plugin</artifactId>
-		        <configuration>
-		        	<providerImplementations>
-		            	<cvs>cvs_native</cvs>
-		          	</providerImplementations>
-		        </configuration>
-	 		</plugin>
-	 		-->
 		</plugins>
 	</build>
 	
