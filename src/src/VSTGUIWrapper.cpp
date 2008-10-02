@@ -119,8 +119,8 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 	Status s = XInitThreads();
 	log("XInitThreads()=%i", s);
 	//this->ParentWindow = 0;
-	this->JavaDisplay=NULL;
-		
+	
+	this->JavaDisplay=NULL;	
 #endif
 
 	hBackground = NULL;
@@ -402,9 +402,13 @@ bool VSTGUIWrapper::open (void *ptr) {
 					this->JavaDisplay = dsi_win->display;   
 					log("Java Display = %p", this->JavaDisplay);
 					
-					//reparent					
-					int ret = XReparentWindow (this->JavaDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
-					//int ret = XReparentWindow (::display, this->JavaWindowHandle, (Window)ptr, 0, 0);
+					//reparent window
+					
+					//works only approx. 1 out of 7 times
+					//int ret = XReparentWindow (this->JavaDisplay, this->JavaWindowHandle, (Window)ptr, 0, 0);
+					
+					//this is much better (works reliable with Renoise and Jost, only EnergyXT makes problems)
+					int ret = XReparentWindow (::display, this->JavaWindowHandle, (Window)ptr, 0, 0);
 					
 					//old reparent
 					/*
@@ -687,16 +691,17 @@ void VSTGUIWrapper::detachWindow() {
 		this->JavaWindowHandle=NULL;
 #endif
 #ifdef linux	
-		//re-decorate window after reparent
-		//undecorateJavaWindow();
-
-		int ret = XReparentWindow (this->JavaDisplay, this->JavaWindowHandle, XDefaultRootWindow(this->JavaDisplay), 0, 0);
+		//does work only approx. 1 out of 7 times
+		//int ret = XReparentWindow (this->JavaDisplay, this->JavaWindowHandle, XDefaultRootWindow(this->JavaDisplay), 0, 0);
+		
+		//is this better? --> jupp, see comment in open() (when attaching)
+		int ret = XReparentWindow (::display, this->JavaWindowHandle, XDefaultRootWindow(this->JavaDisplay), 0, 0);
+		
+		//reparent with saved parent window
 		//int ret = XReparentWindow (this->JavaDisplay, this->JavaWindowHandle, this->ParentWindow, 0, 0);
+		
 		log("remap=%i", ret);
 		this->JavaWindowHandle=0;
-		
-		//re-decorate window after reparent
-		//undecorateJavaWindow();
 #endif
 	}
 	if(frame!=NULL) {
