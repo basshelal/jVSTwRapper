@@ -1,28 +1,27 @@
 Installing Java VST plugins on LINUX mini HOW-TO
 --------------------------------------------------
 
-NOTE: these steps are only required once If you got JayDlay to work, any other plugin will 
-      work too. 
+NOTE: these steps are only required once. If you got JayDlay (or another jVSTwRapper plugin) 
+	to work, any other plugin will work too. 
 
 1. Make sure you have a JAVA_HOME environment variable that is set to the correct value
    e.g. in your .bashrc add: 
    export JAVA_HOME=/usr/lib/jvm/java-6-sun/jre/
    
-   If you have a JDK installed (like me), JAVA_HOME should point to the location of your JRE. This is 
+   If you have a JDK installed (like me), $JAVA_HOME should point to the location of your JRE. This is 
    usually done by appending /jre to the path of your jdk, like in the example above.
-   In any case, check if the path is valid!
+   In any case, please check if the path is valid. 
    
-2. You need to tweak your LD_LIBRARY_PATH, e.g. add the following line to your .bashrc, replacing $JAVA_HOME with 
-   the correct value:
+2. You need to tweak your LD_LIBRARY_PATH, e.g. add the following line to your .bashrc :
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JAVA_HOME/lib/:$JAVA_HOME/lib/i386/:$JAVA_HOME/lib/i386/xawt/:$JAVA_HOME/lib/i386/client/
    
    Alternatively, it may work when you add all the paths from LD_LIBRARY_PATH above separately to /etc/ld.so.conf 
-   and then do "sudo ldconfig" afterwards.
+   and then execute "sudo ldconfig" afterwards.
    
 3. *** CHECK YOUR CONFIGURATION *** 
    by executing "ldd jvstwrapper.so". Your configuration ONLY was successful when the output 
    of this call does NOT contain the text "=> not found" for ANY library that is listed in the output. 
-   (i.e. "ldd jvstwrapper.so | grep not" returns zero lines!)	
+   (i.e. "ldd jvstwrapper.so | grep not" returns zero lines)	
 	
 4. Fire up Jost, energyXT2, Renoise or any other VST host application and enjoy the JayDLay demo plugin!
    Note: some hosts require a VST_PATH environment variable set to the directory where you stored your plugins (e.g. Renoise), 
@@ -38,7 +37,8 @@ jvstwrapper.so file is. (e.g. execute "ln -s $JAVA_HOME/lib/i386/xawt/ axwt" in 
 
 	
 **** The following steps are for plugin development ONLY ****
-   
+--------------------------------------------------------------
+
 5. Write your java plugin using the wrapper API.
 
 6. Specify your plugin main class in the jvstwrapper.ini file 
@@ -54,6 +54,7 @@ LADSPA: jVSTwRapper now exposes your plugins as VST and LADSPA plugins at the sa
         your plug in a LADSPA host (e.g. ardour, rezound, muse, audacity, ...) simply symlink  
         jvstwrapper.so to the directory where your ladspa plugs are (e.g. /usr/lib/ladspa or /usr/local/lib/ladspa).
 		e.g. "sudo ln -s absolute_path_to_jvstwrapper.so_file /usr/lib/ladspa/jvstwrapper.so"
+
 
 
 *** PLEASE USE THE FORUM FOR QUESTIONS ***
