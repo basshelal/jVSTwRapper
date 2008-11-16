@@ -42,16 +42,16 @@ class LadspaPluginAdapter {
  public:
    LadspaPluginAdapter();
    ~LadspaPluginAdapter();
-   
+
    bool canBeReused;
-   
+
    bool Init( unsigned long id ) ;
    bool InitVSTEffect( unsigned long rate );
-   
+
    char *GetStr( VstInt32 opcode, char *dflt );
    LadspaPluginAdapter *GetPrev();
    void SetPrev( LadspaPluginAdapter *prev );
-   
+
    /*LADSPA methods*/
    LADSPA_Descriptor *GetDescriptor();
    void Cleanup();
@@ -60,8 +60,8 @@ class LadspaPluginAdapter {
    void Run_Adding( unsigned long count );
    void Set_Run_Adding_Gain( LADSPA_Data gain );
    void Set_Parameters();
-      
-   
+
+
  private:
    LadspaPluginAdapter *mPrev;
    AEffect *mThunk;
@@ -82,21 +82,21 @@ class LadspaPluginAdapter {
 
 // This is the ladspa MAIN entry point
 VST_EXPORT const LADSPA_Descriptor *ladspa_descriptor( unsigned long index ) {
-	if (index>0) return NULL; //Only one plugin per .so file!
-	 
+	if (index!=0) return NULL; //Only one plugin per .so file!
+
 	IsLADSPALoaded = true;
 	LadspaPluginAdapter *plugin = new LadspaPluginAdapter();
-			
+
 	//TODO: fix this so that a random id is generated every time
    	//random() here generates always the same num (check with analysepluing)
 	bool success = plugin->Init( 100000 + (rand() % 100000) );
 	if (success==false) {
 		log("** LADSPA: Error wrapping VST Plugin");
-		delete plugin;
-		plugin = NULL;
+		//delete plugin;
+		//plugin = NULL;
 		return NULL;
 	}
-	
+
 	plugin->canBeReused=true; //reuse this instance in vst_instantiate
    	return plugin->GetDescriptor();
 }
@@ -104,10 +104,10 @@ VST_EXPORT const LADSPA_Descriptor *ladspa_descriptor( unsigned long index ) {
 
 static LADSPA_Handle vst_instantiate(const LADSPA_Descriptor *desc, unsigned long rate) {
    //printf("LADSPA instantiate\n");
-   
+
    LadspaPluginAdapter *plug = (LadspaPluginAdapter *) desc->ImplementationData;
    bool success = false;
-   
+
    if (plug->canBeReused) {
    		log("reusing LADSPA wrapper instance\n");
    		success = plug->InitVSTEffect(rate);
@@ -116,31 +116,31 @@ static LADSPA_Handle vst_instantiate(const LADSPA_Descriptor *desc, unsigned lon
    else {
    		log("creating new LADSPA wrapper instance\n");
    		plug = new LadspaPluginAdapter();
-   		
-   		success = plug->Init( 100000 + (rand() % 100000) ); 
+
+   		success = plug->Init( 100000 + (rand() % 100000) );
    		if (success==false) {
 			log("** LADSPA: Error initializing VST Plugin");
 			delete plug;
 			plug = NULL;
 			return NULL;
 		}
-		
+
    		success = plug->InitVSTEffect(rate);
    }
-   
+
    if (success==false) {
 		log("** LADSPA: Error init VST Effect");
 		delete plug;
 		plug = NULL;
 		return NULL;
    }
-	
+
    return (LADSPA_Handle)plug;
 }
 
 static void vst_activate(LADSPA_Handle handle) {
 	//show GUI here???
-	//printf("LADSPA activate\n");	
+	//printf("LADSPA activate\n");
 }
 
 static void vst_connect_port(LADSPA_Handle handle, unsigned long port, LADSPA_Data *data) {
@@ -198,7 +198,7 @@ LadspaPluginAdapter::~LadspaPluginAdapter() {
    if( mDesc.Name ) delete mDesc.Name;
    if( mDesc.Maker ) delete mDesc.Maker;
    if( mDesc.Copyright ) delete mDesc.Copyright;
-   
+
    for( i = 0; i < mDesc.PortCount; i++ ) {
       if( mDesc.PortNames ) {
          if( mDesc.PortNames[ i ] ) {
@@ -206,7 +206,7 @@ LadspaPluginAdapter::~LadspaPluginAdapter() {
          }
       }
    }
-   
+
    if( mDesc.PortDescriptors ) delete [] mDesc.PortDescriptors;
    if( mDesc.PortNames ) delete [] mDesc.PortNames;
    if( mDesc.PortRangeHints ) delete [] mDesc.PortRangeHints;
@@ -221,20 +221,20 @@ bool LadspaPluginAdapter::Init( unsigned long id ) {
    char temp[ 500 ];
    int port;
    int i;
-   
-   
+
+
    AEffect* effect = jvst_main(audioMaster);
-	
+
    if( effect && effect->magic == kEffectMagic );
    else {
 		log("** LADSPA: Error during jvst_main");
 		return false;
    }
-     
+
    mThunk = effect;
    mEffect = effect;
    mDesc.UniqueID = id;
- 
+
    //check vst plugin type
    //we only accept types of effect (ladspa doesnt know midi, vst instruments, ...)
    VstInt32 cat = mEffect->dispatcher(effect, effGetPlugCategory , 0, 0, NULL, 0);
@@ -315,7 +315,7 @@ bool LadspaPluginAdapter::Init( unsigned long id ) {
       hints[ port ].HintDescriptor = LADSPA_HINT_BOUNDED_BELOW | LADSPA_HINT_BOUNDED_ABOVE;
       hints[ port ].LowerBound = 0.0f;
       hints[ port ].UpperBound = 1.0f;
-      
+
       val = mThunk->getParameter( mEffect, i );
 
       if( val < 0.4f ) {
@@ -354,7 +354,7 @@ bool LadspaPluginAdapter::Init( unsigned long id ) {
    return true;
 }
 
-bool LadspaPluginAdapter::InitVSTEffect( unsigned long rate ) {  
+bool LadspaPluginAdapter::InitVSTEffect( unsigned long rate ) {
    mBlockSize = 0;
    mFirstParam = mEffect->numInputs + mEffect->numOutputs;
    mNumPorts = mFirstParam + mEffect->numParams;
@@ -362,7 +362,7 @@ bool LadspaPluginAdapter::InitVSTEffect( unsigned long rate ) {
 
    mPorts = new LADSPA_Data *[ mNumPorts ];
    if( mPorts == NULL ) return false;
-   
+
    memset( mPorts, 0, mNumPorts * sizeof(LADSPA_Data *));
 
    mThunk->dispatcher( mEffect, effOpen, 0, 0, NULL, 0 );
@@ -474,7 +474,7 @@ void LadspaPluginAdapter::Run_Adding( unsigned long count ) {
    }
 
    mThunk->processReplacing( mEffect, &mPorts[ 0 ], &out[ 0 ], count );
-   
+
    for( och = mEffect->numInputs, ich = 0; och < mEffect->numInputs + mEffect->numOutputs ; och++, ich++ ) {
       for( index = 0; index < (int) count; index++ ) {
          mPorts[ och ][ index ] += out[ ich ][ index ] * mGain;
