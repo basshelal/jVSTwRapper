@@ -94,6 +94,7 @@ VST_EXPORT const LADSPA_Descriptor *ladspa_descriptor( unsigned long index ) {
 		log("** LADSPA: Error wrapping VST Plugin");
 		//delete plugin;
 		//plugin = NULL;
+		IsLADSPALoaded = false;
 		return NULL;
 	}
 
