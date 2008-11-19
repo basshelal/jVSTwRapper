@@ -116,10 +116,15 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 	this->AttachWindow=0;
 #endif
 #ifdef linux
+	// XInitThreads(); this is causing major problems with QT4 based apps (Qtractor)
+	// --> disabled. still works fine with Jost, Renoise, eXT2
+	// DO NOT ENABLE AGAIN!
+	/*
 	Status s = XInitThreads();
 	log("XInitThreads()=%i", s);
-	//this->ParentWindow = 0;
+	*/
 	
+	//this->ParentWindow = 0;
 	this->JavaDisplay=NULL;	
 #endif
 
