@@ -553,8 +553,11 @@ void VSTGUIWrapper::valueChanged (CDrawContext* context, CControl* control) {
 		break;
 	}
 	
+#ifdef linux
 	//tip from lucio --> force GUI update here
+	//most linux hosts seem not to do this on their own, so manually update gui here...
 	update();
+#endif
 }
 
 
