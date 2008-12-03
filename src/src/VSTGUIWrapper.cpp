@@ -552,6 +552,9 @@ void VSTGUIWrapper::valueChanged (CDrawContext* context, CControl* control) {
 		}
 		break;
 	}
+	
+	//tip from lucio --> force GUI update here
+	update();
 }
 
 
