@@ -339,8 +339,15 @@ public class JayDLay extends VSTPluginAdapter {
 	//this is to prevent a threading issue on the mac that may cause a npe because the sliders 
 	//arent there yet (the constructor of the plugin is called, when the gui is not initialized yet)
 	//for thread savety on the mac, never call gui stuff in the constructor of the plugin
-	//init the gui defaults always when the gui is loaded, not when the plug is loaded. 
-	if (gui!=null && gui.DelaySlider!=null) { //gui.DelaySlider is the last slider in the initilalisation sequence
+	//init the gui defaults always when the gui is loaded, not when the plug is loaded.
+	
+	if (	gui!=null && 
+			gui.DelaySlider!=null && 
+			gui.DelayText!=null && 
+			gui.FeedbackSlider!=null && 
+			gui.FeedbackText!=null && 
+			gui.VolumeSlider!=null && 
+			gui.VolumeText!=null) {
 	    gui.DelaySlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
 	    gui.DelayText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
 	    
