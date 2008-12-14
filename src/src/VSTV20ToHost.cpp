@@ -112,10 +112,11 @@ jfieldID MidiEventFieldReserved2 = NULL;
 
 struct BigVstEvents
 {
-    long numEvents;
-    long reserved;
+    VstInt32 numEvents;
+    VstIntPtr reserved;
     VstEvent* events[VST_EVENTS_MAX];
 };
+
 
 /*
  * Class:     jvst_wrapper_communication_VSTV20ToHost
@@ -240,14 +241,19 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 		if (IsEventsCacheInitialised==false) InitEventsCache(env);
 
 
-		VstEvents* evts = (VstEvents*)&vstEventsToHost;
-		evts->numEvents = env->GetIntField(events, EventsFieldNumEvents);
-		evts->reserved = env->GetIntField(events, EventsFieldReserved);
+		VstEvents* ret = (VstEvents*)&vstEventsToHost;
+		ret->numEvents = env->GetIntField(events, EventsFieldNumEvents);
+		ret->reserved = env->GetIntField(events, EventsFieldReserved);
 
 		jobjectArray jevents = (jobjectArray)env->GetObjectField(events, EventsFieldEvents);
 		if (jevents==NULL) return 0;
 
-		for (int i=0; i < env->GetArrayLength(jevents); i++) {
+		int len = min (env->GetArrayLength(jevents), ret->numEvents); // better be save. If somebody initializes a big array, 
+																	  // but only initializes the first el. we crash later 
+																	  // when accessing the second element. Solution: hopefully 
+																	  // the field numEvents was used. We simply use the smaller 
+																	  // one of both hints to be save. 
+		for (int i=0; i < len; i++) {
 			
 			//CAUTION: I only VST_EVENTS_MAX events will be transmited to Host
 
@@ -304,11 +310,11 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 				env->DeleteLocalRef(jdata);
 			}
 
-			evts->events[i] = vstevent;
+			ret->events[i] = vstevent;
 		}
 
 		checkAndThrowException(env);			
-		return WrapperInstance->sendVstEventsToHost(evts);
+		return WrapperInstance->sendVstEventsToHost(ret);
 	}
 	else return 0;
  }
