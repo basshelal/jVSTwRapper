@@ -9,9 +9,9 @@
 			Name="Debug|Win32"
 			>
 			<DebugSettings
-				Command="C:\@DATA\private\jvst\minihost\win\Debug\minihost.exe"
+				Command="C:\Programme\Tools\vsthost\vsthost.exe"
 				WorkingDirectory=""
-				CommandArguments="C:\@DATA\private\jvst\jvst_native\src\Debug\jVSTwRapper.dll"
+				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -37,7 +37,7 @@
 			Name="Release|Win32"
 			>
 			<DebugSettings
-				Command=""
+				Command="C:\Programme\Tools\vsthost\vsthost.exe"
 				WorkingDirectory=""
 				CommandArguments=""
 				Attach="false"

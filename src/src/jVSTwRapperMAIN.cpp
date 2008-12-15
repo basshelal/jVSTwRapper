@@ -38,6 +38,7 @@
 #include "VSTV24ToPlug.h"
 #include "ConfigFileReader.h"
 
+#include <time.h>
 
 // *** VERSION *** //
 #define JVSTWRAPPER_VERSION "0.9g"
@@ -157,7 +158,11 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	log_stream = fopen(log_location, "a");
 	if (log_stream==NULL) log("** ERROR: cant create log stream at '%s'", log_location);
 
-	log("\n***** jVSTwRapper v%s *****", JVSTWRAPPER_VERSION);
+	log("\n\n***** jVSTwRapper v%s *****", JVSTWRAPPER_VERSION);
+
+	//print the current time/date
+	time_t now = time(NULL);
+	log("---- %s", ctime(&now));
 
 	// Get VST Version
 	if (!pAudioMaster(0, audioMasterVersion, 0, 0, 0, 0)) return 0;  // old version
