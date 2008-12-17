@@ -208,24 +208,6 @@ VSTGUIWrapper::~VSTGUIWrapper () {
 }
 
 
-//-----------------------------------------------------------------------------
-
-#ifdef WIN32
-static WNDPROC oldWndProcEdit;
-LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-LONG WINAPI WindowProcEdit (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {	
-	switch (message) {
-		case WM_ERASEBKGND : {		
-			CFrame* frame = (CFrame*)GetWindowLong(hwnd, GWL_USERDATA);
-			HWND javaHandle = ((VSTGUIWrapper*)frame->getEditor())->JavaWindowHandle;
-			RedrawWindow(javaHandle, NULL, NULL, RDW_NOERASE);
-			return 1;
-		}	
-	}
-	return CallWindowProc (oldWndProcEdit, hwnd, message, wParam, lParam);
-}
-#endif
-
 #ifdef linux
 int xErrorHandler(Display *dp, XErrorEvent *e) {
 	char text[1024];
@@ -238,7 +220,6 @@ int xErrorHandler(Display *dp, XErrorEvent *e) {
 	return 0;
 }
 #endif
-
 
 
 bool VSTGUIWrapper::open (void *ptr) {
@@ -367,39 +348,29 @@ bool VSTGUIWrapper::open (void *ptr) {
 					dsi_win = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
 #endif
 
-#ifdef WIN32 
-					//Create Frame to embedd the java Frame
-					ERect* thissize;
-					this->getRect(&thissize);
-					
-					//create new Frame using VSTGUI! (CRect, CFrame)
-					CRect size (0, 0, thissize->right, thissize->bottom);
-
-					//frame is a var from AEffectGUIEditor
-					if (frame!=NULL) delete frame;
-					frame = new CFrame (size, ptr, this);
-					
-//#ifdef WIN32 
-					HWND frhwnd=(HWND)frame->getSystemWindow();
-
+#ifdef WIN32 			
 					//Get Java Window-Handle
 					this->JavaWindowHandle=dsi_win->hwnd;
-					//Set Parent Window
-					SetParent((HWND)JavaWindowHandle, (HWND)frhwnd);
 					
-					//Set Windows Styles
-					long style;
-					style=(LONG)GetWindowLong(((HWND)frhwnd), GWL_STYLE);
-					SetWindowLong((HWND)frhwnd, GWL_STYLE, style | WS_CLIPCHILDREN);
+					//set window styles
+					LONG style;
+					
+					//remove WS_CHILD (possibly set from last open() call) and add WS_POPUP (expected from AWT)
+					//--> this causes the focus to be lost when the window is opened. currently I dont know any way around 
+					//    this, when we reparent with WS_CHILD being set, the host application will freeze...
+					style=GetWindowLong((HWND)JavaWindowHandle, GWL_STYLE);
+					SetWindowLong((HWND)JavaWindowHandle, GWL_STYLE, (style & ~WS_CHILD) | WS_POPUP);
 
+					//Set Parent Window
+					SetParent((HWND)JavaWindowHandle, (HWND)ptr);
+
+					//now add required styles so that focus/clipping stuff works correctly
+					//host window
 					style=(LONG)GetWindowLong(((HWND)ptr), GWL_STYLE);
 					SetWindowLong((HWND)ptr, GWL_STYLE, style | WS_CLIPCHILDREN);
-
+					//java window
 					style=GetWindowLong((HWND)JavaWindowHandle, GWL_STYLE);
-					SetWindowLong(dsi_win->hwnd, GWL_STYLE, style | WS_CHILD);
-
-					//Set new Paint-Method	
-					oldWndProcEdit = (WNDPROC)SetWindowLong ((HWND)frhwnd, GWL_WNDPROC, (long)WindowProcEdit);
+					SetWindowLong((HWND)JavaWindowHandle, GWL_STYLE, (style & ~WS_POPUP) | WS_CHILD);
 #endif
 #ifdef linux
 					//Get Java Window-Handle
@@ -440,8 +411,6 @@ bool VSTGUIWrapper::open (void *ptr) {
 			awt.FreeDrawingSurface(ds);
 		} 
 		else log("**Error: Unable to retrieve the drawing surface!");
-		
-		//TODO: maybe move linux reparenting stuff to this line here
 		
 	} //isAttached   
 #endif		
@@ -499,17 +468,14 @@ bool VSTGUIWrapper::open (void *ptr) {
 		
 		log("new cframe");
 		CFrame* lFrame = new CFrame (size, ptr, this);
-		//frame = new CFrame (size, ptr, this);
 		log("cframe OK!");
 
 		lFrame->setBackground (hBackground);
-		//frame->setBackground (hBackground);
 
 		CBitmap* hButtonBG = new CBitmap (kButtonID);
 		size (kButtonX, kButtonY, kButtonX + hButtonBG->getWidth(), kButtonY + hButtonBG->getHeight()/2);
 		hButton = new COnOffButton(size, this, kButtonTag, hButtonBG);
 		lFrame->addView (hButton);
-		//frame->addView (hButton);
 		
 		hButtonBG->forget();
 
