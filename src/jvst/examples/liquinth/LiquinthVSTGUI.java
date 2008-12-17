@@ -59,7 +59,7 @@ public class LiquinthVSTGUI extends VSTPluginGUIAdapter {
 
 
 	public void set_controller( int controller, int value ) {
-		if( controller >= 0 && controller < controllers.length ) {
+		if( controllers!=null && controller >= 0 && controller < controllers.length ) {
 			controllers[ controller ].setValue( value );
 		}
 	}
