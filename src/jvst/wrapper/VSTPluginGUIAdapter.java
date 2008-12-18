@@ -45,6 +45,9 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 		this.runner=r;
 		this.plugin=plugin;
 		
+		//return gracefully when everything is null --> DEBUG mode
+		if (r==null && plugin==null) return;
+		
 		// center window
 		/*
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
