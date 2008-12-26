@@ -4,8 +4,12 @@
  */
 package jvst.examples.javafx.fxdelay;
 
+import java.awt.BorderLayout;
 import jvst.examples.javafx.*;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import jvst.examples.javafx.fxdemos.JavaInterop;
 import jvst.wrapper.VSTPluginAdapter;
 import jvst.wrapper.gui.VSTPluginGUIRunner;
 
@@ -16,8 +20,6 @@ import jvst.wrapper.VSTPluginGUIAdapter;
  * @author nix
  *
  * TODO:
- *  - THREADING --> swing, invokeLater for all calls from plug-->gui
- *  - commit to cvs
  *  - tabs / other fx samples (clock, stopwatch, game)
  * 
  */
@@ -37,18 +39,12 @@ public class FXDelayGUIDelegator extends VSTPluginGUIAdapter {
             this.setSize(280, 300);
             this.setResizable(false);
 
-            // instantiate JavaFX GUI (which is a JavaFX Scene) here
-            // use classloader
-            ClassLoader cl = this.getClass().getClassLoader();
-            while(cl!=null) {
-                System.out.println("CL = " + cl);
-                System.out.println("sys CL = " + cl.getSystemClassLoader());
-                
-                cl=cl.getParent();
-            }
-        
+            //create tabbed pane
+            JTabbedPane tabbedPane = new JTabbedPane();
+
+            //first tab is the JayDLay GUI
             FXDelayJavaInterop fxscene =
-                    (FXDelayJavaInterop) this.getClass().getClassLoader().loadClass(FX_GUI_CLASS).newInstance();
+                (FXDelayJavaInterop) this.getClass().getClassLoader().loadClass(FX_GUI_CLASS).newInstance();
             fxscene.setPluginInstance(plug);
             fxscene.setDelegator(this);
 
@@ -59,8 +55,19 @@ public class FXDelayGUIDelegator extends VSTPluginGUIAdapter {
             //embedd into this (which is a JFrame)
             JXScene s = new JXScene();
             s.setScene(fxscene);
-            this.getContentPane().add(s);
-            
+            tabbedPane.addTab("JayDLay", s);
+
+
+            //add some more JavaFX stuff --> this is stolen from the sample fx files at javafx.com
+            JPanel p;
+            p = makeFXPanel("jvst.examples.javafx.fxdemos.AnalogClock");
+            tabbedPane.addTab("AnalogClock", p);
+            p = makeFXPanel("jvst.examples.javafx.fxdemos.BouncingBall");
+            tabbedPane.addTab("BouncingBall", p);
+
+
+            this.getContentPane().add(tabbedPane);
+
             
             //this is needed on the mac only,
             //java guis are handled there in a pretty different way than on win/linux
@@ -73,6 +80,33 @@ public class FXDelayGUIDelegator extends VSTPluginGUIAdapter {
             log("** ERROR: Fatal error when loading JavaFX GUI: " + ex.toString());
             ex.printStackTrace();
         } 
+    }
+
+    private JPanel makeFXPanel(String fxGUIClass) throws Exception {
+        JPanel panel = new JPanel(false);
+
+        // instantiate JavaFX GUI (which is a JavaFX Scene) here
+        // use classloader
+        /*
+        ClassLoader cl = this.getClass().getClassLoader();
+        while(cl!=null) {
+            System.out.println("CL = " + cl);
+            System.out.println("sys CL = " + cl.getSystemClassLoader());
+
+            cl=cl.getParent();
+        }
+        */
+
+        JavaInterop fxobj =
+                (JavaInterop) this.getClass().getClassLoader().loadClass(fxGUIClass).newInstance();
+        //embedd into this (which is a JFrame)
+        JXScene js = new JXScene();
+        js.setScene(fxobj.getScene());
+
+        panel.setLayout(new BorderLayout());
+        panel.add(js, BorderLayout.CENTER);
+        
+        return panel;
     }
 
 
