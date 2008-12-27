@@ -60,15 +60,7 @@ public class FXDelayGUI extends Scene, FXDelayJavaInterop {
 
     //scene is created here
     init {
-        var tree = RecursiveTree {
-            translateX: 140 translateY: 120
-            angle: 45
-            leftFactor: 1.3
-            rightFactor: 1.3
-        };
-        tree.anim.play();
-
-        fill = Color.LIGHTGREY;
+        fill = Color.DARKGREY;
 
         //cursor = ...
 
@@ -91,7 +83,6 @@ public class FXDelayGUI extends Scene, FXDelayJavaInterop {
                 text: "Feedback"
                 value : bind feedback with inverse
             }
-            tree
         ]
     }
 
@@ -108,8 +99,8 @@ public class FXDelayGUI extends Scene, FXDelayJavaInterop {
 // debug main function for an easy way of running the GUI without all the VST mess
 function run(args : String[]) {
     Stage {
-        width: 280
-        height: 300
+        width: 290
+        height: 100
         scene: new FXDelayGUI();
     }
 }
