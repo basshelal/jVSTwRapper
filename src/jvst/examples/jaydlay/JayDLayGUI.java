@@ -84,9 +84,9 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     if (!DEBUG) {
     	((JayDLay)plugin).gui=this; //tell the plug that it has a gui!
     	
-    	this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
-    	this.FeedbackSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
-    	this.DelaySlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
+    	this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(JayDLay.PARAM_ID_OUT) * 100F));
+    	this.FeedbackSlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(JayDLay.PARAM_ID_FEEDBACK) * 100F));
+    	this.DelaySlider = new JSlider(JSlider.VERTICAL, 1, 100, (int)(this.pPlugin.getParameter(JayDLay.PARAM_ID_DELAY) * 100F));
     }
     else {
        	this.VolumeSlider = new JSlider(JSlider.VERTICAL, 1, 100, 1);
@@ -98,9 +98,9 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     this.DelaySlider.addChangeListener(this);
 
     if (!DEBUG) {
-	    this.VolumeText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
-	    this.FeedbackText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
-	    this.DelayText = new JTextField(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
+	    this.VolumeText = new JTextField(this.pPlugin.getParameterDisplay(JayDLay.PARAM_ID_OUT));
+	    this.FeedbackText = new JTextField(this.pPlugin.getParameterDisplay(JayDLay.PARAM_ID_FEEDBACK));
+	    this.DelayText = new JTextField(this.pPlugin.getParameterDisplay(JayDLay.PARAM_ID_DELAY));
 	}
     else {
 	    this.VolumeText = new JTextField("0");
@@ -146,18 +146,18 @@ public class JayDLayGUI extends VSTPluginGUIAdapter implements ChangeListener {
     if (!DEBUG) {
 	    if (sl == this.VolumeSlider) {
 	      //this.pPlugin.setParameter(DelayProgram.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
-	      this.pPlugin.setParameterAutomated(DelayProgram.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
-	      this.VolumeText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_OUT));
+	      this.pPlugin.setParameterAutomated(JayDLay.PARAM_ID_OUT, (float)((float)sl.getValue() / 100F));
+	      this.VolumeText.setText(this.pPlugin.getParameterDisplay(JayDLay.PARAM_ID_OUT));
 	    }
 	    else if (sl == this.FeedbackSlider) {
 	      //this.pPlugin.setParameter(DelayProgram.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
-	      this.pPlugin.setParameterAutomated(DelayProgram.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
-	      this.FeedbackText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
+	      this.pPlugin.setParameterAutomated(JayDLay.PARAM_ID_FEEDBACK, (float)((float)sl.getValue() / 100F));
+	      this.FeedbackText.setText(this.pPlugin.getParameterDisplay(JayDLay.PARAM_ID_FEEDBACK));
 	    }
 	    else if (sl == this.DelaySlider) {
 	      //this.pPlugin.setParameter(DelayProgram.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));
-	      this.pPlugin.setParameterAutomated(DelayProgram.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));
-	      this.DelayText.setText(this.pPlugin.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
+	      this.pPlugin.setParameterAutomated(JayDLay.PARAM_ID_DELAY, (float)((float)sl.getValue() / 100F));
+	      this.DelayText.setText(this.pPlugin.getParameterDisplay(JayDLay.PARAM_ID_DELAY));
 	    }
     }
   }

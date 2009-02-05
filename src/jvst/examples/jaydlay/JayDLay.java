@@ -31,6 +31,13 @@ import jvst.wrapper.*;
 
 
 public class JayDLay extends VSTPluginAdapter {
+  public final static int PARAM_ID_DELAY = 0;
+  public final static int PARAM_ID_FEEDBACK = 1;
+  public final static int PARAM_ID_OUT = 2;
+
+  public final static int NUM_PARAMS = PARAM_ID_OUT + 1;
+
+  
   private DelayProgram[] programs;
   private float[] buffer;
   private float fDelay, fFeedBack, fOut;
@@ -140,20 +147,20 @@ public class JayDLay extends VSTPluginAdapter {
 
   public int getNumParams() {
     log("getNumParams");
-    return DelayProgram.NUM_PARAMS;
+    return NUM_PARAMS;
   }
 
   public float getParameter(int index) {
     float v = 0;
 
     switch (index) {
-        case DelayProgram.PARAM_ID_DELAY:
+        case PARAM_ID_DELAY:
           v = this.fDelay;
           break;
-        case DelayProgram.PARAM_ID_FEEDBACK:
+        case PARAM_ID_FEEDBACK:
           v = this.fFeedBack;
           break;
-        case DelayProgram.PARAM_ID_OUT:
+        case PARAM_ID_OUT:
           v = this.fOut;
           break;
     }
@@ -165,13 +172,13 @@ public class JayDLay extends VSTPluginAdapter {
     String label = "";
 
     switch (index) {
-        case DelayProgram.PARAM_ID_DELAY:
+        case PARAM_ID_DELAY:
           label = "Delay";
           break;
-        case DelayProgram.PARAM_ID_FEEDBACK:
+        case PARAM_ID_FEEDBACK:
           label = "FeedBack";
           break;
-        case DelayProgram.PARAM_ID_OUT:
+        case PARAM_ID_OUT:
           label = "Volume";
           break;
     }
@@ -190,11 +197,11 @@ public class JayDLay extends VSTPluginAdapter {
     
     this.currentProgram = index;
 
-    this.setParameter(DelayProgram.PARAM_ID_DELAY, dp.getDelay());
-    this.setParameter(DelayProgram.PARAM_ID_FEEDBACK, dp.getFeedback());
-    this.setParameter(DelayProgram.PARAM_ID_OUT, dp.getOut());
+    this.setParameter(PARAM_ID_DELAY, dp.getDelay());
+    this.setParameter(PARAM_ID_FEEDBACK, dp.getFeedback());
+    this.setParameter(PARAM_ID_OUT, dp.getOut());
     
-    this.updateGUI();
+    updateGUI();
   }
 
   public void setParameter(int index, float value) {
@@ -203,20 +210,20 @@ public class JayDLay extends VSTPluginAdapter {
     //log("setParameter index=" + index + " value=" + value);
     
     switch (index) {
-        case DelayProgram.PARAM_ID_DELAY:
+        case PARAM_ID_DELAY:
           this.setDelay(value);
           break;
-        case DelayProgram.PARAM_ID_FEEDBACK:
+        case PARAM_ID_FEEDBACK:
           this.fFeedBack = value;
           dp.setFeedback(value);
           break;
-        case DelayProgram.PARAM_ID_OUT:
+        case PARAM_ID_OUT:
           this.fOut = value;
           dp.setOut(value);
           break;
     }
     
-    this.updateGUI();
+    updateGUI();
   }
 
   public String getEffectName() {
@@ -227,13 +234,13 @@ public class JayDLay extends VSTPluginAdapter {
     String label = "";
 
     switch (index) {
-        case DelayProgram.PARAM_ID_DELAY:
+        case PARAM_ID_DELAY:
           label = "";
           break;
-        case DelayProgram.PARAM_ID_FEEDBACK:
+        case PARAM_ID_FEEDBACK:
           label = "";
           break;
-        case DelayProgram.PARAM_ID_OUT:
+        case PARAM_ID_OUT:
           label = "dB";
           break;
     }
@@ -249,14 +256,14 @@ public class JayDLay extends VSTPluginAdapter {
     String text = "";
 
     switch (index) {
-        case DelayProgram.PARAM_ID_DELAY:
-          text = Integer.toString(this.delay) + this.getParameterLabel(DelayProgram.PARAM_ID_DELAY);
+        case PARAM_ID_DELAY:
+          text = Integer.toString(this.delay) + this.getParameterLabel(PARAM_ID_DELAY);
           break;
-        case DelayProgram.PARAM_ID_FEEDBACK:
-          text = this.formatFloatParam(this.fFeedBack) + this.getParameterLabel(DelayProgram.PARAM_ID_FEEDBACK);
+        case PARAM_ID_FEEDBACK:
+          text = this.formatFloatParam(this.fFeedBack) + this.getParameterLabel(PARAM_ID_FEEDBACK);
           break;
-        case DelayProgram.PARAM_ID_OUT:
-          text = this.dbToString(this.fOut) + this.getParameterLabel(DelayProgram.PARAM_ID_OUT);
+        case PARAM_ID_OUT:
+          text = this.dbToString(this.fOut) + this.getParameterLabel(PARAM_ID_OUT);
           break;
     }
 
@@ -334,7 +341,7 @@ public class JayDLay extends VSTPluginAdapter {
   }
   
   
-  private void updateGUI() {
+  protected void updateGUI() {
 	//only access gui elemts if the gui was fully initialized
 	//this is to prevent a threading issue on the mac that may cause a npe because the sliders 
 	//arent there yet (the constructor of the plugin is called, when the gui is not initialized yet)
@@ -348,14 +355,14 @@ public class JayDLay extends VSTPluginAdapter {
 			gui.FeedbackText!=null && 
 			gui.VolumeSlider!=null && 
 			gui.VolumeText!=null) {
-	    gui.DelaySlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_DELAY) * 100F));
-	    gui.DelayText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_DELAY));
+	    gui.DelaySlider.setValue((int)(this.getParameter(PARAM_ID_DELAY) * 100F));
+	    gui.DelayText.setText(this.getParameterDisplay(PARAM_ID_DELAY));
 	    
-	    gui.FeedbackSlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_FEEDBACK) * 100F));
-	    gui.FeedbackText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_FEEDBACK));
+	    gui.FeedbackSlider.setValue((int)(this.getParameter(PARAM_ID_FEEDBACK) * 100F));
+	    gui.FeedbackText.setText(this.getParameterDisplay(PARAM_ID_FEEDBACK));
 	    
-	    gui.VolumeSlider.setValue((int)(this.getParameter(DelayProgram.PARAM_ID_OUT) * 100F));
-	    gui.VolumeText.setText(this.getParameterDisplay(DelayProgram.PARAM_ID_OUT)); 
+	    gui.VolumeSlider.setValue((int)(this.getParameter(PARAM_ID_OUT) * 100F));
+	    gui.VolumeText.setText(this.getParameterDisplay(PARAM_ID_OUT)); 
 	}
   }
   
@@ -369,12 +376,6 @@ public class JayDLay extends VSTPluginAdapter {
  * @version 1.0
  */
 class DelayProgram {
-  public final static int PARAM_ID_DELAY = 0;
-  public final static int PARAM_ID_FEEDBACK = 1;
-  public final static int PARAM_ID_OUT = 2;
-
-  public final static int NUM_PARAMS = PARAM_ID_OUT + 1;
-
   private String name = "Init";
   private float delay = 0.5F;
   private float feedback = 0.5F;
