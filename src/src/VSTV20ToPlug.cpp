@@ -143,7 +143,8 @@ bool VSTV20ToPlug::getProgramNameIndexed (VstInt32 category, VstInt32 index, cha
 	if (ret==NULL) return false;
 
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
-	strcpy (text, jstr);
+	if (strlen(jstr)>kVstMaxProgNameLen) log("* WARNING: program name indexed '%s' too long (max %i)", jstr, kVstMaxProgNameLen);
+	vst_strncpy (text, jstr, kVstMaxProgNameLen);
 
 	if (this->checkException(env)) return false;
 
@@ -162,7 +163,8 @@ bool VSTV20ToPlug::getProductString (char* text) {
 	if (ret==NULL) return false;
 	
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
-	strcpy (text, jstr);
+	if (strlen(jstr)>kVstMaxProductStrLen) log("* WARNING: product string '%s' too long (max %i)", jstr, kVstMaxProductStrLen);
+	vst_strncpy (text, jstr, kVstMaxProductStrLen);
 
 	if (this->checkException(env)) return false;
 
@@ -181,7 +183,8 @@ bool VSTV20ToPlug::getVendorString (char* text) {
 	if (ret==NULL) return false;
 
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
-	strcpy (text, jstr);
+	if (strlen(jstr)>kVstMaxVendorStrLen) log("* WARNING: vendor string '%s' too long (max %i)", jstr, kVstMaxVendorStrLen);
+	vst_strncpy (text, jstr, kVstMaxVendorStrLen);
 
 	if (this->checkException(env)) return false;
 
@@ -313,7 +316,8 @@ bool VSTV20ToPlug::getEffectName (char* name)   {
 	if (ret==NULL) return false;
 	
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
-	strcpy (name, jstr);
+	if (strlen(jstr)>kVstMaxEffectNameLen) log("* WARNING: effect name '%s' is too long (max %i)", jstr, kVstMaxEffectNameLen);
+	vst_strncpy (name, jstr, kVstMaxEffectNameLen);
 	
 	if (this->checkException(env)) return false;
 
@@ -411,7 +415,7 @@ bool VSTV20ToPlug::getInputProperties (VstInt32 index, VstPinProperties *props) 
 	jstr = (jstring)env->GetObjectField(obj, fid);
 	if (jstr!=NULL) {
 		str = env->GetStringUTFChars(jstr, 0);
-		strncpy(props->label,str,63);
+		vst_strncpy(props->label,str, kVstMaxLabelLen);
 	}
 	
 	fid = env->GetFieldID(cls, "ShortLabel", "Ljava/lang/String;");
@@ -419,7 +423,7 @@ bool VSTV20ToPlug::getInputProperties (VstInt32 index, VstPinProperties *props) 
 	jstr = (jstring)env->GetObjectField(obj, fid);
 	if (jstr!=NULL) {
 		str = env->GetStringUTFChars(jstr, 0);
-		strncpy(props->shortLabel,str,6);
+		vst_strncpy(props->shortLabel,str, kVstMaxShortLabelLen);
 	}
 
 	if (this->checkException(env)) return false;
@@ -455,7 +459,7 @@ bool VSTV20ToPlug::getOutputProperties (VstInt32 index, VstPinProperties * props
 	jstr = (jstring)env->GetObjectField(obj, fid);
 	if (jstr!=NULL) {
 		str = env->GetStringUTFChars(jstr, 0);
-		strncpy(props->label,str,63);
+		vst_strncpy(props->label,str, kVstMaxLabelLen);
 	}
 	
 	fid = env->GetFieldID(cls, "ShortLabel", "Ljava/lang/String;");
@@ -463,7 +467,7 @@ bool VSTV20ToPlug::getOutputProperties (VstInt32 index, VstPinProperties * props
 	jstr = (jstring)env->GetObjectField(obj, fid);
 	if (jstr!=NULL) {
 		str = env->GetStringUTFChars(jstr, 0);
-		strncpy(props->shortLabel,str,6);
+		vst_strncpy(props->shortLabel,str, kVstMaxShortLabelLen);
 	}
 
 	if (this->checkException(env)) return false;
@@ -482,7 +486,8 @@ bool VSTV20ToPlug::getErrorText (char* text) {
 	if (ret==NULL) return false;
 	
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
-	strcpy (text, jstr);
+	if (strlen(jstr)>50) log("* WARNING: error text '%s' too long (max %i)", jstr, 50);
+	vst_strncpy (text, jstr, 50);
 
 	if (this->checkException(env)) return false;
 
@@ -534,7 +539,7 @@ bool VSTV20ToPlug::getParameterProperties (VstInt32 index, VstParameterPropertie
 	jstr = (jstring)env->GetObjectField(obj, fid);
 	if (jstr!=NULL) {
 		str = env->GetStringUTFChars(jstr, 0);
-		strncpy(p->label,str,64);
+		vst_strncpy(p->label,str,kVstMaxLabelLen);
 	}
 
 	fid = env->GetFieldID(cls, "flags", "I");
@@ -563,7 +568,7 @@ bool VSTV20ToPlug::getParameterProperties (VstInt32 index, VstParameterPropertie
 	jstr = (jstring)env->GetObjectField(obj, fid);
 	if (jstr!=NULL) {
 		str = env->GetStringUTFChars(jstr, 0);
-		strncpy(p->label,str,6);
+		vst_strncpy(p->label,str,kVstMaxShortLabelLen);
 	}
 
 	fid = env->GetFieldID(cls, "displayIndex", "I");
@@ -588,7 +593,7 @@ bool VSTV20ToPlug::getParameterProperties (VstInt32 index, VstParameterPropertie
 	jstr = (jstring)env->GetObjectField(obj, fid);
 	if (jstr!=NULL) {
 		str = env->GetStringUTFChars(jstr, 0);
-		strncpy(p->categoryLabel,str,24);
+		vst_strncpy(p->categoryLabel,str,kVstMaxCategLabelLen);
 	}
 	
 	fid = env->GetFieldID(cls, "future", "[C");
@@ -1051,7 +1056,7 @@ bool VSTV20ToPlug::getSpeakerArrangement (VstSpeakerArrangement** pluginInput, V
 		jstring str = (jstring)env->GetObjectField(jSpeakerPropsObject, this->nameField);
 		if (str==NULL) break;
 		const char* jstr = env->GetStringUTFChars(str, NULL);
-		strcpy (props.name, jstr);
+		vst_strncpy (props.name, jstr, kVstMaxNameLen);
 		if(this->checkException(env)) break;
 
 		jcharArray jin = (jcharArray)env->GetObjectField(jSpeakerPropsObject, this->futureField);
@@ -1081,7 +1086,7 @@ bool VSTV20ToPlug::getSpeakerArrangement (VstSpeakerArrangement** pluginInput, V
 		jstring str = (jstring)env->GetObjectField(jSpeakerPropsObject, this->nameField);
 		if (str==NULL) break;
 		const char* jstr = env->GetStringUTFChars(str, NULL);
-		strcpy (props.name, jstr);
+		vst_strncpy (props.name, jstr, kVstMaxNameLen);
 		if(this->checkException(env)) break;
 
 		jcharArray jin = (jcharArray)env->GetObjectField(jSpeakerPropsObject, this->futureField);

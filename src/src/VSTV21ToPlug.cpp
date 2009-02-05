@@ -128,7 +128,7 @@ VstInt32 VSTV21ToPlug::getMidiProgramName (VstInt32 channel, MidiProgramName* mi
 	jstring jstr = (jstring)env->GetObjectField(jMidiProgramObject, nameField);
 	if (jstr!=NULL) {
 		const char* str = env->GetStringUTFChars(jstr, NULL);
-		strncpy (midiProgramName->name, str, 63);
+		vst_strncpy (midiProgramName->name, str, kVstMaxNameLen);
 		env->ReleaseStringUTFChars(jstr, str);
 		env->DeleteLocalRef(jstr);
 	}
@@ -220,7 +220,7 @@ VstInt32 VSTV21ToPlug::getCurrentMidiProgram (VstInt32 channel, MidiProgramName*
 	jstring jstr = (jstring)env->GetObjectField(jMidiProgramObject, nameField);
 	if (jstr!=NULL) {
 		const char* str = env->GetStringUTFChars(jstr, NULL);
-		strncpy (midiProgramName->name, str, 63);
+		vst_strncpy (midiProgramName->name, str, kVstMaxNameLen);
 		env->ReleaseStringUTFChars(jstr, str);
 		env->DeleteLocalRef(jstr);
 	}
@@ -296,7 +296,7 @@ VstInt32 VSTV21ToPlug::getMidiProgramCategory (VstInt32 channel, MidiProgramCate
 	jstring jstr = (jstring)env->GetObjectField(jMidiProgramCategoryObject, nameField);
 	if (jstr!=NULL) {
 		const char* str = env->GetStringUTFChars(jstr, NULL);
-		strncpy (category->name, str, 63);
+		vst_strncpy (category->name, str,kVstMaxNameLen);
 		env->ReleaseStringUTFChars(jstr, str);
 		env->DeleteLocalRef(jstr);
 	}
@@ -384,7 +384,7 @@ bool VSTV21ToPlug::getMidiKeyName (VstInt32 channel, MidiKeyName* keyName) {
 	jstring jstr = (jstring)env->GetObjectField(jMidikeyNameObject, keyNameField);
 	if (jstr!=NULL) {
 		const char* str = env->GetStringUTFChars(jstr, NULL);
-		strncpy (keyName->keyName, str, 63);
+		vst_strncpy (keyName->keyName, str, kVstMaxNameLen);
 		keyName->keyName[64] = 0;
 		env->ReleaseStringUTFChars(jstr, str);
 		env->DeleteLocalRef(jstr);

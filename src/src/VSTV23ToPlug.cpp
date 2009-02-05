@@ -76,7 +76,7 @@ VstInt32 VSTV23ToPlug::getNextShellPlugin (char* name) {
 	
 	if (str!=NULL) {
 		const char* jstr = env->GetStringUTFChars(str, NULL);
-		strncpy (name, jstr, 63);
+		vst_strncpy (name, jstr, kVstMaxNameLen);
 		env->ReleaseStringUTFChars(str, jstr);
 		env->DeleteLocalRef(str);
 	} else ret = 0L;
