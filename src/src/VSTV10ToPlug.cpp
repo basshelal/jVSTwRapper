@@ -135,7 +135,7 @@ void VSTV10ToPlug::setProgramName (char *name) {
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setProgramName", "(Ljava/lang/String;)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setProgramName(Ljava/lang/String;)V");
 	
-	char[kVstMaxNameLen] newname;
+	char newname[kVstMaxNameLen];
 	vst_strncpy(newname, name, kVstMaxNameLen); //cut chars
 	jstring arg = env->NewStringUTF(newname);
 
