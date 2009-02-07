@@ -135,6 +135,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 	const char* text = env->GetStringUTFChars(str, NULL);
 	strncpy(t, text,254);
 	env->ReleaseStringUTFChars(str, text);
+
     VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) ret = WrapperInstance->canHostDo(t);
 
@@ -395,11 +396,13 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getDirect
 
 	jstring ret = NULL;
 
+#ifdef WIN32
 	//TODO:
 	//Mac hosts return a FSSpec* here!!! (instead of char*)
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) ret = env->NewStringUTF((char *)WrapperInstance->getDirectory());
-
+#endif
+	
 	return ret;
 }
 
@@ -412,6 +415,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostPr
 		(JNIEnv* env, jobject obj) {
 	
 	jstring ret = NULL;
+	//text 	String of maximum 64 char 
 	char text[255]={'\0'};
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->getHostProductString(text);
@@ -441,6 +445,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostVe
 		(JNIEnv* env, jobject obj) {
 
 	jstring ret = NULL;
+	//text 	String of maximum 64 char 
 	char text[255]={'\0'};
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->getHostVendorString(text);
