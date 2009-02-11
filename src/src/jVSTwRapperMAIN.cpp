@@ -80,7 +80,8 @@
 extern int IsLogEnabled;
 
 //------------------------------------------------------------------------
-VSTV24ToPlug* WrapperInstance = NULL;
+VSTV24ToPlug* WrapperInstance = NULL;  //TODO: this var should be passed around as argument rather than hang around as global var
+									   // might cause problems with concurrent starts of the wrapper!
 JavaVM *GlobalJVM = NULL;
 
 //------------------------------------------------------------------------
@@ -150,7 +151,7 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	IsLogEnabled = cfg->IsLoggingEnabled;
 
 	char log_location[JVST_PATH_MAX];
-	strncpy(log_location, DllPath, JVST_PATH_MAX);
+	vst_strncpy(log_location, DllPath, JVST_PATH_MAX);
 	strncat(log_location, LogFileName, JVST_FILE_MAX);
 	log("log_location=%s", log_location);
 
@@ -316,7 +317,7 @@ void* startJava(void *nix) {
 	ConfigFileReader *cfg = new ConfigFileReader();
 
 	strcpy(java_path, "-Djava.class.path=");
-	strncat(java_path, replace(cfg->SystemClassPath, "{WrapperPath}", DllPath), JVST_PATH_MAX);
+	vst_strncat(java_path, replace(cfg->SystemClassPath, "{WrapperPath}", DllPath), JVST_PATH_MAX - strlen("-Djava.class.path=") - 1);
 
 	log("SystemPath=%s", java_path);
 	options[0].optionString = java_path;
@@ -458,7 +459,7 @@ int loadPlugin() {
 	JNIEnv *env = ensureJavaThreadAttachment(GlobalJVM);
 
 	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
-	strncpy(class_path, DllPath, JVST_PATH_MAX);
+	vst_strncpy(class_path, DllPath, JVST_PATH_MAX);
 	
 #if defined(MACX) || defined(linux)
 	strcat(class_path, ":\0");

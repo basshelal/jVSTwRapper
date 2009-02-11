@@ -385,7 +385,6 @@ bool VSTV21ToPlug::getMidiKeyName (VstInt32 channel, MidiKeyName* keyName) {
 	if (jstr!=NULL) {
 		const char* str = env->GetStringUTFChars(jstr, NULL);
 		vst_strncpy (keyName->keyName, str, kVstMaxNameLen);
-		keyName->keyName[64] = 0;
 		env->ReleaseStringUTFChars(jstr, str);
 		env->DeleteLocalRef(jstr);
 	}

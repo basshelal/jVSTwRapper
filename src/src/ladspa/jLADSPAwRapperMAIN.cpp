@@ -394,6 +394,7 @@ char *LadspaPluginAdapter::GetStr( VstInt32 opcode, char *dflt ) {
    int dot;
    int slash;
 
+   str[255]='\0';
    if( mThunk->dispatcher( mEffect, opcode, 0, 0, str, 0 ) )  {
       if( strlen( str ) > 0 ) return strdup( str );
    }
@@ -469,10 +470,7 @@ void LadspaPluginAdapter::Run_Adding( unsigned long count ) {
    if( !out[ 0 ] ) return;
 
    out[ 1 ] = new LADSPA_Data[ count ];
-   if( !out[ 0 ] || !out[ 1 ] ) {
-      delete [] out[ 0 ];
-      return;
-   }
+   if( !out[ 0 ] || !out[ 1 ] ) return;
 
    mThunk->processReplacing( mEffect, &mPorts[ 0 ], &out[ 0 ], count );
 

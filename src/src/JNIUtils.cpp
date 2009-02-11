@@ -217,8 +217,10 @@ char *replace(char *string, char *oldpiece, char *newpiece) {
    char newstring[JVST_PATH_MAX]; 
 
 
+   newstring[JVST_PATH_MAX-1]='\0';
+
    if ((c = (char *) strstr(string, oldpiece)) == NULL) 
-      return string; 
+      return strdup(string); 
 
 
    new_len = strlen(newpiece); 

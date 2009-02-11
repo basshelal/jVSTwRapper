@@ -49,7 +49,7 @@ extern char ConfigFileName[JVST_FILE_MAX];
 ConfigFileReader::ConfigFileReader() {
 	char ConfigFileLocation[JVST_PATH_MAX];
 
-	strncpy(ConfigFileLocation, DllPath, JVST_PATH_MAX);
+	vst_strncpy(ConfigFileLocation, DllPath, JVST_PATH_MAX);
 	strncat(ConfigFileLocation, ConfigFileName, JVST_FILE_MAX);
 	
 	//log(ConfigFileLocation);
