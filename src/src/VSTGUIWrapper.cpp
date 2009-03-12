@@ -102,14 +102,15 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 
 	this->IsInitialized=false;
 
-#if defined (WIN32) || defined(linux)
-	this->JavaWindowHandle = 0;
-
+	this->AttachWindow=false;
 	ConfigFileReader *cfg = new ConfigFileReader();
 	if(cfg!=NULL) {
 		this->AttachWindow=(cfg->AttachToNativePluginWindow==1);
 		delete cfg;
 	}
+
+#if defined (WIN32) || defined(linux)
+	this->JavaWindowHandle = 0;
 #endif
 #ifdef MACX
 	//no window embedding on the mac for now...
@@ -184,6 +185,7 @@ bool VSTGUIWrapper::getRect (ERect **ppErect) {
 VSTGUIWrapper::~VSTGUIWrapper () {
 	log("GUI wrapper destroy");
 
+// TODO: really still need to avoid the mac destroy call here???
 #ifndef MACX	
 	if (this->IsInitialized==true) {
 		JNIEnv* env = this->ensureJavaThreadAttachment();
@@ -545,10 +547,15 @@ void VSTGUIWrapper::close () {
 	this->detachWindow(); //first detach, then close 
 #endif
 
-	jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
-	if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
-	env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+
+	//only call close() on the java side if AttachToNativePluginWindow==1
+	if (this->AttachWindow==true) {
+		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
+		if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
+		env->CallVoidMethod(this->JavaPlugGUIObj, mid);
+	}
 	bool error = this->checkException(env);
+
 
 // LINUX: 
 // well, this would look best (the window is made invisible first, then the java win is detached from 
