@@ -548,12 +548,18 @@ void VSTGUIWrapper::close () {
 #endif
 
 
-	//only call close() on the java side if AttachToNativePluginWindow==1
-	//if (this->AttachWindow==true) {
+	// only call close() on the java side if AttachToNativePluginWindow==1
+	// but not on the mac, there, destroy() is not called on the java side (historical stability reasons)
+	// the java window would be alive and visible even when the plug was closed...
+#ifndef MACX
+	if (this->AttachWindow==true) {
+#endif
 		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 		if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
 		env->CallVoidMethod(this->JavaPlugGUIObj, mid);
-	//}
+#ifndef MACX
+	}
+#endif
 	bool error = this->checkException(env);
 
 
