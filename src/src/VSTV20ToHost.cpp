@@ -133,7 +133,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 	if (str==NULL) return ret;
 
 	const char* text = env->GetStringUTFChars(str, NULL);
-	strncpy(t, text,254);
+	vst_strncpy(t, text, 254);
 	env->ReleaseStringUTFChars(str, text);
 
     VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);

@@ -135,8 +135,8 @@ void VSTV10ToPlug::setProgramName (char *name) {
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "setProgramName", "(Ljava/lang/String;)V");
 	if (mid == NULL) log("** ERROR: cannot find instance-method setProgramName(Ljava/lang/String;)V");
 	
-	char newname[kVstMaxNameLen+1];
-	vst_strncpy(newname, name, kVstMaxNameLen); //cut chars
+	char newname[kVstMaxNameLen];
+	vst_strncpy(newname, name, kVstMaxNameLen-1); //cut chars
 	jstring arg = env->NewStringUTF(newname);
 
 	env->CallVoidMethod(this->JavaPlugObj, mid, arg);
@@ -157,7 +157,7 @@ void VSTV10ToPlug::getProgramName (char *name) {
 
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
 	if (strlen(jstr)>kVstMaxProgNameLen) log("* WARNING: program name '%s' too long (max %i)", jstr, kVstMaxProgNameLen);
-	vst_strncpy (name, jstr, kVstMaxProgNameLen);
+	vst_strncpy (name, jstr, kVstMaxProgNameLen-1);
 	env->ReleaseStringUTFChars(ret, jstr);
 
 	this->checkException(env);
@@ -218,7 +218,7 @@ void VSTV10ToPlug::getParameterName(VstInt32 index, char *label) {
 
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
 	if (strlen(jstr)>kVstMaxParamStrLen) log("* WARNING: parameter name '%s' is too long (max %i)", jstr, kVstMaxParamStrLen);
-	vst_strncpy (label, jstr, kVstMaxParamStrLen);
+	vst_strncpy (label, jstr, kVstMaxParamStrLen-1);
 
 	this->checkException(env);
 }
@@ -236,7 +236,7 @@ void VSTV10ToPlug::getParameterDisplay (VstInt32 index, char *text) {
 
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
 	if (strlen(jstr)>kVstMaxParamStrLen) log("* WARNING: parameter display '%s' is too long (max %i)", jstr, kVstMaxParamStrLen);
-	vst_strncpy (text, jstr, kVstMaxParamStrLen);
+	vst_strncpy (text, jstr, kVstMaxParamStrLen-1);
 
 	this->checkException(env);
 }
@@ -254,7 +254,7 @@ void VSTV10ToPlug::getParameterLabel (VstInt32 index, char *label) {
 
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
 	if (strlen(jstr)>kVstMaxParamStrLen) log("* WARNING: parameter label '%s' too long (max %i)", jstr, kVstMaxParamStrLen);
-	vst_strncpy (label, jstr, kVstMaxParamStrLen);
+	vst_strncpy (label, jstr, kVstMaxParamStrLen-1);
 
 	this->checkException(env);
 }

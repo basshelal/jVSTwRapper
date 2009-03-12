@@ -611,7 +611,7 @@ void calculatePaths() {
 		log("** ERROR: could not locate my own location! (/proc/self/maps missing?)");
 		return;
 	}	
-	strncpy(DllLocation, soPath, JVST_PATH_MAX);
+	strncpy(DllLocation, soPath, JVST_PATH_MAX-1);
 	log("DllLocation=%s", DllLocation);
 #endif
 
