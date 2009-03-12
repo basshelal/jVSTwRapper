@@ -549,11 +549,11 @@ void VSTGUIWrapper::close () {
 
 
 	//only call close() on the java side if AttachToNativePluginWindow==1
-	if (this->AttachWindow==true) {
+	//if (this->AttachWindow==true) {
 		jmethodID mid = env->GetMethodID(this->JavaPlugGUIClass, "close", "()V");
 		if (mid == NULL) log("** ERROR: cannot find GUI instance-method close()V");
 		env->CallVoidMethod(this->JavaPlugGUIObj, mid);
-	}
+	//}
 	bool error = this->checkException(env);
 
 
