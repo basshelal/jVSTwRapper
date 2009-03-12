@@ -48,9 +48,9 @@ extern char ConfigFileName[JVST_FILE_MAX];
 
 ConfigFileReader::ConfigFileReader() {
 	char ConfigFileLocation[JVST_PATH_MAX];
-
-	vst_strncpy(ConfigFileLocation, DllPath, JVST_PATH_MAX);
-	strncat(ConfigFileLocation, ConfigFileName, JVST_FILE_MAX);
+	
+	vst_strncpy(ConfigFileLocation, DllPath, JVST_PATH_MAX-1);
+	vst_strncat(ConfigFileLocation, ConfigFileName, JVST_FILE_MAX-1);
 	
 	//log(ConfigFileLocation);
 
@@ -70,7 +70,7 @@ ConfigFileReader::ConfigFileReader() {
 	this->JVMOption5 = NULL;
 	this->SystemClassPath = NULL;
 	this->IsLoggingEnabled = 0;
-	this->AttachToNativePluginWindow = 1;
+	this->AttachToNativePluginWindow = 0;
 	this->CloseNativePluginWindow = 0;
 	this->CustomJVMLocation = NULL;
 	this->RequestedJVMVersion = NULL;

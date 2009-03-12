@@ -487,7 +487,7 @@ bool VSTV20ToPlug::getErrorText (char* text) {
 	
 	const char* jstr = env->GetStringUTFChars(ret, NULL);
 	if (strlen(jstr)>50) log("* WARNING: error text '%s' too long (max %i)", jstr, 50);
-	vst_strncpy (text, jstr, 50);
+	vst_strncpy (text, jstr, 50-1);
 
 	if (this->checkException(env)) return false;
 

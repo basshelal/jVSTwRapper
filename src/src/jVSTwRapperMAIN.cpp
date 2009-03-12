@@ -151,8 +151,8 @@ AEffect* jvst_main(audioMasterCallback pAudioMaster) {
 	IsLogEnabled = cfg->IsLoggingEnabled;
 
 	char log_location[JVST_PATH_MAX];
-	vst_strncpy(log_location, DllPath, JVST_PATH_MAX);
-	strncat(log_location, LogFileName, JVST_FILE_MAX);
+	vst_strncpy(log_location, DllPath, JVST_PATH_MAX-1);
+	vst_strncat(log_location, LogFileName, JVST_FILE_MAX-1);
 	log("log_location=%s", log_location);
 
 	//creating log stream...
@@ -317,7 +317,7 @@ void* startJava(void *nix) {
 	ConfigFileReader *cfg = new ConfigFileReader();
 
 	strcpy(java_path, "-Djava.class.path=");
-	vst_strncat(java_path, replace(cfg->SystemClassPath, "{WrapperPath}", DllPath), JVST_PATH_MAX - strlen("-Djava.class.path=") - 1);
+	vst_strncat(java_path, replace(cfg->SystemClassPath, "{WrapperPath}", DllPath), JVST_PATH_MAX - strlen("-Djava.class.path=") - 2);
 
 	log("SystemPath=%s", java_path);
 	options[0].optionString = java_path;
@@ -459,7 +459,7 @@ int loadPlugin() {
 	JNIEnv *env = ensureJavaThreadAttachment(GlobalJVM);
 
 	log("DllPath (implicitly added to the classpath)=%s", DllPath);	
-	vst_strncpy(class_path, DllPath, JVST_PATH_MAX);
+	vst_strncpy(class_path, DllPath, JVST_PATH_MAX-1);
 	
 #if defined(MACX) || defined(linux)
 	strcat(class_path, ":\0");
