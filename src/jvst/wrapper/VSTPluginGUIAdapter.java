@@ -138,8 +138,15 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 	}
 
 	public void destroy() {
-		this.log("GUI destroy");
-		this.dispose();
+		//MAC was deadlocking when calling destroy() --> well, then simply hide the window instead :-)
+		//TODO: still the case ???
+		if(!RUNNING_MAC_X) {
+			this.log("GUI destroy");
+			this.dispose();
+		}
+		else {
+			this.close();
+		}
 	}
 
 	// ***********************************************************************
