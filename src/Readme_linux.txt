@@ -17,10 +17,7 @@ NOTE: these steps are only required once. If you got JayDlay (or another jVSTwRa
    
    Alternatively, it may work when you add all the paths from LD_LIBRARY_PATH above separately to /etc/ld.so.conf 
    and then execute "sudo ldconfig" afterwards.
-   
-   Sometimes, adding $JAVA_HOME/lib/i386 to the PATH env variable is also required. So, to be save, add this one as well. 
-   (to be really save you can add all the dirs you added to LD_LIBRARY_PATH as described above also to PATH :-))
-   
+      
 3. *** CHECK YOUR CONFIGURATION *** 
    by executing "ldd jvstwrapper.so". Your configuration ONLY was successful when the output 
    of this call does NOT contain the text "=> not found" for ANY library that is listed in the output. 
@@ -58,6 +55,15 @@ LADSPA: jVSTwRapper now exposes your plugins as VST and LADSPA plugins at the sa
         jvstwrapper.so to the directory where your ladspa plugs are (e.g. /usr/lib/ladspa or /usr/local/lib/ladspa).
 		e.g. "sudo ln -s absolute_path_to_jvstwrapper.so_file /usr/lib/ladspa/jvstwrapper.so"
 
+
+
+**** Troubleshooting ****
+--------------------------
+
+Sometimes, adding $JAVA_HOME/lib/i386 to the PATH env variable is also required. So, to be save, add this one as well. 
+(to be really save you can add all the dirs you added to LD_LIBRARY_PATH as described above also to PATH :-))
+
+re-check using "ldd jvstwrapper.so" as described in step 3. above
 
 
 *** PLEASE USE THE FORUM FOR QUESTIONS ***
