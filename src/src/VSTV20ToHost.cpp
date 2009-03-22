@@ -223,6 +223,11 @@ JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeIn
 
 
 
+
+#ifdef linux
+	int min(int a, int b) {return a < b ? a : b;}
+#endif
+
 /*
  * Class:     jvst_wrapper_communication_VSTV20ToHost
  * Method:    sendVstEventsToHost
@@ -248,6 +253,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 
 		jobjectArray jevents = (jobjectArray)env->GetObjectField(events, EventsFieldEvents);
 		if (jevents==NULL) return 0;
+
 
 		int len = min (env->GetArrayLength(jevents), ret->numEvents); // better be save. If somebody initializes a big array, 
 																	  // but only initializes the first el. we crash later 
