@@ -18,6 +18,9 @@ NOTE: these steps are only required once. If you got JayDlay (or another jVSTwRa
    Alternatively, it may work when you add all the paths from LD_LIBRARY_PATH above separately to /etc/ld.so.conf 
    and then execute "sudo ldconfig" afterwards.
    
+   Sometimes, adding $JAVA_HOME/lib/i386 to the PATH env variable is also required. So, to be save, add this one as well. 
+   (to be really save you can add all the dirs you added to LD_LIBRARY_PATH as described above also to PATH :-))
+   
 3. *** CHECK YOUR CONFIGURATION *** 
    by executing "ldd jvstwrapper.so". Your configuration ONLY was successful when the output 
    of this call does NOT contain the text "=> not found" for ANY library that is listed in the output. 
