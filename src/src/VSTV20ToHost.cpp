@@ -1,11 +1,11 @@
-/* 
+/*
  * jVSTwRapper - The Java way into VST world!
- * 
- * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface. 
- * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments 
+ *
+ * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface.
+ * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments
  * plus user interfaces with the Java Programming Language. 3 Demo Plugins(+src) are included!
- * 
- * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net] 
+ *
+ * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net]
  * 					   and many others, see CREDITS.txt
  *
  *
@@ -48,10 +48,10 @@ extern VSTV24ToPlug* getWrapperInstance(JNIEnv *env, jobject obj);
 
 
 
-// XXX: BUG: TODO:	The reference to the TimeInfoObject is global, so, if there is more than one 
-//					plugin running at the same time, races might occur and 
-//					the TimeInfo a plugin receives gets mixed up (all plugins get the information 
-//					written by the last writer). 
+// XXX: BUG: TODO:	The reference to the TimeInfoObject is global, so, if there is more than one
+//					plugin running at the same time, races might occur and
+//					the TimeInfo a plugin receives gets mixed up (all plugins get the information
+//					written by the last writer).
 //
 //					Solution: cache the TimeInfoObject at the java side, so that every plugin instance
 //					has its own, private copy of the instance and there is no global one.
@@ -67,20 +67,20 @@ bool IsTimeInfoCacheInitialised = false;
 jclass TimeInfoClass = NULL;
 jobject TimeInfoObject = NULL;
 
-jfieldID TimeInfoFieldSamplePos = NULL;     
+jfieldID TimeInfoFieldSamplePos = NULL;
 jfieldID TimeInfoFieldSampleRate = NULL;
-jfieldID TimeInfoFieldNanoSeconds = NULL;		
-jfieldID TimeInfoFieldPPQPos = NULL;		
-jfieldID TimeInfoFieldTempo = NULL;		
-jfieldID TimeInfoFieldBarStartPos = NULL;		
-jfieldID TimeInfoFieldCycleStartPos = NULL;	
-jfieldID TimeInfoFieldCycleEndPos = NULL;	
+jfieldID TimeInfoFieldNanoSeconds = NULL;
+jfieldID TimeInfoFieldPPQPos = NULL;
+jfieldID TimeInfoFieldTempo = NULL;
+jfieldID TimeInfoFieldBarStartPos = NULL;
+jfieldID TimeInfoFieldCycleStartPos = NULL;
+jfieldID TimeInfoFieldCycleEndPos = NULL;
 jfieldID TimeInfoFieldTimeSigNumerator = NULL;
 jfieldID TimeInfoFieldTimeSigDenominator = NULL;
 jfieldID TimeInfoFieldSmpteOffset = NULL;
-jfieldID TimeInfoFieldSmpteFrameRate = NULL;	
+jfieldID TimeInfoFieldSmpteFrameRate = NULL;
 jfieldID TimeInfoFieldSamplesToNextClock = NULL;
-jfieldID TimeInfoFieldFlags = NULL;		
+jfieldID TimeInfoFieldFlags = NULL;
 
 
 //Events
@@ -129,7 +129,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_canHostDo
 
 	char t[255];
 	jint ret = -1L;
-	
+
 	if (str==NULL) return ret;
 
 	const char* text = env->GetStringUTFChars(str, NULL);
@@ -187,7 +187,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_ioChange
  */
 JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeInfo
 		(JNIEnv* env, jobject obj, jint filt) {
-	
+
     VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) {
 		if (IsTimeInfoCacheInitialised==false) InitTimeInfoCache(env);
@@ -204,7 +204,7 @@ JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeIn
 			env->SetDoubleField(TimeInfoObject, TimeInfoFieldBarStartPos, ti->barStartPos);
 			env->SetDoubleField(TimeInfoObject, TimeInfoFieldCycleStartPos, ti->cycleStartPos);
 			env->SetDoubleField(TimeInfoObject, TimeInfoFieldCycleEndPos, ti->cycleEndPos);
-			
+
 			env->SetIntField(TimeInfoObject, TimeInfoFieldTimeSigNumerator, ti->timeSigNumerator);
 			env->SetIntField(TimeInfoObject, TimeInfoFieldTimeSigDenominator, ti->timeSigDenominator);
 			env->SetIntField(TimeInfoObject, TimeInfoFieldSmpteFrameRate, ti->smpteFrameRate);
@@ -224,7 +224,7 @@ JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeIn
 
 
 
-#ifdef linux
+#ifndef min
 	int min(int a, int b) {return a < b ? a : b;}
 #endif
 
@@ -236,13 +236,13 @@ JNIEXPORT jobject JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getTimeIn
 
 JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstEventsToHost
 	(JNIEnv* env, jobject obj, jobject events) {
-	 
+
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL && events!=NULL) {
-		
+
         BigVstEvents vstEventsToHost;
-        VstMidiEvent vstMidiEventsToHost[VST_EVENTS_MAX];  
-        VstEvent vstEventToHost[VST_EVENTS_MAX];        
+        VstMidiEvent vstMidiEventsToHost[VST_EVENTS_MAX];
+        VstEvent vstEventToHost[VST_EVENTS_MAX];
 
 		if (IsEventsCacheInitialised==false) InitEventsCache(env);
 
@@ -255,25 +255,25 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 		if (jevents==NULL) return 0;
 
 
-		int len = min (env->GetArrayLength(jevents), ret->numEvents); // better be save. If somebody initializes a big array, 
-																	  // but only initializes the first el. we crash later 
-																	  // when accessing the second element. Solution: hopefully 
-																	  // the field numEvents was used. We simply use the smaller 
-																	  // one of both hints to be save. 
+		int len = min (env->GetArrayLength(jevents), ret->numEvents); // better be save. If somebody initializes a big array,
+																	  // but only initializes the first el. we crash later
+																	  // when accessing the second element. Solution: hopefully
+																	  // the field numEvents was used. We simply use the smaller
+																	  // one of both hints to be save.
 		for (int i=0; i < len; i++) {
-			
+
 			//CAUTION: I only VST_EVENTS_MAX events will be transmited to Host
 
-			if (i>=VST_EVENTS_MAX) break; 
+			if (i>=VST_EVENTS_MAX) break;
 
 			VstEvent* vstevent;
 			jobject jevent = env->GetObjectArrayElement(jevents, i);
 
 			jint typ = env->GetIntField(jevent, EventFieldType);
 
-			if (typ==kVstMidiType) {					
+			if (typ==kVstMidiType) {
 				VstMidiEvent* mevent = &(vstMidiEventsToHost[i]);
-				
+
 				mevent->type = typ;
 				mevent->byteSize = env->GetIntField(jevent, EventFieldByteSize);
 				mevent->deltaFrames = env->GetIntField(jevent, EventFieldDeltaFrames);
@@ -288,7 +288,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 				mevent->midiData[3] = 0; //reserved
 				env->ReleaseByteArrayElements(jdata, elmts, 0);
 				env->DeleteLocalRef(jdata);
-				
+
 				mevent->noteLength = env->GetIntField(jevent, MidiEventFieldNoteLength);
 				mevent->noteOffset = env->GetIntField(jevent, MidiEventFieldNoteOffset);
 
@@ -320,7 +320,7 @@ JNIEXPORT jboolean JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_sendVstE
 			ret->events[i] = vstevent;
 		}
 
-		checkAndThrowException(env);			
+		checkAndThrowException(env);
 		return WrapperInstance->sendVstEventsToHost(ret);
 	}
 	else return 0;
@@ -408,7 +408,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getDirect
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) ret = env->NewStringUTF((char *)WrapperInstance->getDirectory());
 #endif
-	
+
 	return ret;
 }
 
@@ -419,9 +419,9 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getDirect
  */
 JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostProductString
 		(JNIEnv* env, jobject obj) {
-	
+
 	jstring ret = NULL;
-	//text 	String of maximum 64 char 
+	//text 	String of maximum 64 char
 	char text[255]={'\0'};
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->getHostProductString(text);
@@ -451,7 +451,7 @@ JNIEXPORT jstring JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_getHostVe
 		(JNIEnv* env, jobject obj) {
 
 	jstring ret = NULL;
-	//text 	String of maximum 64 char 
+	//text 	String of maximum 64 char
 	char text[255]={'\0'};
 	VSTV24ToPlug* WrapperInstance=getWrapperInstance(env,obj);
 	if (WrapperInstance!=NULL) WrapperInstance->getHostVendorString(text);
@@ -653,7 +653,7 @@ JNIEXPORT jint JNICALL Java_jvst_wrapper_communication_VSTV20ToHost_willProcessR
 
 
 void InitTimeInfoCache(JNIEnv* env) {
-	TimeInfoClass = env->FindClass("jvst/wrapper/valueobjects/VSTTimeInfo");		
+	TimeInfoClass = env->FindClass("jvst/wrapper/valueobjects/VSTTimeInfo");
 	if (TimeInfoClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTTimeInfo");
 		return;
@@ -753,21 +753,21 @@ void InitTimeInfoCache(JNIEnv* env) {
 
 
 void InitEventsCache(JNIEnv* env) {
-	VSTEventsClass = env->FindClass("jvst/wrapper/valueobjects/VSTEvents");		
+	VSTEventsClass = env->FindClass("jvst/wrapper/valueobjects/VSTEvents");
 	if (VSTEventsClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTEvents");
 		return;
 	}
 	VSTEventsClass = (jclass) env->NewGlobalRef(VSTEventsClass);
 
-	VSTEventClass = env->FindClass("jvst/wrapper/valueobjects/VSTEvent");		
+	VSTEventClass = env->FindClass("jvst/wrapper/valueobjects/VSTEvent");
 	if (VSTEventClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTEvent");
 		return;
 	}
 	VSTEventClass = (jclass) env->NewGlobalRef(VSTEventClass);
 
-	MidiEventClass = env->FindClass("jvst/wrapper/valueobjects/VSTMidiEvent");		
+	MidiEventClass = env->FindClass("jvst/wrapper/valueobjects/VSTMidiEvent");
 	if (MidiEventClass == NULL) {
 		log("** ERROR: cannot find Class jvst.wrapper.valueobjects.VSTMidiEvent");
 		return;
