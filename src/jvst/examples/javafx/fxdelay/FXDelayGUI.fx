@@ -43,7 +43,7 @@ public class FXDelayGUI extends Scene, FXDelayJavaInterop {
         //notify the plugin
         // EXAMPLE: directly call the plugin without using the delegator
         // --> Note the creation of a new object instance --> BAD, since GC needs to cleanup this one
-        if (not FXDelayGUIDelegator.DEBUG) plug.setParameterAutomated(JayDLay.PARAM_ID_OUT, new Float(volume));
+        if (not FXDelayGUIDelegator.DEBUG) plug.setParameterAutomated(JayDLay.PARAM_ID_OUT, volume);
     };
 
 
