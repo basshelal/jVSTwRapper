@@ -142,6 +142,7 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 		//TODO: still the case ???
 		if(!RUNNING_MAC_X) {
 			this.log("GUI destroy");
+			this.close(); //first close --> hide window before destroy
 			this.dispose();
 		}
 		else {
