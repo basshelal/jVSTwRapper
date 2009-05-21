@@ -307,6 +307,10 @@ public abstract class VSTPluginAdapter extends VSTV24ToHost implements VSTV24ToP
   protected static boolean isLogEnabled() {
     return logEnabled;
   }
+  
+  protected static void setIsLogEnabled(boolean b) {
+	logEnabled=b;
+  }
 
   protected static String getLogBasePath() {
     return logBasePath;
