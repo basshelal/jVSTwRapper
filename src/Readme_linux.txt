@@ -32,7 +32,7 @@ If you see the following error in jvstwrapper_log.txt:
 ** java.lang.UnsatisfiedLinkError: Can't load library: ### some .so file ###
 
 Create a symbolic link to the directory $JAVA_HOME/lib/i386/xawt/ in the folder where the 
-jvstwrapper.so file is. (e.g. execute "ln -s $JAVA_HOME/lib/i386/xawt/ axwt" in the folder where jvstwrapper.so is located)
+jvstwrapper.so file is. (e.g. execute "ln -s $JAVA_HOME/lib/i386/xawt/ xawt" in the folder where jvstwrapper.so is located)
 
 
 	
