@@ -5,15 +5,15 @@
 package jvst.examples.javafx.fxdelay;
 
 import java.awt.BorderLayout;
-import jvst.examples.javafx.*;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import jvst.examples.javafx.fxdemo.JavaInterop;
+import jvst.examples.javafx.JXScene;
+import jvst.examples.javafx.SceneToJComponent;
 import jvst.wrapper.VSTPluginAdapter;
 import jvst.wrapper.gui.VSTPluginGUIRunner;
 
 import jvst.wrapper.VSTPluginGUIAdapter;
+
 
 /**
  *
@@ -42,17 +42,21 @@ public class FXDelayGUIDelegator extends VSTPluginGUIAdapter {
             // instantiate JavaFX GUI (which is a JavaFX Scene) here
             // use classloader
             FXDelayJavaInterop fxscene =
-                (FXDelayJavaInterop) this.getClass().getClassLoader().loadClass(FX_GUI_CLASS).newInstance();
+                    (FXDelayJavaInterop) this.getClass().getClassLoader().loadClass(FX_GUI_CLASS).newInstance();
             fxscene.setPluginInstance(plug);
-            fxscene.setDelegator(this);
 
             //give the plug a refence to the gui
             //--> so that the plug updates the GUI on param change (loading presets, etc.)
             if (!DEBUG) ((FXDelay)plug).setFxgui(fxscene);
+            
+            //embedd JavaFX GUI into Swing
 
-            //embedd into this (which is a JFrame)
-            JXScene s = new JXScene();
-            s.setScene(fxscene);
+            //use SceneToJComponent
+            JComponent s = SceneToJComponent.loadScene(fxscene, FX_GUI_CLASS);
+
+            //use JXscene
+            //JXScene s = new JXScene();
+            //s.setScene(fxscene);
 
             this.setLayout(new BorderLayout(10,10));
             this.add(s, BorderLayout.CENTER);
@@ -69,17 +73,6 @@ public class FXDelayGUIDelegator extends VSTPluginGUIAdapter {
             log("** ERROR: Fatal error when loading JavaFX GUI: " + ex.toString());
             ex.printStackTrace();
         } 
-    }
-
-
-    /*
-     * Convenience methods to convert stupid JavFX types to Java types and back
-     * --> avoids the casts, that would involve creating a new object (new Float();) otherwise
-     * --> save GC time!
-     */
-
-    public void setParameterAutomated(int idx, double val) {
-        this.plugin.setParameterAutomated(idx,(float) val);
     }
 
 

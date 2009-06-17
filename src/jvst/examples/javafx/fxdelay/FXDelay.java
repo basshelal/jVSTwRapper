@@ -34,7 +34,7 @@ public class FXDelay extends JayDLay {
 
             final FXDelay thi = this;
             
-            //Avoid Swing threading issues (esp. on Mac): invoke all calls from plug-->gui from another thread
+            //Avoid Swing threading issues (esp. on Mac): invoke all calls from plug-->gui from the EDT
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {

@@ -29,36 +29,65 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jvst.examples.javafx.components;
+package jvst.examples.javafx.ui;
 
 import javafx.scene.*;
-import javafx.scene.paint.*;
-import javafx.scene.text.*;
+import javafx.stage.*;
 
 /**
  * @author campbell
  */
 
-public class Label extends CustomNode {
+public class LabeledKnob extends CustomNode {
     public var text = "Blank";
     public var value = 0.0;
-    public var fraction = true;
-    var t:Text;
+    public var minimum = 0.0;
+    public var maximum = 1.0;
+
+    public var minAngle = 0.0;
+    public var maxAngle = 180.0;
+
+    var lbl:Label;
+
     override protected function create() : Node {
         Group {
             content: [
-                t = Text {
-                    content: bind text
-                    font: Font { size: 10 }
-                    fill: Color.WHITE
+                Knob {
+                    minimum: bind minimum
+                    maximum: bind maximum
+                    value:   bind value with inverse
+                    minAngle: bind minAngle
+                    maxAngle: bind maxAngle
                 },
-                Text {
-                    translateX: bind t.layoutBounds.maxX + 5
-                    content: bind if (fraction) "{%+1.2f value}" else "{(value as Integer)}"
-                    font: Font { size: 10 }
-                    fill: Color.rgb(40, 40, 40)
-                }
+                lbl = Label {
+                    translateX: bind -(lbl.layoutBounds.width / 2)
+                    translateY: 28
+                    text: bind text
+                    value: bind value
+                    fraction: false
+                },
             ]
         }
     }
+}
+
+function run() {
+Stage {
+    width: 400
+    height: 300
+    scene: Scene {
+        fill: javafx.scene.paint.Color.BLACK
+        content: [
+            LabeledKnob {
+                translateX: 40
+                translateY: 30
+                minimum: -90
+                maximum: 90
+                value: 0
+                minAngle: -90
+                maxAngle:  90
+            }
+        ]
+    }
+}
 }

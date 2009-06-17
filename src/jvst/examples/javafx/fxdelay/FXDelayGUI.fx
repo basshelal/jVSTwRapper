@@ -6,18 +6,13 @@
 
 package jvst.examples.javafx.fxdelay;
 
-import javafx.scene.CustomNode;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.*;
 import javafx.stage.*;
 import jvst.wrapper.VSTPluginAdapter;
 import jvst.examples.jaydlay.*;
 import java.lang.*;
-import jvst.examples.javafx.components.*;
+import jvst.examples.javafx.ui.*;
 
 
 /**
@@ -28,21 +23,18 @@ import jvst.examples.javafx.components.*;
 public class FXDelayGUI extends Scene, FXDelayJavaInterop {
 
     var plug : JayDLay;
-    var delegator : FXDelayGUIDelegator;
-    
+
     
     public var delay : Number = 0.5 on replace oldval {
         //notify the plugin
-        if (not FXDelayGUIDelegator.DEBUG) delegator.setParameterAutomated(JayDLay.PARAM_ID_DELAY, delay);
+        if (not FXDelayGUIDelegator.DEBUG) plug.setParameterAutomated(JayDLay.PARAM_ID_DELAY, delay);
     };
     public var feedback : Number = 0.5 on replace oldval {
         //notify the plugin
-        if (not FXDelayGUIDelegator.DEBUG) delegator.setParameterAutomated(JayDLay.PARAM_ID_FEEDBACK, feedback);
+        if (not FXDelayGUIDelegator.DEBUG) plug.setParameterAutomated(JayDLay.PARAM_ID_FEEDBACK, feedback);
     };
     public var volume : Number = 1.0 on replace oldval {
         //notify the plugin
-        // EXAMPLE: directly call the plugin without using the delegator
-        // --> Note the creation of a new object instance --> BAD, since GC needs to cleanup this one
         if (not FXDelayGUIDelegator.DEBUG) plug.setParameterAutomated(JayDLay.PARAM_ID_OUT, volume);
     };
 
@@ -91,9 +83,6 @@ public class FXDelayGUI extends Scene, FXDelayJavaInterop {
         plug = p as JayDLay; // CAST!
     }
 
-    public override function setDelegator(p : FXDelayGUIDelegator): Void {
-        delegator = p;
-    }
 }
 
 // debug main function for an easy way of running the GUI without all the VST mess

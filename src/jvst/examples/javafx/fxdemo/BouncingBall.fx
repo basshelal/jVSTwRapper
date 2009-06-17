@@ -38,7 +38,8 @@ import javafx.scene.paint.*;
 import javafx.scene.transform.*;
 import javafx.scene.input.*;
 import javafx.scene.text.*;
-import javafx.stage.*;
+
+import javafx.animation.transition.ParallelTransition;
 
 
 public class BouncingBall extends JavaInterop {
@@ -105,13 +106,9 @@ public class BouncingBall extends JavaInterop {
 
 
     // loop the other timelines forever
-    var clip = Timeline {
+    var clip = ParallelTransition {
         repeatCount: Timeline.INDEFINITE
-        keyFrames:
-            KeyFrame {
-                time: 0s
-                timelines: [ax, ay, sxy]
-            }
+        content: [ax,ay,sxy]
     }
 
 

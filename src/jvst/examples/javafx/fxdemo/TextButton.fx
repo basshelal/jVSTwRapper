@@ -110,7 +110,7 @@ public class TextButton extends CustomNode{
                     time: 0.3s
                     values: [
                         textNode.fill =>
-                        Color.rgb(100,100,100) tween Interpolator.EASEOUT
+                        Color.rgb(100,100,100) tween Interpolator.EASEOUT, 
                         rect.fill => Color.WHITE tween Interpolator.EASEOUT
                     ]
                 }
@@ -124,7 +124,7 @@ public class TextButton extends CustomNode{
                 keyFrames: KeyFrame {
                     time: 0.3s
                     values: [
-                        textNode.fill => Color.WHITE tween Interpolator.EASEOUT
+                        textNode.fill => Color.WHITE tween Interpolator.EASEOUT, 
                         rect.fill =>
                         Color.rgb(100,100,100,0) tween Interpolator.EASEOUT
                     ]

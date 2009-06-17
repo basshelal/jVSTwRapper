@@ -13,7 +13,6 @@ import jvst.wrapper.VSTPluginAdapter;
  */
 public interface FXDelayJavaInterop {
     public void setPluginInstance(VSTPluginAdapter plug);
-    public void setDelegator(FXDelayGUIDelegator delegator);
 
     public void setVolume(float v);
     public void setFeedback(float f);

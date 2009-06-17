@@ -57,7 +57,7 @@ public class Forecast extends CustomNode {
   override function create() {
     Group {
       content: [
-        wind
+        wind, 
         RoundRect {
           translateY: Config.OFFSET
           node: Text {

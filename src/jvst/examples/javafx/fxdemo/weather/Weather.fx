@@ -123,7 +123,7 @@ public class Weather extends CustomNode {
             input.close()
           }
         }
-      }.enqueue()
+      }.start()
     }
   }
   override function create() {

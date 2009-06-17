@@ -73,8 +73,8 @@ public class Wind extends CustomNode {
         }
         Polygon {
           points: [
-            -x, -y
-             0,  r
+            -x, -y,
+             0,  r,
              x, -y
           ]
           stroke: Config.DARK_COLOR

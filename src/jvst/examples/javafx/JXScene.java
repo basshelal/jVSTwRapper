@@ -21,6 +21,12 @@ import javax.swing.JComponent;
  *
  * slighly modified by DM
  *
+ * NOTE: only works with JavaFX 1.0
+ *
+ * for the modifications necessary in order to make it run in JavaFX 1.1, see here:
+ * http://karussell.wordpress.com/2009/02/27/calling-javafx-from-java/
+ *
+ *
  * First things first: What I'm about to show you is a hack. It is completely
  * unsupported, uses private APIs, and almost certainly will break in the next
  * version. However, if we see a lot of interest we may add a permanent supported
@@ -37,6 +43,12 @@ import javax.swing.JComponent;
  * your JavaFX scene class and then pull out the internal canvas object.
  * 
  */
+
+
+/**
+ * Use SceneToJComponent instead
+ */
+@Deprecated
 public class JXScene extends JComponent {
 
     private Object scriptObject;

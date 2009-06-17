@@ -6,6 +6,7 @@ package jvst.examples.javafx.fxdemo;
 
 import jvst.examples.javafx.fxdelay.*;
 import java.awt.BorderLayout;
+import javax.swing.JComponent;
 import jvst.examples.javafx.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -48,14 +49,14 @@ public class FXDemoGUIDelegator extends VSTPluginGUIAdapter {
             tabbedPane.addTab("Analog Clock", p);
             p = makeFXPanel("jvst.examples.javafx.fxdemo.BouncingBall");
             tabbedPane.addTab("Bouncing Ball", p);
-            p = makeFXPanel("jvst.examples.javafx.fxdemo.RecursiveTree");
+            /*p = makeFXPanel("jvst.examples.javafx.fxdemo.RecursiveTree");
             tabbedPane.addTab("Recursive Tree", p);
             p = makeFXPanel("jvst.examples.javafx.fxdemo.JigsawPuzzle");
             tabbedPane.addTab("Jigsaw Puzzle", p);
             p = makeFXPanel("jvst.examples.javafx.fxdemo.displayshelf.Main");
             tabbedPane.addTab("Display Shelf", p);
             p = makeFXPanel("jvst.examples.javafx.fxdemo.weather.Main");
-            tabbedPane.addTab("Weather", p);
+            tabbedPane.addTab("Weather", p);*/
 
             this.getContentPane().add(tabbedPane);
 
@@ -88,14 +89,20 @@ public class FXDemoGUIDelegator extends VSTPluginGUIAdapter {
         }
         */
 
-        JavaInterop fxobj =
-                (JavaInterop) this.getClass().getClassLoader().loadClass(fxGUIClass).newInstance();
-        //embedd using JXScene
-        JXScene js = new JXScene();
-        js.setScene(fxobj.getScene());
+
+        JavaInterop fxnode =
+                    (JavaInterop) this.getClass().getClassLoader().loadClass(fxGUIClass).newInstance();
+        
+        //use SceneToJComponent
+        JComponent s = SceneToJComponent.loadScene(fxnode.getScene(), fxGUIClass);
+        
+        //use JXscene
+        //JXScene s = new JXScene();
+        //s.setScene(fxnode.getScene());
+        
 
         panel.setLayout(new BorderLayout());
-        panel.add(js, BorderLayout.CENTER);
+        panel.add(s, BorderLayout.CENTER);
         
         return panel;
     }
