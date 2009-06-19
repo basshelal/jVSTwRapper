@@ -25,15 +25,15 @@ public class FXDelayGUI extends Scene, FXDelayJavaInterop {
     var plug : JayDLay;
 
     
-    public var delay : Number = 0.5 on replace oldval {
+    public var delay : Float = 0.5 on replace oldval {
         //notify the plugin
         if (not FXDelayGUIDelegator.DEBUG) plug.setParameterAutomated(JayDLay.PARAM_ID_DELAY, delay);
     };
-    public var feedback : Number = 0.5 on replace oldval {
+    public var feedback : Float = 0.5 on replace oldval {
         //notify the plugin
         if (not FXDelayGUIDelegator.DEBUG) plug.setParameterAutomated(JayDLay.PARAM_ID_FEEDBACK, feedback);
     };
-    public var volume : Number = 1.0 on replace oldval {
+    public var volume : Float = 1.0 on replace oldval {
         //notify the plugin
         if (not FXDelayGUIDelegator.DEBUG) plug.setParameterAutomated(JayDLay.PARAM_ID_OUT, volume);
     };
@@ -75,6 +75,25 @@ public class FXDelayGUI extends Scene, FXDelayJavaInterop {
                 text: "Feedback"
                 value : bind feedback with inverse
             }
+            
+            LabeledKnob {
+                translateX: 50
+                translateY: 85
+                text: "Volume"
+                value: bind volume with inverse
+            }
+            LabeledKnob {
+                translateX: 140
+                translateY: 85
+                text: "Delay"
+                value: bind delay with inverse
+            }
+            LabeledKnob {
+                translateX: 230
+                translateY: 85
+                text: "Feedback"
+                value: bind feedback with inverse
+            }
         ]
     }
 
@@ -88,8 +107,9 @@ public class FXDelayGUI extends Scene, FXDelayJavaInterop {
 // debug main function for an easy way of running the GUI without all the VST mess
 function run(args : String[]) {
     Stage {
+        title: "FX Delay GUI"
         width: 290
-        height: 100
+        height: 150
         scene: new FXDelayGUI();
     }
 }

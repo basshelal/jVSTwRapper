@@ -47,8 +47,8 @@ public class Knob extends CustomNode {
     public var minimum = 0.0;
     public var maximum = 1.0;
 
-    public var minAngle = -180.0;
-    public var maxAngle =    0.0;
+    public var minAngle = 45.0;
+    public var maxAngle = -225.0;
 
     public var width = 25;
     
@@ -138,9 +138,9 @@ Stage {
             Knob {
                 translateX: 20
                 translateY: 20
-                minimum: 0
-                maximum: 180
-                value: 45
+                minimum: 45
+                maximum: -225
+                value: 0
             }
         ]
     }

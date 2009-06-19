@@ -5,15 +5,14 @@
 
 package jvst.examples.javafx.fxdelay;
 
-import jvst.wrapper.VSTPluginAdapter;
+import jvst.examples.javafx.FXGUIJavaInterop;
 
 /**
  *
  * @author nix
  */
-public interface FXDelayJavaInterop {
-    public void setPluginInstance(VSTPluginAdapter plug);
-
+public interface FXDelayJavaInterop extends FXGUIJavaInterop {
+    
     public void setVolume(float v);
     public void setFeedback(float f);
     public void setDelay(float d);

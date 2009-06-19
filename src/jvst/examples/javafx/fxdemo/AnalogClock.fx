@@ -48,7 +48,7 @@ import java.util.*;
 var months:String[] = ["JAN", "FEB", "MA80R", "APR", "MAY", "JUN",
 				"JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
-public class AnalogClock extends CustomNode, JavaInterop {
+public class AnalogClock extends CustomNode, SceneFromNode {
 
     // Decides the main size of the clock.
     var radius: Number = 80;

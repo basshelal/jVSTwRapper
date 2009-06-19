@@ -4,14 +4,15 @@
  */
 package jvst.examples.javafx.fxdemo;
 
-import jvst.examples.javafx.fxdelay.*;
 import java.awt.BorderLayout;
+import javafx.reflect.FXClassType;
+import javafx.reflect.FXLocal;
+import javafx.reflect.FXLocal.ObjectValue;
 import javax.swing.JComponent;
 import jvst.examples.javafx.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import jvst.examples.javafx.fxdemo.JavaInterop;
 import jvst.wrapper.VSTPluginAdapter;
 import jvst.wrapper.gui.VSTPluginGUIRunner;
 
@@ -21,8 +22,6 @@ import jvst.wrapper.VSTPluginGUIAdapter;
  *
  * @author nix
  *
- * TODO:
- *  - tabs / other fx samples (clock, stopwatch, game)
  * 
  */
 public class FXDemoGUIDelegator extends VSTPluginGUIAdapter {
@@ -49,14 +48,10 @@ public class FXDemoGUIDelegator extends VSTPluginGUIAdapter {
             tabbedPane.addTab("Analog Clock", p);
             p = makeFXPanel("jvst.examples.javafx.fxdemo.BouncingBall");
             tabbedPane.addTab("Bouncing Ball", p);
-            /*p = makeFXPanel("jvst.examples.javafx.fxdemo.RecursiveTree");
+            p = makeFXPanel("jvst.examples.javafx.fxdemo.RecursiveTree");
             tabbedPane.addTab("Recursive Tree", p);
-            p = makeFXPanel("jvst.examples.javafx.fxdemo.JigsawPuzzle");
-            tabbedPane.addTab("Jigsaw Puzzle", p);
-            p = makeFXPanel("jvst.examples.javafx.fxdemo.displayshelf.Main");
-            tabbedPane.addTab("Display Shelf", p);
             p = makeFXPanel("jvst.examples.javafx.fxdemo.weather.Main");
-            tabbedPane.addTab("Weather", p);*/
+            tabbedPane.addTab("Weather", p);
 
             this.getContentPane().add(tabbedPane);
 
@@ -76,31 +71,16 @@ public class FXDemoGUIDelegator extends VSTPluginGUIAdapter {
 
     private JPanel makeFXPanel(String fxGUIClass) throws Exception {
         JPanel panel = new JPanel(false);
-
-        // instantiate JavaFX GUI (which is a JavaFX Scene) here
-        // use classloader
-        /*
-        ClassLoader cl = this.getClass().getClassLoader();
-        while(cl!=null) {
-            System.out.println("CL = " + cl);
-            System.out.println("sys CL = " + cl.getSystemClassLoader());
-
-            cl=cl.getParent();
-        }
-        */
-
-
-        JavaInterop fxnode =
-                    (JavaInterop) this.getClass().getClassLoader().loadClass(fxGUIClass).newInstance();
-        
+       
         //use SceneToJComponent
-        JComponent s = SceneToJComponent.loadScene(fxnode.getScene(), fxGUIClass);
+        JComponent s = SceneToJComponent.loadVSTPluginNode(fxGUIClass);
         
         //use JXscene
+        //JavaInterop fxnode =
+        //            (JavaInterop) this.getClass().getClassLoader().loadClass(fxGUIClass).newInstance();
         //JXScene s = new JXScene();
         //s.setScene(fxnode.getScene());
         
-
         panel.setLayout(new BorderLayout());
         panel.add(s, BorderLayout.CENTER);
         

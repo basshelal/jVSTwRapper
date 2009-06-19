@@ -42,7 +42,7 @@ import javafx.scene.text.*;
 import javafx.animation.transition.ParallelTransition;
 
 
-public class BouncingBall extends JavaInterop {
+public class BouncingBall extends SceneFromNode {
     //width and height of the screen
     var w = 240;
     var h = 320;

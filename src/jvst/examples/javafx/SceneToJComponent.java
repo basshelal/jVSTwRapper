@@ -29,12 +29,16 @@
 
 package jvst.examples.javafx;
 
+import com.sun.javafx.tk.TKScene;
 import com.sun.javafx.tk.swing.SwingScene;
 import javafx.reflect.FXClassType;
 import javafx.reflect.FXFunctionMember;
 import javafx.reflect.FXLocal;
 import javafx.reflect.FXLocal.ObjectValue;
+import javafx.scene.Scene;
 import javax.swing.JComponent;
+import jvst.examples.javafx.fxdemo.SceneFromNode;
+import jvst.wrapper.VSTPluginAdapter;
 
 /**
  * A Java method that allows a JavaFX Scene to be displayed in a Swing application.
@@ -100,14 +104,65 @@ public class SceneToJComponent {
         return scene.scenePanel;
     }
 
-    public static JComponent loadScene(Object fxscene, String classname) {
+    public static JComponent loadVSTPluginScene(String classname, VSTPluginAdapter plug) {
         FXClassType classRef = context.findClass(classname);
-        FXLocal.ObjectValue obj = (ObjectValue) fxscene;
+        FXLocal.ObjectValue obj = (ObjectValue) classRef.newInstance();
+
+        //when not in DEBUG mode
+        if (plug!=null) {
+            //give the scene a reference to the plugin so that it can change
+            //parameters when a slider is moved for instance
+            FXGUIJavaInterop fxgui = (FXGUIJavaInterop)obj.asObject();
+            fxgui.setPluginInstance(plug);
+
+            //give the plugin a reference to the scene so that the gui
+            //is updated when the plugin changes parameter values, e.g. when a
+            //new program is loaded
+            FXPluginJavaInterop fxplug = (FXPluginJavaInterop)plug;
+            fxplug.setFXGUI(fxgui);
+        }
+
         FXFunctionMember getPeer = classRef.getFunction("impl_getPeer");
         FXLocal.ObjectValue peer = (ObjectValue) getPeer.invoke(obj);
         SwingScene scene = (SwingScene)peer.asObject();
 
         return scene.scenePanel;
     }
+
+    public static JComponent loadVSTPluginScene2(String classname, VSTPluginAdapter plug) throws Exception {
+
+        Scene sc = (Scene)Thread.currentThread().getContextClassLoader().loadClass(classname).newInstance();
+
+        //when not in DEBUG mode
+        if (plug!=null) {
+            //give the scene a reference to the plugin so that it can change
+            //parameters when a slider is moved for instance
+            FXGUIJavaInterop fxgui = (FXGUIJavaInterop)sc;
+            fxgui.setPluginInstance(plug);
+
+            //give the plugin a reference to the scene so that the gui
+            //is updated when the plugin changes parameter values, e.g. when a
+            //new program is loaded
+            FXPluginJavaInterop fxplug = (FXPluginJavaInterop)plug;
+            fxplug.setFXGUI(fxgui);
+        }
+        
+        SwingScene scene = (SwingScene)sc.impl_getPeer();
+
+        return scene.scenePanel;
+    }
+
+    public static JComponent loadVSTPluginNode(String classname) {
+        FXClassType classRef = context.findClass(classname);
+        FXLocal.ObjectValue obj = (ObjectValue) classRef.newInstance();
+
+        SceneFromNode sfn = (SceneFromNode)obj.asObject();
+        
+        javafx.scene.Scene sc = (Scene) sfn.getScene();
+        SwingScene scene = (SwingScene) sc.impl_getPeer();
+
+        return scene.scenePanel;
+    }
+    
 }
 

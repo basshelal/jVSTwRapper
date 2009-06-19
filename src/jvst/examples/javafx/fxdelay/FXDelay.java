@@ -6,6 +6,8 @@
 package jvst.examples.javafx.fxdelay;
 
 import javax.swing.SwingUtilities;
+import jvst.examples.javafx.FXGUIJavaInterop;
+import jvst.examples.javafx.FXPluginJavaInterop;
 import jvst.examples.jaydlay.JayDLay;
 
 /**
@@ -13,7 +15,7 @@ import jvst.examples.jaydlay.JayDLay;
  * @author nix
  *
  */
-public class FXDelay extends JayDLay {
+public class FXDelay extends JayDLay implements FXPluginJavaInterop {
 
     FXDelayJavaInterop fxgui;
 
@@ -46,7 +48,8 @@ public class FXDelay extends JayDLay {
         }
     }
 
-    public void setFxgui(FXDelayJavaInterop fxgui) {
-        this.fxgui = fxgui;
+    @Override
+    public void setFXGUI(FXGUIJavaInterop fxgui) {
+        this.fxgui = (FXDelayJavaInterop)fxgui;
     }
 }

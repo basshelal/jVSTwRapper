@@ -36,27 +36,11 @@ public class FXDelayGUIDelegator extends VSTPluginGUIAdapter {
 
             //windows properties
             this.setTitle("JayDLayFXGUI");
-            this.setSize(290, 100);
+            this.setSize(290, 150);
             this.setResizable(false);
 
-            // instantiate JavaFX GUI (which is a JavaFX Scene) here
-            // use classloader
-            FXDelayJavaInterop fxscene =
-                    (FXDelayJavaInterop) this.getClass().getClassLoader().loadClass(FX_GUI_CLASS).newInstance();
-            fxscene.setPluginInstance(plug);
-
-            //give the plug a refence to the gui
-            //--> so that the plug updates the GUI on param change (loading presets, etc.)
-            if (!DEBUG) ((FXDelay)plug).setFxgui(fxscene);
-            
-            //embedd JavaFX GUI into Swing
-
             //use SceneToJComponent
-            JComponent s = SceneToJComponent.loadScene(fxscene, FX_GUI_CLASS);
-
-            //use JXscene
-            //JXScene s = new JXScene();
-            //s.setScene(fxscene);
+            JComponent s = SceneToJComponent.loadVSTPluginScene2(FX_GUI_CLASS, plug);
 
             this.setLayout(new BorderLayout(10,10));
             this.add(s, BorderLayout.CENTER);

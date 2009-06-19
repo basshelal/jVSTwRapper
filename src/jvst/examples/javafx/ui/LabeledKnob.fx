@@ -44,8 +44,8 @@ public class LabeledKnob extends CustomNode {
     public var minimum = 0.0;
     public var maximum = 1.0;
 
-    public var minAngle = 0.0;
-    public var maxAngle = 180.0;
+    public var minAngle = 45.0;
+    public var maxAngle = -225.0;
 
     var lbl:Label;
 
@@ -64,7 +64,6 @@ public class LabeledKnob extends CustomNode {
                     translateY: 28
                     text: bind text
                     value: bind value
-                    fraction: false
                 },
             ]
         }
@@ -81,11 +80,11 @@ Stage {
             LabeledKnob {
                 translateX: 40
                 translateY: 30
-                minimum: -90
-                maximum: 90
-                value: 0
-                minAngle: -90
-                maxAngle:  90
+                minimum: 45
+                maximum: -225
+                value: 45
+                minAngle: 45
+                maxAngle: -225
             }
         ]
     }

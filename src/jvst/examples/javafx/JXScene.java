@@ -26,6 +26,8 @@ import javax.swing.JComponent;
  * for the modifications necessary in order to make it run in JavaFX 1.1, see here:
  * http://karussell.wordpress.com/2009/02/27/calling-javafx-from-java/
  *
+ * Doesnt work in JavaFX 1.2 because class JSGPanelSceneImpl is missing
+ *
  *
  * First things first: What I'm about to show you is a hack. It is completely
  * unsupported, uses private APIs, and almost certainly will break in the next

@@ -41,13 +41,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import jvst.examples.javafx.fxdemo.JavaInterop;
+import jvst.examples.javafx.fxdemo.SceneFromNode;
 
 /**
  * @author Sergey A. Malenkov
  */
 
-public class Main extends JavaInterop {
+public class Main extends SceneFromNode {
 
     var celcius = true;
     var code = "USCA1018";

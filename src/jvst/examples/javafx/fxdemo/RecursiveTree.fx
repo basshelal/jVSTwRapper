@@ -37,7 +37,7 @@ import javafx.scene.paint.*;
 import javafx.scene.transform.*;
 import javafx.scene.shape.*;
 
-public class RecursiveTree extends CustomNode, JavaInterop {
+public class RecursiveTree extends CustomNode, SceneFromNode {
     public var x = 0;
     public var y = 100;
     public var startDepth: Number = 3;

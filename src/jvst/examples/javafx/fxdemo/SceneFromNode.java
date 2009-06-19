@@ -9,6 +9,6 @@ package jvst.examples.javafx.fxdemo;
  *
  * @author nix
  */
-public interface JavaInterop {
+public interface SceneFromNode {
     public Object getScene();
 }
