@@ -140,7 +140,10 @@ int log(const char* data, ...) {
 	//more would just be annoying...
 	if (isWarningOrError) {
 		MessageBoxCount++;	
-		if (MessageBoxCount<5) {
+		if (MessageBoxCount<=5) {
+			if (MessageBoxCount==5) {
+				sprintf(message, "Max number of error messages reached.\n Will now supress error messages and only log them to the log file.");
+			}
 
 #ifdef WIN32
 			MessageBoxA(0, message, "jVSTwRapper", 0);
