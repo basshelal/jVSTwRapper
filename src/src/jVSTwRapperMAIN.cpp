@@ -700,7 +700,7 @@ void* hInstance;
 BOOL WINAPI DllMain (HINSTANCE hInst, DWORD dwReason, LPVOID lpvReserved) {
 	hInstance = hInst;
 
-	GetModuleFileName(hInst, DllLocation, 512);
+	GetModuleFileName(hInst, DllLocation, JVST_PATH_MAX);
 	return 1;
 }
 #endif
