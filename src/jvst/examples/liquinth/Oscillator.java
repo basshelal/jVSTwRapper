@@ -1,108 +1,100 @@
 
 package jvst.examples.liquinth;
 
-public class Oscillator {
-	private static final int
-		LOG2_NUM_WF = 7,
-		LOG2_WF_LEN = 8,
-		NUM_WF = 1 << LOG2_NUM_WF,
-		WF_LEN = 1 << LOG2_WF_LEN,
-		WF_CYCLE = Maths.FP_ONE << LOG2_WF_LEN,
-		WF_MASK = WF_CYCLE - 1;
+public class Oscillator {	
+	private static final int NUM_TABLES = 8;
+	private static final int A8_TABLE_PARTS = 6;
+	private static final int A5_TABLE_INDEX = 3;
+	private static final int WAVE_LEN = 1 << 11;
+	private static final int WAVE_MASK = WAVE_LEN - 1;
+	private static final int PHASE_MASK = ( WAVE_LEN << Maths.FP_SHIFT ) - 1;
 
-	private static final int[]
-		wf_pnt_x = {    0, 128, 128, 256 },
-		wf_saw_y = { -128,   0,   0, 128 },
-		wf_sqr_y = {  -64, -64,  64,  64 };
+	private static short[][] saw_table, sqr_table;
 
-	private static byte[][] waveforms;
-	private int a5_pitch, waveform, wf_idx;
-	private int ampl_1, ampl_2;
-	private int wf_step_1, wf_step_2;
-
-	private static byte[] gen_wave( int wave ) {
-		int tab_idx, x, c, wc, dy, dx;
-		byte[] wf;
-		wf = new byte[ WF_LEN ];
-		tab_idx = -1;
-		dy = dx = c = 0;
-		for( x = 0; x < WF_LEN; x++ ) {
-			if( x >= wf_pnt_x[ tab_idx + 1 ] ) {
-				while( x >= wf_pnt_x[ tab_idx + 1 ] ) tab_idx++;
-				wc = wf_saw_y[ tab_idx ];
-				c = ( wf_sqr_y[ tab_idx ] - wc ) * wave / NUM_WF + wc;
-				wc = wf_saw_y[ tab_idx + 1 ];
-				dy = ( wf_sqr_y[ tab_idx + 1 ] - wc ) * wave / NUM_WF + wc;
-				dy = dy - c;
-				dx = wf_pnt_x[ tab_idx + 1 ] - wf_pnt_x[ tab_idx ];
-			}
-			wf[ x ] = ( byte ) ( dy * ( x - wf_pnt_x[ tab_idx ] ) / dx + c );
-		}
-		return wf;
-	}
+	private int a5_pitch, waveform, table, phase;
+	private int ampl_1, ampl_2, step_1, step_2;
 
 	public Oscillator( int sampling_rate ) {
-		int a5_step, idx;
-		a5_step = ( 55 << Maths.FP_SHIFT + LOG2_WF_LEN ) / ( sampling_rate >> 3 );
+		if( saw_table == null ) saw_table = wavetable( true );
+		if( sqr_table == null ) sqr_table = wavetable( false );
+		int a5_step = 440 * ( ( WAVE_LEN << Maths.FP_SHIFT ) / sampling_rate );
 		a5_pitch = Maths.log2( a5_step );
-		if( waveforms == null ) {
-			waveforms = new byte[ NUM_WF ][];
-			for( idx = 0; idx < NUM_WF; idx++ ) {
-				waveforms[ idx ] = gen_wave( idx );
-			}
-			set_wave( 0 );
-		}
 	}
 
 	public void set_wave( int wave ) {
-		wave &= Maths.FP_MASK;
-		waveform = wave >> Maths.FP_SHIFT - LOG2_NUM_WF;
+		waveform = wave & Maths.FP_MASK;
 	}
 
 	public void set_amplitude( int amplitude, boolean now ) {
 		ampl_2 = amplitude;
-		if( now ) {
-			ampl_1 = ampl_2;
-		}
+		if( now ) ampl_1 = ampl_2;
 	}
 
 	/* Pitch is in octaves relative to 440hz (A5)*/
 	public void set_pitch( int pitch, boolean now ) {
-		wf_step_2 = Maths.exp2( a5_pitch + pitch );
-		if( now ) {
-			wf_step_1 = wf_step_2;
-		}
+		table = A5_TABLE_INDEX - ( pitch >> Maths.FP_SHIFT );
+		if( table < 0 ) table = 0;
+		if( table >= NUM_TABLES ) table = NUM_TABLES - 1;
+		step_2 = Maths.exp2( a5_pitch + pitch );
+		if( now ) step_1 = step_2;
 	}
 
 	public int get_phase() {
-		return wf_idx;
+		return phase;
 	}
 
 	public void set_phase( int phase ) {
-		wf_idx = phase & WF_MASK;
+		this.phase = phase & PHASE_MASK;
 	}
+	
+	public void get_audio( int[] out_buf, int offset, int length ) {	
+		int step = step_1;
+		int dstp = ( step_2 - step_1 ) / length;
+		int ampl = ampl_1;
+		int damp = ( ampl_2 - ampl_1 ) / length;
 
-	public void get_audio( int[] out_buf, int offset, int length ) {
-		int widx, step, dstp, ampl, damp;
-		int out_idx, out_ep1, y;
-		byte[] wf;
-		wf = waveforms[ waveform ];
-		widx = wf_idx;
-		step = wf_step_1 << 8;
-		dstp = ( wf_step_2 - wf_step_1 << 8 ) / length;
-		ampl = ampl_1 << 8;
-		damp = ( ampl_2 - ampl_1 << 8 ) / length;
-		out_idx = offset;
-		out_ep1 = offset + length;
-		while( out_idx < out_ep1 ) {
-			y = wf[ widx >> Maths.FP_SHIFT ];
-			out_buf[ out_idx++ ] += y * ampl >> Maths.FP_SHIFT;
-			widx = ( widx + ( step >> 8 ) ) & WF_MASK;
-			step += dstp;
+		int sqr_amp = waveform;
+		int saw_amp = Maths.FP_ONE - sqr_amp;
+		int phase = this.phase;
+		short[] saw_t = saw_table[ table ];
+		short[] sqr_t = sqr_table[ table ];
+		for( int end = offset + length; offset < end; offset++ ) {
+			int x = phase >> Maths.FP_SHIFT;
+			int saw = saw_t[ x ] * saw_amp >> Maths.FP_SHIFT;
+			int sqr = sqr_t[ x ] * sqr_amp >> Maths.FP_SHIFT;
+			out_buf[ offset ] += ( saw + sqr ) * ampl >> Maths.FP_SHIFT;
+			phase = ( phase + step ) & PHASE_MASK;
 			ampl += damp;
+			step += dstp;
 		}
-		wf_step_1 = wf_step_2;
+		this.phase = phase;
+		step_1 = step_2;
 		ampl_1 = ampl_2;
-		wf_idx = widx;
+	}
+	
+	private static short[][] wavetable( boolean saw ) {
+		double[] buffer = new double[ WAVE_LEN ];
+		short[][] output = new short[ NUM_TABLES ][ WAVE_LEN ];
+		double[] sin = new double[ WAVE_LEN ];
+		double t = 0, dt = 2 * Math.PI / WAVE_LEN;
+		for( int idx = 0; idx < WAVE_LEN; idx++, t += dt ) {
+			sin[ idx ] = Math.sin( t );
+		}
+		int inc = saw ? 1 : 2;
+		int part = 1, parts = A8_TABLE_PARTS;
+		for( int tab = 0; tab < NUM_TABLES; tab++, parts <<= 1 ) {
+			while( part <= parts ) {
+				double amp = 2.0 / ( Math.PI * part );
+				for( int idx = 0; idx < WAVE_LEN; idx++ ) {
+					buffer[ idx ] += sin[ ( idx * part ) & WAVE_MASK ] * amp;
+				}
+				part += inc;
+			}
+			short[] out = output[ tab ];
+			for( int idx = 0; idx < WAVE_LEN; idx++ ) {
+				out[ idx ] = ( short ) ( buffer[ idx ] * 27000 );
+			}
+		}
+		return output;
 	}
 }

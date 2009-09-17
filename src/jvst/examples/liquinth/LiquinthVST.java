@@ -5,55 +5,52 @@ import jvst.wrapper.*;
 import jvst.wrapper.valueobjects.*;
 
 public class LiquinthVST extends VSTPluginAdapter {
-	public static final String VERSION = "LiquinthVST a30";
-	public static final String AUTHOR = "(c)2007 mumart@gmail.com";
-
 	private static final int
 		NUM_PROGRAMS = 16,
 		MIX_BUF_FRAMES = 1024;
 
-	private LiquinthVSTGUI liquinth_vst_gui;
 	private Synthesizer synthesizer;
-	private LiquinthProgram[] programs;
-	private int num_controllers, current_program;
+	private AudioSource audio_source;
+	private MidiReceiver midi_receiver;
+	private Program[] programs;
+	private int current_program;
 	private int[] mix_buf;
 
 	public LiquinthVST( long wrapper ) {
 		super( wrapper );
-		programs = new LiquinthProgram[ NUM_PROGRAMS ];
+		
+		Liquinth liquinth = new Liquinth( 48000 );
+		synthesizer = liquinth;
+		audio_source = liquinth;
+		midi_receiver = new MidiReceiver( synthesizer );
 
-		num_controllers = Synthesizer.get_num_controllers();
+		programs = new Program[ NUM_PROGRAMS ];
 		for( int prg_idx = 0; prg_idx < NUM_PROGRAMS; prg_idx++ ) {
-			LiquinthProgram program = new LiquinthProgram();
-			program.name = "Blank " + prg_idx;
-			program.controllers = new int[ num_controllers ];
-			program.controllers[ 0 ] = 42; /* A bit of overdrive.*/
-			program.controllers[ 1 ] = 127; /* Filter fully open.*/
-			programs[ prg_idx ] = program;
+			programs[ prg_idx ] = new Program( "Blank " + prg_idx, synthesizer );
 		}
 
-		mix_buf = Synthesizer.allocate_mix_buf( MIX_BUF_FRAMES );
-
+		mix_buf = audio_source.allocate_mix_buf( MIX_BUF_FRAMES );
+		
 		setNumInputs( 0 );
 		setNumOutputs( 1 );
 		canProcessReplacing( true );
 		isSynth( true );
-		setUniqueID( 20070708 );
+		setUniqueID( Liquinth.RELEASE_DATE );
 
 		suspend();
 	}
 
-	public void set_gui( LiquinthVSTGUI gui ) {
-		liquinth_vst_gui = gui;
+	public SynthesizerPanel init_gui() {
+		synthesizer = new SynthesizerPanel( synthesizer );
+		midi_receiver = new MidiReceiver( synthesizer );
+		for( int prg_idx = 0; prg_idx < NUM_PROGRAMS; prg_idx++ ) {
+			programs[ prg_idx ].set_controls( synthesizer );
+		}
+		return ( SynthesizerPanel ) synthesizer;
 	}
-
-	public void set_controller( int ctrl_idx, int value, boolean update_gui ) {
-		if( ctrl_idx < 0 || ctrl_idx >= num_controllers) return;
-		LiquinthProgram program = programs[ current_program ];
-		program.controllers[ ctrl_idx ] = value;
+	
+	private void set_controller( int ctrl_idx, int value ) {
 		synthesizer.set_controller( ctrl_idx, value );
-		if( update_gui && liquinth_vst_gui != null )
-			liquinth_vst_gui.set_controller( ctrl_idx, value );
 	}
 
 	/* Deprecated as of VST 2.4 */
@@ -62,28 +59,22 @@ public class LiquinthVST extends VSTPluginAdapter {
 	}
 
 	public void setSampleRate( float sample_rate ) {
-		synthesizer = new Synthesizer( ( int ) sample_rate );
-		setProgram( current_program );
+		audio_source.set_sampling_rate( ( int ) sample_rate );
 	}
 
 	public void setProgram( int index ) {
 		if( index < 0 || index >= NUM_PROGRAMS ) return;
+		programs[ current_program ].store();
 		current_program = index;
-		LiquinthProgram program = programs[ index ];
-		for( int ctrl_idx = 0; ctrl_idx < num_controllers; ctrl_idx++ ) {
-			int controller = program.controllers[ ctrl_idx ];
-			set_controller( ctrl_idx, controller, true );
-		}
+		programs[ current_program ].load();
 	}
 
 	public void setParameter( int index, float value ) {
-		set_controller( index, ( int ) Math.round( value * 127 ), true );
+		set_controller( index, ( int ) Math.round( value * 127 ) );
 	}
 
 	public float getParameter( int index ) {
-		if( index < 0 || index >= num_controllers ) return 0;
-		LiquinthProgram program = programs[ current_program ];
-		return program.controllers[ index ] / 127f;
+		return synthesizer.get_controller( index ) / 127f;
 	}
 
 	public void setProgramName( String name ) {
@@ -103,7 +94,7 @@ public class LiquinthVST extends VSTPluginAdapter {
 	}
 
 	public String getParameterName( int index ) {
-		return Synthesizer.get_controller_name( index );
+		return synthesizer.get_controller_name( index );
 	}
 
 	public VSTPinProperties getOutputProperties( int index ) {
@@ -124,25 +115,20 @@ public class LiquinthVST extends VSTPluginAdapter {
 	/* Deprecated as of VST 2.4 */
 	public boolean copyProgram( int dest_idx ) {
 		if( dest_idx < 0 || dest_idx >= NUM_PROGRAMS ) return false;
-		LiquinthProgram src = programs[ current_program ];
-		LiquinthProgram dest = programs[ dest_idx ];
-		dest.name = src.name;
-		for( int ctrl_idx = 0; ctrl_idx < num_controllers; ctrl_idx++ ) {
-			dest.controllers[ ctrl_idx ] = src.controllers[ ctrl_idx ];
-		}
+		programs[ dest_idx ] = new Program( programs[ current_program ] );
 		return true;
 	}
 
 	public String getEffectName() {
-		return VERSION;
+		return Liquinth.VERSION;
 	}
 
 	public String getVendorString() {
-		return AUTHOR;
+		return Liquinth.AUTHOR;
 	}
 
 	public String getProductString() {
-		return VERSION;
+		return Liquinth.VERSION;
 	}
 
 	public int getNumPrograms() {
@@ -150,7 +136,7 @@ public class LiquinthVST extends VSTPluginAdapter {
 	}
 
 	public int getNumParams() {
-		return num_controllers;
+		return synthesizer.get_num_controllers();
 	}
 
 	public boolean setBypass( boolean value ) {
@@ -190,7 +176,7 @@ public class LiquinthVST extends VSTPluginAdapter {
 		while( frames > 0 ) {
 			int length = frames;
 			if( length > MIX_BUF_FRAMES ) length = MIX_BUF_FRAMES;
-			synthesizer.get_audio( mix_buf, length );
+			audio_source.get_audio( mix_buf, length );
 			for( int mix_idx = 0; mix_idx < length; mix_idx++ ) {
 				float out = mix_buf[ mix_idx ];
 				output[ out_idx++ ] += out * 0.00003f; 
@@ -205,7 +191,7 @@ public class LiquinthVST extends VSTPluginAdapter {
 		while( frames > 0 ) {
 			int length = frames;
 			if( length > MIX_BUF_FRAMES ) length = MIX_BUF_FRAMES;
-			synthesizer.get_audio( mix_buf, length );
+			audio_source.get_audio( mix_buf, length );
 			for( int mix_idx = 0; mix_idx < length; mix_idx++ ) {
 				float out = mix_buf[ mix_idx ];
 				output[ out_idx++ ] = out * 0.00003f; 
@@ -219,38 +205,51 @@ public class LiquinthVST extends VSTPluginAdapter {
 		int num_events = vst_events.getNumEvents();
 		for( int ev_idx = 0; ev_idx < num_events; ev_idx++ ) {
 			VSTEvent event = events[ ev_idx ];
-			if( event.getType() != VSTEvent.VST_EVENT_MIDI_TYPE ) continue;
-			byte[] msg_data = ( ( VSTMidiEvent ) event ).getData();
-			switch( msg_data[ 0 ] & 0xF0 ) {
-				case 0x80: /* Note off.*/
-					synthesizer.note_on( msg_data[ 1 ] & 0x7F, 0 );
-					break;
-				case 0x90: /* Note on.*/
-					/* It seems note on with velocity = 0 is also note off.*/
-					synthesizer.note_on( msg_data[ 1 ] & 0x7F, msg_data[ 2 ] & 0x7F );
-					break;
-				case 0xB0: /* Control change.*/
-					/* Controller 120 = all sound off */
-					/* Controller 121 = reset all controllers */
-					/* Controller 123 = all notes off */
-					int ctrl = msg_data[ 1 ] & 0x7F;
-					int value = msg_data[ 2 ] & 0x7F;
-					if( ctrl >= 20 && ctrl < num_controllers + 20 )
-						set_controller( ctrl - 20, value, true );
-					if( ctrl == 0x7E || ctrl == 0x7B )
-						synthesizer.all_notes_off( false );
-					break;
-				case 0xE0: /* Pitch wheel.*/
-					int pitch = ( msg_data[ 1 ] & 0x7F ) | ( ( msg_data[ 2 ] & 0x7F ) << 7 );
-					synthesizer.set_pitch_wheel( pitch - 8192 );
-					break;
+			if( event.getType() == VSTEvent.VST_EVENT_MIDI_TYPE ) {
+				midi_receiver.send( ( ( VSTMidiEvent ) event ).getData() );
 			}
 		}
 		return 1;
 	}
 }
 
-class LiquinthProgram {
-	public String name;
-	public int[] controllers;
+class Program {
+	public String name = "";
+	private int[] controllers;
+	private Controls controls;
+	
+	public Program( String name, Controls controls ) {
+		this.name = name;
+		controllers = new int[ controls.get_num_controllers() ];
+		set_controls( controls );
+		store();
+	}
+	
+	public Program( Program program ) {
+		name = program.name;
+		controls = program.controls;
+		controllers = new int[ program.controllers.length ];
+		for( int idx = 0; idx < controllers.length; idx++ ) {
+			controllers[ idx ] = program.controllers[ idx ];
+		}
+	}
+	
+	public void load() {
+		for( int idx = 0; idx < controllers.length; idx++ ) {
+			controls.set_controller( idx, controllers[ idx ] );
+		}		
+	}
+	
+	public void store() {
+		for( int idx = 0; idx < controllers.length; idx++ ) {
+			controllers[ idx ] = controls.get_controller( idx );
+		}
+	}
+	
+	public void set_controls( Controls controls ) {
+		if( controls.get_num_controllers() != controllers.length ) {
+			throw new IllegalArgumentException( "Number of controllers differ." );
+		}
+		this.controls = controls;
+	}
 }
