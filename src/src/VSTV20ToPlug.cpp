@@ -261,6 +261,9 @@ VstInt32 VSTV20ToPlug::canDo (char* text) {
 }
 
 bool VSTV20ToPlug::string2parameter (VstInt32 index, char *text) {
+	//vst spec: text==0 is to be expected to check the capability (returns true) 
+	if (text==NULL) return true;
+
 	JNIEnv* env = this->ensureJavaThreadAttachment();
 	jmethodID mid = env->GetMethodID(this->JavaPlugClass, "string2Parameter", "(ILjava/lang/String;)Z");
 	if (mid == NULL) {log("** ERROR: cannot find instance-method string2Parameter(ILjava/lang/String;)Z"); return false;}

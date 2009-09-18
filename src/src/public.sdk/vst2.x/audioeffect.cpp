@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------------
 // VST Plug-Ins SDK
-// Version 2.4       $Date: 2007/01/01 21:25:10 $
+// Version 2.4       $Date: 2009/09/18 22:27:11 $
 //
 // Category     : VST 2.x Classes
 // Filename     : audioeffect.cpp
@@ -25,7 +25,7 @@ VstIntPtr AudioEffect::dispatchEffectClass (AEffect* e, VstInt32 opCode, VstInt3
 	if (opCode == effClose)
 	{
 		ae->dispatcher (opCode, index, value, ptr, opt);
-		delete ae;
+		delete ae; //comment out to make VST Unit Test "TestInactiveProcessReplacing" work!
 		return 1;
 	}
 
