@@ -701,6 +701,8 @@ BOOL WINAPI DllMain (HINSTANCE hInst, DWORD dwReason, LPVOID lpvReserved) {
 	hInstance = hInst;
 
 	GetModuleFileName(hInst, DllLocation, JVST_PATH_MAX);
+	//Workaround for the "DllMain Bug" in VST Unit Tester by Christian Budde (great Tool btw!)
+	//sprintf(DllLocation, "C:\\Programme\\Steinberg\\VstPlugins\\jvstwrapper2\\jvstwrapper.dll");
 	return 1;
 }
 #endif

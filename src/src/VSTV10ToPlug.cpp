@@ -74,7 +74,7 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 	chunkdata = NULL;
 	chunksize = 0;
 
-	ProcessLastSampleFrames=0;
+	ProcessLastSampleFrames=-1;
 	ProcessJInputs=NULL;
 	ProcessJOutputs=NULL;
 	for (int i=0;i<8;i++) {
@@ -82,7 +82,7 @@ VSTV10ToPlug::VSTV10ToPlug (audioMasterCallback audioMaster, int progs, int parm
 		ProcessOutArrays[i]=NULL;
 	}
 
-	ProcessReplacingLastSampleFrames=0;
+	ProcessReplacingLastSampleFrames=-1;
 	ProcessReplacingJInputs=NULL;
 	ProcessReplacingJOutputs=NULL;
 	for (int i=0;i<8;i++) {
@@ -427,6 +427,8 @@ void VSTV10ToPlug::setSampleRate(float sampleRt) {
 //------------------------------------------------------------------------
 void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFrames) {
 
+	if (sampleFrames<=0 || inputs==NULL || outputs==NULL) return; // do nothing when no samples are given
+
 	if (!this->isProcessing) this->resume();
 
 	JNIEnv* env = this->ensureJavaThreadAttachment();
@@ -586,6 +588,8 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 
 //---------------------------------------------------------------------------
 void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames) {
+
+	if (sampleFrames<=0 || inputs==NULL || outputs==NULL) return; // do nothing when no samples are given
 
 	if (!this->isProcessing) this->resume();
 
