@@ -104,7 +104,7 @@ VstInt32 VSTV24ToPlug::getNumMidiOutputChannels() {
 //-----------------------------------------------------------------------------------------
 void VSTV24ToPlug::processDoubleReplacing (double** inputs, double** outputs, VstInt32 sampleFrames) {
 
-	if (sampleFrames<=0 || inputs==NULL || outputs==NULL) return; // do nothing when no samples are given
+	if (sampleFrames<=0) return; // do nothing when no samples are given
 
 	//if (!this->isProcessing) this->resume(); //TODO: maybe implement the isProcessing logic here (as in VSTV10ToPlug)?
 

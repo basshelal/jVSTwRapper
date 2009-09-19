@@ -427,7 +427,7 @@ void VSTV10ToPlug::setSampleRate(float sampleRt) {
 //------------------------------------------------------------------------
 void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFrames) {
 
-	if (sampleFrames<=0 || inputs==NULL || outputs==NULL) return; // do nothing when no samples are given
+	if (sampleFrames<=0) return; // do nothing when no samples are given
 
 	if (!this->isProcessing) this->resume();
 
@@ -589,7 +589,7 @@ void VSTV10ToPlug::process (float** inputs, float** outputs, VstInt32 sampleFram
 //---------------------------------------------------------------------------
 void VSTV10ToPlug::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames) {
 
-	if (sampleFrames<=0 || inputs==NULL || outputs==NULL) return; // do nothing when no samples are given
+	if (sampleFrames<=0) return; // do nothing when no samples are given
 
 	if (!this->isProcessing) this->resume();
 
