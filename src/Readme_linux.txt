@@ -35,6 +35,12 @@ Create a symbolic link to the directory $JAVA_HOME/lib/i386/xawt/ in the folder 
 jvstwrapper.so file is. (e.g. execute "ln -s $JAVA_HOME/lib/i386/xawt/ xawt" in the folder where jvstwrapper.so is located)
 
 
+LADSPA: jVSTwRapper now exposes your plugins as VST and LADSPA plugins at the same time. To use 
+        your plug in a LADSPA host (e.g. ardour, rezound, muse, audacity, ...) simply symlink  
+        jvstwrapper.so to the directory where your ladspa plugs are (e.g. /usr/lib/ladspa or /usr/local/lib/ladspa).
+		e.g. "sudo ln -s absolute_path_to_jvstwrapper.so_file /usr/lib/ladspa/jvstwrapper.so"
+
+
 	
 **** The following steps are for plugin development ONLY ****
 --------------------------------------------------------------
@@ -48,12 +54,6 @@ jvstwrapper.so file is. (e.g. execute "ln -s $JAVA_HOME/lib/i386/xawt/ xawt" in 
    
 8. Look for problems. If you left IsLoggingEnabled=1 in the ini file, the log files will 
    appear in the same directory as the plugin .so file is.
-
-
-LADSPA: jVSTwRapper now exposes your plugins as VST and LADSPA plugins at the same time. To use 
-        your plug in a LADSPA host (e.g. ardour, rezound, muse, audacity, ...) simply symlink  
-        jvstwrapper.so to the directory where your ladspa plugs are (e.g. /usr/lib/ladspa or /usr/local/lib/ladspa).
-		e.g. "sudo ln -s absolute_path_to_jvstwrapper.so_file /usr/lib/ladspa/jvstwrapper.so"
 
 
 
