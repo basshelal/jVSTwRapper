@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 mvn clean
+rm ChangeLog.txt*
+rm fb.jpg*
+rm style.css*
+rm READ_ME.html*
 
 export CVSROOT=:pserver:anonymous@jvstwrapper.cvs.sourceforge.net:/cvsroot/jvstwrapper
 mkdir target
@@ -17,10 +21,6 @@ cp ../cvs2cl.pl .
 
 cd ..
 
-rm READ_ME.html
-rm ChangeLog.txt*
-rm style.css*
-rm fb.jpg*
 wget -O READ_ME.html http://jvstwrapper.sourceforge.net/index.html
 wget http://jvstwrapper.sourceforge.net/style.css
 wget http://jvstwrapper.sourceforge.net/fb.jpg
@@ -29,7 +29,8 @@ mvn install javadoc:jar package assembly:assembly
 
 echo Mac OSX only --> create custom folder icon
 
-ASSEMBLY_DIR=target/jVSTwRapper-Release-0.9g-osx.dir
+ASSEMBLY_DIR=target/jVSTwRapper-Release-1.0beta-osx.dir
+
 rm -f $ASSEMBLY_DIR/jvstwrapper.vst/Icon*
 /Developer/Tools/SetFile -a B $ASSEMBLY_DIR/jvstwrapper.vst
 sips -i $ASSEMBLY_DIR/jvstwrapper.vst/Contents/Resources/jvstwrapper.icns
