@@ -4,7 +4,7 @@
 	<groupId>net.sourceforge.jvstwrapper</groupId>
 	<artifactId>jVSTwRapper-Release</artifactId>
 	<name>jVST Release Meta POM</name>
-	<version>0.9g</version>
+	<version>1.0beta</version>
 	<packaging>pom</packaging>
 	<url>http://jvstwrapper.sourceforge.net/</url>
 	
