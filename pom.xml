@@ -4,7 +4,7 @@
 	<groupId>net.sourceforge.jvstwrapper</groupId>
 	<artifactId>jVSTeXamples</artifactId>
 	<name>jVSTeXamples</name>
-	<version>0.9g</version>
+	<version>1.0beta</version>
 	<url>http://jvstwrapper.sourceforge.net/</url>
 	<packaging>jar</packaging>
 
