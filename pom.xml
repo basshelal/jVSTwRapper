@@ -32,7 +32,7 @@
 	<distributionManagement>
 		<repository>
 			<id>jvstwrapper-repo</id>
-			<url>scp://web.sourceforge.net/home/groups/j/jv/jvstwrapper/htdocs/maven2/</url>
+			<url>scp://shell.sourceforge.net/home/groups/j/jv/jvstwrapper/htdocs/maven2/</url>
 		</repository>
 	</distributionManagement>
 
