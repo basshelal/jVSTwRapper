@@ -5,10 +5,10 @@ echo 'TODO: change project version in 4 pom.xml files, add project version in 3 
 #sleep 5
 
 mvn clean
-
-rm -f fb.jpg*
-rm -f style.css*
-rm -f ChangeLog.txt*
+rm ChangeLog.txt*
+rm fb.jpg*
+rm style.css*
+rm READ_ME.html*
 
 export CVSROOT=:pserver:anonymous@jvstwrapper.cvs.sourceforge.net:/cvsroot/jvstwrapper
 mkdir target
