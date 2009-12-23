@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+echo 'TODO: change project version in 4 pom.xml files, add project version in 3 .ini files (jvst_native/conf/*.ini) and change version in main.cpp'
+
+#sleep 5
+
 mvn clean
 
 rm -f fb.jpg*
@@ -27,7 +31,10 @@ wget http://jvstwrapper.sourceforge.net/fb.jpg
 
 mvn install javadoc:jar package assembly:assembly
 
-mvn deploy
+# create a (temporary!) shell so that mvn deploy is able to create directories, ...
+# prevents the "No such file or directory" error!
+#ssh -t daniel309,jvstwrapper@shell.sf.net create
+#mvn deploy
 
 #mvn release:prepare
 #mvn release:perform
