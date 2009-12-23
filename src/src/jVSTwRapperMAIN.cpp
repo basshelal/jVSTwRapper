@@ -41,7 +41,7 @@
 #include <time.h>
 
 // *** VERSION *** //
-#define JVSTWRAPPER_VERSION "0.9h"
+#define JVSTWRAPPER_VERSION "1.0beta"
 
 
 #ifdef WIN32
