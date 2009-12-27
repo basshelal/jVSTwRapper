@@ -112,9 +112,8 @@ public class JayDLay extends VSTPluginAdapter {
   }
 
   public boolean string2Parameter(int index, String value) {
-    log("string2parameter");
+    log("string2parameter index=" + index + " value=" + value);
     boolean ret = false;
-
 
     try {
       if (value != null) this.setParameter(index, Float.parseFloat(value));
