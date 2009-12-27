@@ -139,6 +139,8 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 
 //-----------------------------------------------------------------------------
 bool VSTGUIWrapper::getRect (ERect **ppErect) {
+	if (ppErect==NULL) return false; //sanity check parameter
+
 	log("GUI wrapper getRect");
 	if(this->AttachWindow) {
 		JNIEnv* env = this->ensureJavaThreadAttachment();

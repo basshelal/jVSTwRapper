@@ -661,7 +661,8 @@ bool VSTV20ToPlug::keysRequired () {
 
 
 VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
-
+	if (events==NULL) return 0; //sanity check parameter
+	
 	if (this->isProcessEventsCacheInitialised==false) this->initProcessEventsCache();
 
 	JNIEnv* env = this->ensureJavaThreadAttachment();
