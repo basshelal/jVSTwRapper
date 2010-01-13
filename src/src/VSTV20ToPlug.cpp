@@ -705,15 +705,11 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 			env->SetByteField(jevent, this->VSTMidiEventFieldReserved1, me->reserved1);
 			env->SetByteField(jevent, this->VSTMidiEventFieldReserved2, me->reserved2);
 			
-			//hack! convert array
-			jbyte* b = new jbyte[4];
-			for (int k=0; k<4; k++) b[k]=me->midiData[k]; 
-			
+			//midi data --> 4 byte
 			jbyteArray barr = env->NewByteArray(4);
-			env->SetByteArrayRegion(barr, 0, 3, b);
+			env->SetByteArrayRegion(barr, 0, 4, (jbyte*)me->midiData);
 			env->SetObjectField(jevent, this->VSTEventFieldData, barr);	
-			env->DeleteLocalRef(barr);	
-			delete [] b;
+			env->DeleteLocalRef(barr);
 		}
 		else {
 			//any other event
@@ -728,15 +724,21 @@ VstInt32 VSTV20ToPlug::processEvents (VstEvents* events) {
 			env->SetIntField(jevent, this->VSTEventFieldDeltaFrames, e->deltaFrames);
 			env->SetIntField(jevent, this->VSTEventFieldFlags, e->flags);
 			
-			//hack! convert array
-			jbyte* b = new jbyte[16];
-			for (int k=0; i<16; k++) b[k]=e->data[k]; 
-			
-			jbyteArray barr = env->NewByteArray(16);
-			env->SetByteArrayRegion(barr, 0, 15, b);
-			env->SetObjectField(jevent, this->VSTEventFieldData, barr);	
-			env->DeleteLocalRef(barr);
-			delete [] b;
+			if (e->type==kVstSysExType) {
+				//sysex data --> variable size
+				VstMidiSysexEvent* se = (VstMidiSysexEvent*)e;
+				jbyteArray barr = env->NewByteArray(se->dumpBytes);
+				env->SetByteArrayRegion(barr, 0, se->dumpBytes, (jbyte*)se->sysexDump);
+				env->SetObjectField(jevent, this->VSTEventFieldData, barr);	
+				env->DeleteLocalRef(barr);
+			}
+			else {
+				//generic vst event --> 16 byte
+				jbyteArray barr = env->NewByteArray(16);
+				env->SetByteArrayRegion(barr, 0, 16, (jbyte*)e->data);
+				env->SetObjectField(jevent, this->VSTEventFieldData, barr);	
+				env->DeleteLocalRef(barr);
+			}
 		}
 
 		env->SetObjectArrayElement(jevents, i, jevent);
