@@ -135,6 +135,22 @@ int log(const char* data, ...) {
 
 	isWarningOrError = (*message == '*') && (*(message+1)=='*');
 
+	//write to log file
+	if (IsLogEnabled || isWarningOrError) {
+		if(log_stream!=NULL) {
+			fprintf(log_stream, "\n%s", message);
+			fflush(log_stream);
+			retval = 0;
+		}
+		else {
+			fprintf(stderr, "\n%s", message);
+			fflush(stderr);
+			retval = 0;
+		}
+	} 
+	else retval = 0;
+
+
 	//show MessageBox on Error or warning!
 	//restrict it to 5 messages per session.
 	//more would just be annoying...
@@ -163,21 +179,7 @@ int log(const char* data, ...) {
 #endif
 		}
 	}
-
-	if (IsLogEnabled || isWarningOrError) {
-		if(log_stream!=NULL) {
-			fprintf(log_stream, "\n%s", message);
-			fflush(log_stream);
-			retval = 0;
-		}
-		else {
-			fprintf(stderr, "\n%s", message);
-			fflush(stderr);
-			retval = 0;
-		}
-	} 
-	else retval = 0;
-
+	
     return retval;
 }
 
