@@ -411,7 +411,7 @@ public class JayVSTxSynth extends VSTPluginAdapter {
 // struct will be filled with information for 'thisProgramIndex' and 'thisKeyNumber'
 // if keyName is "" the standard name of the key will be displayed.
 // if false is returned, no MidiKeyNames defined for 'thisProgramIndex'.
-  public boolean getMidiKeyName (long channel, MidiKeyName key) {
+  public boolean getMidiKeyName (int channel, MidiKeyName key) {
     return false;
   }
 
