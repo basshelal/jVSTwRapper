@@ -14,19 +14,18 @@ public class LiquinthVSTGUI extends VSTPluginGUIAdapter {
 	public LiquinthVSTGUI( VSTPluginGUIRunner r, VSTPluginAdapter plugin ) {
 		super( r, plugin );
 		final LiquinthVST liquinth_vst = ( LiquinthVST ) plugin;
-		SwingUtilities.invokeLater( new Runnable() {
-			public void run() {
-				setTitle( Liquinth.VERSION );
-				JPanel panel = new JPanel();
-				panel.setLayout( new BorderLayout() );
-				panel.add( new LogoPanel(), BorderLayout.NORTH );
-				panel.add( liquinth_vst.init_gui(), BorderLayout.CENTER );
-				panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
-				getContentPane().add( panel );
-				pack();
-				setVisible( true );
-				//if( RUNNING_MAC_X ) setVisible( true );
-			}
-		} );
+
+		setTitle( Liquinth.VERSION );
+		JPanel panel = new JPanel();
+		panel.setLayout( new BorderLayout() );
+		panel.add( new LogoPanel(), BorderLayout.NORTH );
+		panel.add( liquinth_vst.init_gui(), BorderLayout.CENTER );
+		panel.setBorder( new EmptyBorder( 6, 6, 6, 6 ) );
+		getContentPane().add( panel );
+		
+		pack();
+		this.setResizable(false);
+		
+		if( RUNNING_MAC_X ) this.show();
 	}
 }
