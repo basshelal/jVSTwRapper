@@ -7,7 +7,6 @@ package jvst.examples.javafx.fxdelay;
 import java.awt.BorderLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import jvst.examples.javafx.JXScene;
 import jvst.examples.javafx.SceneToJComponent;
 import jvst.wrapper.VSTPluginAdapter;
 import jvst.wrapper.gui.VSTPluginGUIRunner;

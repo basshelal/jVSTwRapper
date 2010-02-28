@@ -47,6 +47,7 @@ import jvst.wrapper.VSTPluginAdapter;
  *
  * NOTE: works with JavaFX 1.2
  *
+ * Alternative: JXScene.java, also from jfxtras
  * Modified by daniel309: added method loadScene(Object fxscene, String classname)
  *
  * @example
