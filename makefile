@@ -9,14 +9,14 @@
 # export LD_DEBUG=bindings
 # export LD_DEBUG_OUTPUT=loader_debug.txt
 
-JAVA_HOME=/usr/lib/jvm/java-6-sun
+JAVA_HOME=/home/privat/opt/jdk
 
 all:	release
 
 debug:
 #	debug build option as executable so that all errors are reported!
 
-#	g++ -o ./bin/jvstwrapper.so -fPIC -DPIC -DDEBUG=1 -DMOTIF=1 -DLINUX=1 -g -ldl -lX11 -lXpm -ljawt -lmawt \
+#	g++ -o bin/jvstwrapper.so -fPIC -DPIC -DDEBUG=1 -DMOTIF=1 -DLINUX=1 -g -ldl -lX11 -lXpm -ljawt -lmawt \
 #	-fvisibility=hidden -fvisibility-inlines-hidden \
 #	-I/usr/include -I./src/src/public.sdk/vst2.x -I./src/src/ladspa -I$(JAVA_HOME)/include \
 #	-I$(JAVA_HOME)/include/linux -I./src/src/pluginterfaces/vst2.x -I./src/src \
@@ -33,7 +33,7 @@ debug:
 
 
 #	the real thing is here...
-	g++ -o ./bin/jvstwrapper.so -shared -fPIC -DPIC -DDEBUG=1 -DMOTIF=1 -DLINUX=1 -g -ldl -lX11 -lXpm -ljawt -lmawt \
+	g++ -o bin/jvstwrapper.so -shared -fPIC -DPIC -DDEBUG=1 -DMOTIF=1 -DLINUX=1 -g -ldl -lX11 -lXpm -ljawt -lmawt \
  	-fvisibility=hidden -fvisibility-inlines-hidden \
 	-I/usr/include -I./src/src/public.sdk/vst2.x -I./src/src/ladspa -I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux -I./src/src/pluginterfaces/vst2.x -I./src/src \
@@ -50,9 +50,9 @@ debug:
 	
 	
 release:
-#	g++ -o ./bin/jvstwrapper.so -shared -fPIC -DPIC -DLINUX=1 -DMOTIF=1 -O2 -ldl -lX11 -lXpm -ljawt -lmawt \
+#	g++ -o bin/jvstwrapper.so -shared -fPIC -DPIC -DLINUX=1 -DMOTIF=1 -O2 -ldl -lX11 -lXpm -ljawt -lmawt \
 	
-	g++ -o ./bin/jvstwrapper.so -shared -fPIC -DPIC -DLINUX=1 -DMOTIF=1 -O2 -ldl -lX11 -lXpm -ljawt -lmawt -s \
+	g++ -o bin/jvstwrapper.so -shared -fPIC -DPIC -DLINUX=1 -DMOTIF=1 -O2 -ldl -lX11 -lXpm -ljawt -lmawt -s \
 	-fvisibility=hidden -fvisibility-inlines-hidden \
 	-I/usr/include -I./src/src/public.sdk/vst2.x -I./src/src/ladspa -I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux -I./src/src/pluginterfaces/vst2.x -I./src/src \
@@ -69,5 +69,5 @@ release:
 	
 	
 clean:
-	rm -f ./bin/*.so 		
+	rm -f bin/*.so 		
 	
