@@ -138,12 +138,22 @@ int log(const char* data, ...) {
 	//write to log file
 	if (IsLogEnabled || isWarningOrError) {
 		if(log_stream!=NULL) {
+#ifdef WIN32
 			fprintf(log_stream, "\nThread=%i: %s", GetCurrentThreadId(), message);
+#endif
+#if defined(MACX) || defined(linux)
+			fprintf(log_stream, "\nThread=%i: %s", pthread_self(), message);
+#endif
 			fflush(log_stream);
 			retval = 0;
 		}
 		else {
+#ifdef WIN32
 			fprintf(stderr, "\nThread=%i: %s", GetCurrentThreadId(), message);
+#endif
+#if defined(MACX) || defined(linux)
+			fprintf(stderr, "\nThread=%i: %s", pthread_self(), message);
+#endif
 			fflush(stderr);
 			retval = 0;
 		}
