@@ -183,6 +183,7 @@ void VSTV10ToPlug::setParameter (VstInt32 index, float value) {
 		if (this->SetParameterMethod == NULL) log("** ERROR: cannot find instance-method setParameter(IF)V");
 	}
 
+	log("setParameter(%i,%f)", index, value);
 	env->CallVoidMethod(this->JavaPlugObj, this->SetParameterMethod, (jint)index, (jfloat)value);
 
 	this->checkException(env);

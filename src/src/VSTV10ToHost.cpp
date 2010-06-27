@@ -254,6 +254,7 @@ JNIEXPORT void JNICALL Java_jvst_wrapper_communication_VSTV10ToHost_setParameter
 	WrapperInstance->ToHostThread=pthread_self();
 #endif
 
+	log("setParameterAutomated(%i,%f)", index, value);
 	if (WrapperInstance!=NULL) WrapperInstance->setParameterAutomated(index, value);
 
     WrapperInstance->ToHostThread=0;

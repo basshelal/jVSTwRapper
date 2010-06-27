@@ -1,11 +1,11 @@
-/* 
+/*
  * jVSTwRapper - The Java way into VST world!
- * 
- * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface. 
- * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments 
+ *
+ * jVSTwRapper is an easy and reliable Java Wrapper for the Steinberg VST interface.
+ * It enables you to develop VST 2.3 compatible audio plugins and virtual instruments
  * plus user interfaces with the Java Programming Language. 3 Demo Plugins(+src) are included!
- * 
- * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net] 
+ *
+ * Copyright (C) 2006  Daniel Martin [daniel309@users.sourceforge.net]
  * 					   and many others, see CREDITS.txt
  *
  *
@@ -54,21 +54,21 @@ extern FILE* log_stream;
 
 //------------------------------------------------------------------------
 jvalue JNU_CallJavaMethod(	JNIEnv *env,
-							jobject obj, 
-							jmethodID mid, 
+							jobject obj,
+							jmethodID mid,
 							const char *name,
-							const char *descriptor, 
+							const char *descriptor,
 							...) {
 	va_list args;
 	jvalue result;
 
 
 	log("Invoking JNU_CallJavaMethod method=%s descriptor=%s", name, descriptor);
-	
+
 	if (mid) {
 		const char *p = descriptor;
-		//skip over argument types to find out the 
-		//return type 
+		//skip over argument types to find out the
+		//return type
 
 		while (*p != ')') p++; // skip till ')'
 		p++;
@@ -109,7 +109,7 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 			default:
 				env->FatalError("** JNU_CallJavaMethod: illegal descriptor");
 		}
-		
+
 		va_end(args);
 	}
 
@@ -122,7 +122,7 @@ jvalue JNU_CallJavaMethod(	JNIEnv *env,
 //------------------------------------------------------------------------
 int log(const char* data, ...) {
     int retval = -1;
-	int isWarningOrError = 1;    
+	int isWarningOrError = 1;
 	char message[9999];
 
 
@@ -138,16 +138,16 @@ int log(const char* data, ...) {
 	//write to log file
 	if (IsLogEnabled || isWarningOrError) {
 		if(log_stream!=NULL) {
-			fprintf(log_stream, "\n%s", message);
+			fprintf(log_stream, "\nThread=%i: %s", GetCurrentThreadId(), message);
 			fflush(log_stream);
 			retval = 0;
 		}
 		else {
-			fprintf(stderr, "\n%s", message);
+			fprintf(stderr, "\nThread=%i: %s", GetCurrentThreadId(), message);
 			fflush(stderr);
 			retval = 0;
 		}
-	} 
+	}
 	else retval = 0;
 
 
@@ -155,7 +155,7 @@ int log(const char* data, ...) {
 	//restrict it to 5 messages per session.
 	//more would just be annoying...
 	if (isWarningOrError) {
-		MessageBoxCount++;	
+		MessageBoxCount++;
 		if (MessageBoxCount<=5) {
 			if (MessageBoxCount==5) {
 				sprintf(message, "Max number of error messages reached.\n Will now supress error messages and only log them to the log file.");
@@ -179,7 +179,7 @@ int log(const char* data, ...) {
 #endif
 		}
 	}
-	
+
     return retval;
 }
 
@@ -216,62 +216,62 @@ char *trim (char *string) {
 }
 
 
-char *replace(char *string, char *oldpiece, char *newpiece) { 
-   int str_index, newstr_index, oldpiece_index, end, new_len, old_len, cpy_len; 
-   char *c; 
-   char newstring[JVST_PATH_MAX]; 
+char *replace(char *string, char *oldpiece, char *newpiece) {
+   int str_index, newstr_index, oldpiece_index, end, new_len, old_len, cpy_len;
+   char *c;
+   char newstring[JVST_PATH_MAX];
 
 
    newstring[JVST_PATH_MAX-1]='\0';
 
-   if ((c = (char *) strstr(string, oldpiece)) == NULL) 
-      return strdup(string); 
+   if ((c = (char *) strstr(string, oldpiece)) == NULL)
+      return strdup(string);
 
 
-   new_len = strlen(newpiece); 
-   old_len = strlen(oldpiece); 
-   end = strlen(string) - old_len; 
-   oldpiece_index = c - string; 
+   new_len = strlen(newpiece);
+   old_len = strlen(oldpiece);
+   end = strlen(string) - old_len;
+   oldpiece_index = c - string;
 
 
-   newstr_index = 0; 
-   str_index = 0; 
-   while(str_index <= end && c != NULL) { 
-      /* Copy characters from the left of matched pattern occurence */ 
-      cpy_len = oldpiece_index-str_index; 
-      strncpy(newstring+newstr_index, string+str_index, cpy_len); 
-      newstr_index += cpy_len; 
-      str_index += cpy_len; 
+   newstr_index = 0;
+   str_index = 0;
+   while(str_index <= end && c != NULL) {
+      /* Copy characters from the left of matched pattern occurence */
+      cpy_len = oldpiece_index-str_index;
+      strncpy(newstring+newstr_index, string+str_index, cpy_len);
+      newstr_index += cpy_len;
+      str_index += cpy_len;
 
 
-      /* Copy replacement characters instead of matched pattern */ 
-      strcpy(newstring+newstr_index, newpiece); 
-      newstr_index += new_len; 
-      str_index += old_len; 
+      /* Copy replacement characters instead of matched pattern */
+      strcpy(newstring+newstr_index, newpiece);
+      newstr_index += new_len;
+      str_index += old_len;
 
 
-      /* Check for another pattern match */ 
-      if((c = (char *) strstr(string+str_index, oldpiece)) != NULL) 
-         oldpiece_index = c - string; 
-   } 
-   /* Copy remaining characters from the right of last matched pattern */ 
-   strcpy(newstring+newstr_index, string+str_index); 
+      /* Check for another pattern match */
+      if((c = (char *) strstr(string+str_index, oldpiece)) != NULL)
+         oldpiece_index = c - string;
+   }
+   /* Copy remaining characters from the right of last matched pattern */
+   strcpy(newstring+newstr_index, string+str_index);
 
 
-   return strdup(newstring); 
-} 
+   return strdup(newstring);
+}
 
 
 bool checkException(JNIEnv *env) {
 	if (env->ExceptionCheck()==0) return false;
-	
+
 	jthrowable exc = env->ExceptionOccurred();
 	if (exc==NULL) return false;
-	
+
 	//this clears the exception, but we want it to be trown in java again.
 	//this will happen when the native method returns.
 
-	//but if we called a java method, the exception remains pending in the 
+	//but if we called a java method, the exception remains pending in the
 	//thread until someone clears it (either a java native method returns or we do it!)
 	env->ExceptionDescribe();
 	env->ExceptionClear();
@@ -281,7 +281,7 @@ bool checkException(JNIEnv *env) {
 	jclass c = env->FindClass("jvst/wrapper/system/ExceptionUtililities");
 	if (c!=NULL) {
 		jmethodID mid = env->GetStaticMethodID(c, "getStackTrace", "(Ljava/lang/Throwable;)Ljava/lang/String;");
-		
+
 		if (mid!=NULL) {
 			jstring ret = (jstring)env->CallStaticObjectMethod(c, mid, exc);
 			if (ret==NULL) {
@@ -311,7 +311,7 @@ bool checkException(JNIEnv *env) {
 
 
 
-//check for exception, print stack trace, and throw it again, 
+//check for exception, print stack trace, and throw it again,
 //so it can be catched in java code!
 bool checkAndThrowException(JNIEnv *env) {
 	jthrowable exc = env->ExceptionOccurred();
@@ -357,18 +357,18 @@ JNIEnv* ensureJavaThreadAttachment(JavaVM* vm) {
 #define JVM_REG_12 "Software\\JavaSoft\\Java Runtime Environment\\1.2"
 
 char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey) {
-	DWORD	rc; 
+	DWORD	rc;
 	HKEY	regKey;
-	DWORD	len; 
-	DWORD	dwType; 
+	DWORD	len;
+	DWORD	dwType;
 	char	javaLibLocation[JVST_PATH_MAX]; //value stored here
-	
+
 
 	if (customRegKey!=NULL) {
 		log("Trying to locate custom jvm location from registry with key=%s", customRegKey);
-		
+
 		//check if this key is available
-		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, customRegKey, 0, KEY_ALL_ACCESS, &regKey); 
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, customRegKey, 0, KEY_ALL_ACCESS, &regKey);
 		if (rc != ERROR_SUCCESS) return NULL;
 	}
 	else if (requestedJVMVersion!=NULL) {
@@ -376,21 +376,21 @@ char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey) {
 		char jvmRegKey[512] = {'\0'};
 		strcat(jvmRegKey, "Software\\JavaSoft\\Java Runtime Environment\\\0");
 		strcat(jvmRegKey, requestedJVMVersion);
-		
+
 		log("Trying to locate specific jvm version with regkey=%s", jvmRegKey);
-		
+
 		//check if this key is available
-		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey); 
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey);
 		if (rc != ERROR_SUCCESS) return NULL;
 	}
 	else {
 		//Auto check for installed JVMs
-		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_ALL_ACCESS, &regKey); 
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_ALL_ACCESS, &regKey);
 		if (rc!=ERROR_SUCCESS) return NULL;
 
 		char currentVersion[64];
 		len = sizeof(currentVersion);
-		rc = RegQueryValueEx(regKey, "CurrentVersion", 0, &dwType, (unsigned char*)currentVersion, &len); 
+		rc = RegQueryValueEx(regKey, "CurrentVersion", 0, &dwType, (unsigned char*)currentVersion, &len);
 		if (rc!=ERROR_SUCCESS) return NULL;
 
 		char jvmRegKey[512] = {'\0'};
@@ -399,12 +399,12 @@ char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey) {
 
 		log("default jvm is at regkey=%s", jvmRegKey);
 
-		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey); 
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE, jvmRegKey, 0, KEY_ALL_ACCESS, &regKey);
 		if (rc!=ERROR_SUCCESS) return NULL;
 	}
-	
+
 	len = sizeof(javaLibLocation);
-	rc = RegQueryValueEx(regKey, "RuntimeLib", 0, &dwType, (unsigned char*)javaLibLocation, &len); 
+	rc = RegQueryValueEx(regKey, "RuntimeLib", 0, &dwType, (unsigned char*)javaLibLocation, &len);
 
 	if (rc==ERROR_SUCCESS) return strdup(javaLibLocation);
 	else return NULL;
@@ -412,10 +412,10 @@ char* readJVMLibLocation(char* requestedJVMVersion, char* customRegKey) {
 #endif
 
 #ifdef linux
-//on linux, we check if there is a $JAVA_HOME 
+//on linux, we check if there is a $JAVA_HOME
 char* readJVMLibLocation(char* requestedJVMVersion) {
 	char *pPath = getenv("JAVA_HOME");
-  	
+
   	if(pPath==NULL) return NULL;
   	else {
   		char* tmp = (char *)malloc(1024);
@@ -431,7 +431,7 @@ char* readJVMLibLocation(char* requestedJVMVersion) {
 #if defined(WIN32) || defined(linux)
 
 //globals
-jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *) = NULL; 
+jint (JNICALL *PTR_CreateJavaVM)(JavaVM **, void **, void *) = NULL;
 jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *) = NULL;
 
 
@@ -460,7 +460,7 @@ int initJVMFunctionPointers(char *vmlibpath) {
 			to the end of its value.\n\
 			Note the ';' at the beginning of the string. close all windows with ok, and you \n\
 			should be all set.\n\
-			If you still cant use the plugin, contact the forum at \n\nhttp://sourceforge.net/forum/forum.php?forum_id=318265"); 
+			If you still cant use the plugin, contact the forum at \n\nhttp://sourceforge.net/forum/forum.php?forum_id=318265");
 #ifdef linux
 			log(dlerror());
 #endif
@@ -483,7 +483,7 @@ int initJVMFunctionPointers(char *vmlibpath) {
 #endif
 		return -1;
 	}
-	
+
 	return 0;
 }
 #endif
@@ -502,37 +502,37 @@ void printCurrentThreadID() {
 
 
 /*
-To invoke Java 1.4.1 or the currently preferred JDK as defined by the operating system 
-(1.4.2 as of the release of this sample and the release of Mac OS X 10.4) nothing changes in 10.4 vs 10.3 
-in that when a JNI_VERSION_1_4 is passed into JNI_CreateJavaVM as the vm_args.version it returns 
+To invoke Java 1.4.1 or the currently preferred JDK as defined by the operating system
+(1.4.2 as of the release of this sample and the release of Mac OS X 10.4) nothing changes in 10.4 vs 10.3
+in that when a JNI_VERSION_1_4 is passed into JNI_CreateJavaVM as the vm_args.version it returns
 the current preferred JDK.
 
-To specify the current preferred JDK in a family of JVM's, say the 1.5.x family, applications should set 
-the environment variable JAVA_JVM_VERSION to 1.5, and then pass JNI_VERSION_1_4 into JNI_CreateJavaVM 
-as the vm_args.version. To get a specific Java 1.5 JVM, say Java 1.5.0, set the environment variable 
-JAVA_JVM_VERSION to 1.5.0. For Java 1.6 it will be the same in that applications will need to set 
-the environment variable JAVA_JVM_VERSION to 1.6 to specify the current preferred 1.6 Java VM, and 
+To specify the current preferred JDK in a family of JVM's, say the 1.5.x family, applications should set
+the environment variable JAVA_JVM_VERSION to 1.5, and then pass JNI_VERSION_1_4 into JNI_CreateJavaVM
+as the vm_args.version. To get a specific Java 1.5 JVM, say Java 1.5.0, set the environment variable
+JAVA_JVM_VERSION to 1.5.0. For Java 1.6 it will be the same in that applications will need to set
+the environment variable JAVA_JVM_VERSION to 1.6 to specify the current preferred 1.6 Java VM, and
 to get a specific Java 1.6 JVM, say Java 1.6.1, set the environment variable JAVA_JVM_VERSION to 1.6.1.
 
-To make this sample bring up the current preferred 1.5 JVM, set the environment variable 
-JAVA_JVM_VERSION to 1.5 before calling JNI_CreateJavaVM as shown below.  Applications must currently 
-check for availability of JDK 1.5 before requesting it.  If your application requires JDK 1.5 and it is not 
-found, it is your responsibility to report an error to the user. To verify if a JVM is installed, check 
-to see if the symlink, or directory exists for the JVM in /System/Library/Frameworks/JavaVM.framework/Versions/ 
+To make this sample bring up the current preferred 1.5 JVM, set the environment variable
+JAVA_JVM_VERSION to 1.5 before calling JNI_CreateJavaVM as shown below.  Applications must currently
+check for availability of JDK 1.5 before requesting it.  If your application requires JDK 1.5 and it is not
+found, it is your responsibility to report an error to the user. To verify if a JVM is installed, check
+to see if the symlink, or directory exists for the JVM in /System/Library/Frameworks/JavaVM.framework/Versions/
 before setting the environment variable JAVA_JVM_VERSION.
 
-If the environment variable JAVA_JVM_VERSION is not set, and JNI_VERSION_1_4 is passed into 
-JNI_CreateJavaVM as the vm_args.version, JNI_CreateJavaVM will return the current preferred JDK. 
+If the environment variable JAVA_JVM_VERSION is not set, and JNI_VERSION_1_4 is passed into
+JNI_CreateJavaVM as the vm_args.version, JNI_CreateJavaVM will return the current preferred JDK.
 Java 1.4.2 is the preferred JDK as of the release of this sample and the release of Mac OS X 10.4.
 */
 
 
 int checkJVMVersionRequest(char* requestedJVMVersion) {
 	if (requestedJVMVersion==NULL) return -1;
-	
+
 	log("checking for a jvm version");
 	log(requestedJVMVersion);
-	
+
 	CFStringRef targetJVM = CFStringCreateWithCString(NULL, requestedJVMVersion, kCFStringEncodingASCII);
 	CFBundleRef JavaVMBundle;
 	CFURLRef    JavaVMBundleURL;
@@ -541,25 +541,25 @@ int checkJVMVersionRequest(char* requestedJVMVersion) {
 	UInt8 pathToTargetJVM [PATH_MAX] = "\0";
 	struct stat sbuf;
 	int retval = -1;
-	
+
 	// Look for the JavaVM bundle using its identifier
 	JavaVMBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.JavaVM") );
-	
+
 	if(JavaVMBundle != NULL) {
 		// Get a path for the JavaVM bundle
 		JavaVMBundleURL = CFBundleCopyBundleURL(JavaVMBundle);
 		CFRelease(JavaVMBundle);
-		
+
 		if(JavaVMBundleURL != NULL) {
 			// Append to the path the Versions Component
 			JavaVMBundlerVersionsDirURL = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault,JavaVMBundleURL,CFSTR("Versions"),true);
 			CFRelease(JavaVMBundleURL);
-			
+
 			if(JavaVMBundlerVersionsDirURL != NULL) {
 				// Append to the path the target JVM's Version
 				TargetJavaVM = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault,JavaVMBundlerVersionsDirURL,targetJVM,true);
 				CFRelease(JavaVMBundlerVersionsDirURL);
-				
+
 				if(TargetJavaVM != NULL) {
 					if(CFURLGetFileSystemRepresentation (TargetJavaVM,true,pathToTargetJVM,PATH_MAX )) {
 						// Check to see if the directory, or a sym link for the target JVM directory exists, and if so set the
@@ -580,8 +580,8 @@ int checkJVMVersionRequest(char* requestedJVMVersion) {
 			} else log("Error appending path component to bundle url");
 		} else log("Error copying bulde url");
 	} else log("ERROR: cant find bundle: com.apple.JavaVM");
-	
-	
+
+
 	return retval;
 }
 #endif
