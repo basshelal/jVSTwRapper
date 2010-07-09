@@ -71,6 +71,7 @@ class VSTGUIWrapper : public AEffGUIEditor, public CControlListener {
 
 		//Utility
 		int initJavaSide();	
+		void idle();
 
 #ifdef WIN32
 		HWND JavaWindowHandle;
@@ -101,6 +102,7 @@ class VSTGUIWrapper : public AEffGUIEditor, public CControlListener {
 		jobject JavaPlugGUIObj;
 		jclass JavaPlugGUIClass;
 		jstring JavaPlugGUIString;
+		jmethodID IdleMethodID;
 		
 		bool IsInitialized;
 		bool AttachWindow;

@@ -101,6 +101,7 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 	this->JavaPlugGUIString = (jstring) env->NewGlobalRef(guiclazz);
 
 	this->IsInitialized=false;
+	this->IdleMethodID=NULL;
 
 	this->AttachWindow=false;
 	ConfigFileReader *cfg = new ConfigFileReader();
@@ -134,6 +135,18 @@ VSTGUIWrapper::VSTGUIWrapper (AudioEffect *effect, jclass guiRunnerClass, jstrin
 
 	// load the background bitmap --> only used if attachwindow==false
 	hBackground = new CBitmap (kBackgroundID);
+}
+
+
+//-----------------------------------------------------------------------------
+void VSTGUIWrapper::idle () {
+	if (this->IsInitialized==false) return;
+	JNIEnv* env = this->ensureJavaThreadAttachment();
+
+	if (this->IdleMethodID == NULL) this->IdleMethodID = env->GetMethodID(this->JavaPlugGUIClass, "idle", "()V");
+	if (this->IdleMethodID == NULL) log("** ERROR: cannot find GUI instance-method idle()V");
+	env->CallVoidMethod(this->JavaPlugGUIObj, this->IdleMethodID);
+	this->checkException(env);
 }
 
 
