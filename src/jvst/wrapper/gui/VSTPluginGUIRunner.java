@@ -94,6 +94,22 @@ public class VSTPluginGUIRunner implements VSTPluginGUI {
 
 	
 	
+	/* we directly pass through the idle call
+	 * this is important, since we want to do things on the same thread than we are being called here **
+	 * only use it for setParameterAutomated, beginEdit, endEdit **
+	 * ###### NEVER EVER DO ANY GUI RELATED THINGS HERE !!!! --> will crash on Mac! #######
+	 * if necessary, use invokeLater() and friends to offload things away from the Swing GUI event thread (EDT)
+	 */
+	public void idle() {
+		if (this.gui==null) {
+			log("** ERROR in VSTPluginGUIRunner.idle: gui is NULL!");
+			return;
+		}
+		//pass the call through directly
+		gui.idle();
+	}
+	
+	
 	
 	
 	private void runLater(final int method) {

@@ -49,6 +49,17 @@ public interface VSTPluginGUI {
    *  Description of the Method
    */
   public void close();
+  
+  
+  /**
+   *  This method runs in the context of the hosts GUI event loop
+   *  So this is the right place for plug-->host calls like beginEdit, endEdit, setParameterAutomated(), etc.
+   *  WARNING: do not do any Swing related tasks or other long.running actions here. 
+   *  This call blocks the host event thread and thus all GUI related things
+   *  Also, if Swing things are done here the plugin will deadlock on Mac
+   *  You can prevent this by wrapping everything EXCEPT plug-->host calls by using invokeLater()
+   */
+  public void idle();
 
 
   /**

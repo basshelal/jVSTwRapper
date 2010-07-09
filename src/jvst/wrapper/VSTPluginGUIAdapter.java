@@ -149,6 +149,11 @@ public abstract class VSTPluginGUIAdapter extends JFrame implements VSTPluginGUI
 			this.close();
 		}
 	}
+	
+	public void idle() {
+		//empty by default, should be used for plug-->host calls (setParameterAutomated, beginEdit, endEdit, ...) ONLY!
+		//absolutely DO NOT ATTEMPT ANY GUI related calls here, these must all be decoupled with invokeLater()...
+	}
 
 	// ***********************************************************************
 	protected void log(String s) {
