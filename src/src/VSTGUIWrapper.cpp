@@ -366,25 +366,29 @@ bool VSTGUIWrapper::open (void *ptr) {
 					//Get Java Window-Handle
 					this->JavaWindowHandle=dsi_win->hwnd;
 
-					//set window styles
+					//window style
 					LONG style;
-
-					//remove WS_CHILD (possibly set from last open() call) and add WS_POPUP (expected from AWT)
-					//--> this causes the focus to be lost when the window is opened. currently I dont know any way around
-					//    this, when we reparent with WS_CHILD being set, the host application will freeze...
-					style=GetWindowLong((HWND)JavaWindowHandle, GWL_STYLE);
-					SetWindowLong((HWND)JavaWindowHandle, GWL_STYLE, (style & ~WS_CHILD) | WS_POPUP);
-
-					//Set Parent Window
-					SetParent((HWND)JavaWindowHandle, (HWND)ptr);
-
-					//now add required styles so that focus/clipping stuff works correctly
-					//host window
-					style=(LONG)GetWindowLong(((HWND)ptr), GWL_STYLE);
-					SetWindowLong((HWND)ptr, GWL_STYLE, style | WS_CLIPCHILDREN);
+					
+					//http://msdn.microsoft.com/en-us/library/ms633541%28VS.85%29.aspx
+					//do what msdn suggests: clear a possible WS_POPUP hint here, and add WS_CHILD
 					//java window
-					style=GetWindowLong((HWND)JavaWindowHandle, GWL_STYLE);
-					SetWindowLong((HWND)JavaWindowHandle, GWL_STYLE, (style & ~WS_POPUP) | WS_CHILD);
+					//style=GetWindowLong((HWND)JavaWindowHandle, GWL_STYLE);
+					//SetWindowLong((HWND)JavaWindowHandle, GWL_STYLE, (style & ~WS_POPUP) | WS_CHILD);
+					//--> IMPORTANT: reverse these styles again when unembedding the window!
+					// CAUSES DEADLOCK (threading issue? --> dont do this for now...)
+
+					//also, add hint so that drawing stuff works correctly
+					//host window
+					//style=(LONG)GetWindowLong(((HWND)ptr), GWL_STYLE);
+					//SetWindowLong((HWND)ptr, GWL_STYLE, style | WS_CLIPCHILDREN);
+					// --> not needed, set by default
+					
+					//reparent windows
+					HWND ret = SetParent((HWND)JavaWindowHandle, (HWND)ptr);
+					log("reparent=%p", ret);
+
+					//style=GetWindowLong((HWND)JavaWindowHandle, GWL_STYLE);
+					//SetWindowLong((HWND)JavaWindowHandle, GWL_STYLE, (style & ~WS_CHILD) | WS_POPUP);
 #endif
 #ifdef linux
 					//Get Java Window-Handle
@@ -689,8 +693,19 @@ void VSTGUIWrapper::detachWindow() {
 	// Detach the Window
 	if(this->JavaWindowHandle!=0) {
 #ifdef WIN32
-		SetParent(this->JavaWindowHandle,NULL);
+
+		HWND ret = SetParent(this->JavaWindowHandle,NULL);
+		log("reparent=%p", ret);
+
 		this->JavaWindowHandle=NULL;
+
+		//http://msdn.microsoft.com/en-us/library/ms633541%28VS.85%29.aspx
+		//do what msdn suggests: clear a possible WS_CHILD hint here, and add WS_POPUP AFTER repanting the window
+		//java window
+		//LONG style = GetWindowLong((HWND)JavaWindowHandle, GWL_STYLE);
+		//SetWindowLong((HWND)JavaWindowHandle, GWL_STYLE, (style & ~WS_CHILD) | WS_POPUP);
+		//--> CAUSES DEADLOCK!
+
 #endif
 #ifdef linux
 		//does work only approx. 1 out of 7 times
