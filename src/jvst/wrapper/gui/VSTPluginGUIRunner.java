@@ -16,12 +16,12 @@ public class VSTPluginGUIRunner implements VSTPluginGUI {
 
 	// yeah, i know: type save enums would be better here. but those arent java 1.3 compatible 
 	// and im too lazy to create a separate class...
-	private int OPEN = 0;
-	private int CLOSE = 1;
-	private int DESTROY = 2;
-	private int UNDECORATE = 3;
-	private int GETWIDTH = 4;
-	private int GETHEIGHT = 5;
+	private static final int OPEN = 0;
+	private static final int CLOSE = 1;
+	private static final int DESTROY = 2;
+	private static final int UNDECORATE = 3;
+	private static final int GETWIDTH = 4;
+	private static final int GETHEIGHT = 5;
 
 	
 	
@@ -123,14 +123,17 @@ public class VSTPluginGUIRunner implements VSTPluginGUI {
 			SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
 	            	switch (method) {
-						case 0:
+						case OPEN:
 							gui.open();
 							break;
-						case 1:
+						case CLOSE:
 							gui.close();
 							break;
-						case 2:
+						case DESTROY:
 							gui.destroy();
+							break;
+						case UNDECORATE:
+							gui.undecorate();
 							break;
 						default:
 							log("** ERROR: unknown method: " + method);
@@ -157,13 +160,13 @@ public class VSTPluginGUIRunner implements VSTPluginGUI {
 			SwingUtilities.invokeAndWait(new Runnable() {
 	            public void run() {
 	            	switch (method) {
-						case 3:
+						case UNDECORATE:
 			                gui.undecorate();
 							break;
-						case 4:
+						case GETWIDTH:
 			                ret[0] = gui.getWidth();
 							break;
-						case 5:
+						case GETHEIGHT:
 			                ret[0] = gui.getHeight();
 							break;
 						default:
