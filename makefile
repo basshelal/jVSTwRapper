@@ -9,7 +9,7 @@
 # export LD_DEBUG=bindings
 # export LD_DEBUG_OUTPUT=loader_debug.txt
 
-JAVA_HOME=/home/privat/opt/jdk
+JAVA_HOME=/usr/lib/jvm/java-6-sun
 
 all:	release
 
