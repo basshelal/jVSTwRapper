@@ -472,10 +472,17 @@ int initJVMFunctionPointers(char *vmlibpath) {
 			should be all set.\n\
 			If you still cant use the plugin, contact the forum at \n\nhttp://sourceforge.net/forum/forum.php?forum_id=318265");
 #ifdef linux
-			log(dlerror());
+		log(dlerror());
+#endif
+#ifdef WIN32
+		char buffer[5000] = {'\0'};
+		DWORD err = GetLastError();
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, err, LANG_NEUTRAL, buffer, sizeof(buffer), NULL);
+		log("**ERROR: LoadLibrary error %X: %s", err, buffer);
 #endif
 		return -1;
 	}
+
 
 #ifdef WIN32
 	PTR_CreateJavaVM = (jint (JNICALL *)(JavaVM **, void **, void *)) GetProcAddress(hVM, "JNI_CreateJavaVM");
@@ -490,6 +497,12 @@ int initJVMFunctionPointers(char *vmlibpath) {
 		log("**ERROR: Cant find jvm interface pointers!");
 #ifdef linux
 		log(dlerror());
+#endif
+#ifdef WIN32
+		char buffer[5000] = {'\0'};
+		DWORD err = GetLastError();
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, err, LANG_NEUTRAL, buffer, sizeof(buffer), NULL);
+		log("**ERROR: LoadLibrary error %X: %s", err, buffer);
 #endif
 		return -1;
 	}
