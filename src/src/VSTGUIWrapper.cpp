@@ -321,6 +321,15 @@ bool VSTGUIWrapper::open (void *ptr) {
 
 
 	if(isAttached) {
+		jfieldID guiField = env->GetFieldID(this->JavaPlugGUIClass, "gui", "Ljvst/wrapper/VSTPluginGUIAdapter;");
+		this->checkException(env);
+		jobject guiObject = env->GetObjectField(this->JavaPlugGUIObj, guiField);
+		this->checkException(env);
+		if (guiField==NULL || guiObject==NULL) {
+			log("** ERROR: guiField==NULL || guiObject==NULL");
+			return false;
+		}
+
 		// Call Undecorate
 		this->undecorateJavaWindow();
 
@@ -336,12 +345,6 @@ bool VSTGUIWrapper::open (void *ptr) {
 #endif
 		jint lock;
   	    // Get the drawing surface (jframe)
-		jfieldID guiField = env->GetFieldID(this->JavaPlugGUIClass, "gui", "Ljvst/wrapper/VSTPluginGUIAdapter;");
-		this->checkException(env);
-		jobject guiObject = env->GetObjectField(this->JavaPlugGUIObj, guiField);
-		this->checkException(env);
-		if (guiField==NULL || guiObject==NULL) log("** ERROR: guiField==NULL || guiObject==NULL");
-
 		ds = awt.GetDrawingSurface(env, guiObject);
 		if(ds != NULL){
 			log("obtained drawing surface");
@@ -662,6 +665,9 @@ int VSTGUIWrapper::initJavaSide() {
 
 	if (!this) return -1;
 	if (this->checkException(env)) return -1;
+
+	//sleep 100ms to give the java thread some time to finish GUI initialization and avoid race conditions in directly following (open()) calls
+	usleep(1000*100);
 
 	log("GUI initJavaSide OK -- ready for GUI calls!");
 
