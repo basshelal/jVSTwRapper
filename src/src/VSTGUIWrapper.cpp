@@ -667,8 +667,11 @@ int VSTGUIWrapper::initJavaSide() {
 	if (this->checkException(env)) return -1;
 
 	//sleep 100ms to give the java thread some time to finish GUI initialization and avoid race conditions in directly following (open()) calls
+#if defined(MACX) || defined(linux)
 	usleep(1000*100);
-
+#else
+	Sleep(100);
+#endif
 	log("GUI initJavaSide OK -- ready for GUI calls!");
 
 	this->IsInitialized=true;
