@@ -40,7 +40,7 @@ public class VSTPluginGUIRunner implements VSTPluginGUI {
 		log("Initializing CLASSLOAD Plugin GUI=" + classname);
 
 		//SwingUtilities.invokeLater(new Runnable() {
-		//tests showed that invokeandwait is okay (running on a newly created thread on mac --> okay here)
+		//tests showed that invokeandwait is okay (we are running on a newly created thread on mac --> okay here as well)
 		SwingUtilities.invokeAndWait(new Runnable() {
 		    public void run() {
 		        try {
