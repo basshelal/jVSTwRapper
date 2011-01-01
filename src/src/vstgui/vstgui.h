@@ -2,7 +2,7 @@
 // VST Plug-Ins SDK
 // VSTGUI: Graphical User Interface Framework for VST plugins : 
 //
-// Version 3.0       $Date: 2007/01/01 21:25:10 $
+// Version 3.0       $Date: 2011/01/01 20:00:08 $
 //
 //-----------------------------------------------------------------------------
 // VSTGUI LICENSE
@@ -98,6 +98,7 @@ END_NAMESPACE_VSTGUI
 
 //----------------------------------------------------
 #if WINDOWS
+	#define _WIN32_WINNT 0x0502
 	#include <windows.h>
 
 //----------------------------------------------------

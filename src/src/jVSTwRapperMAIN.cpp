@@ -30,7 +30,7 @@
 // Dll WinAPI entry
 // VSTi API entry
 //-
-// 2003,2004,2007,2008 Daniel Martin, Gerard Roma
+// 2003,2004,2007,2008,2011 Daniel Martin, Gerard Roma
 //-------------------------------------------------------------------------------------------------------
 
 #include "jVSTwRapperMAIN.h"

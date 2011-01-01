@@ -46,6 +46,7 @@
 	#include <stdlib.h>
 #endif
 
+
 //------------------------------------------------------------------------
 int IsLogEnabled = 1;
 int MessageBoxCount = 0;
@@ -448,7 +449,27 @@ jint (JNICALL *PTR_GetCreatedJavaVMs)(JavaVM **, jsize, jsize *) = NULL;
 int initJVMFunctionPointers(char *vmlibpath) {
 #ifdef WIN32
 	//load the library
+	//*******************
+	//do what http://www.duckware.com/tech/java6msvcr71.html suggests:
+	//Call SetCurrentDirectory() and SetDllDirectory() to the Java bin folder
+	//Call LoadLibrary() on the full path to the jvm.dll
+	//Call SetCurrentDirectory(old-dir) and SetDllDirectory(NULL)
+
+	//clear errors
+	SetLastError(0);
+
+	char dir1[5000] = {'\0'}, dir2[5000] = {'\0'}, oldDir[5000] = {'\0'};
+	DWORD ret = GetFullPathName(strcat(strcat(dir1,vmlibpath),"\\..\\.."), sizeof(dir2), dir2, NULL);
+	log("jvm bin dir=%s ret=%i", dir2, ret);
+	
+	GetCurrentDirectory(sizeof(oldDir), oldDir);
+	log ("old current dir=%s", oldDir);
+
+	SetCurrentDirectory(dir2);
+	SetDllDirectory(dir2);
 	HINSTANCE hVM = LoadLibrary(vmlibpath);
+	SetCurrentDirectory(oldDir);
+	SetDllDirectory(NULL);
 #endif
 #ifdef linux
 	void* hVM = dlopen(vmlibpath, RTLD_LAZY); //RTLD_NOW);
@@ -456,12 +477,12 @@ int initJVMFunctionPointers(char *vmlibpath) {
 
     if (hVM == NULL) {
 		log("**ERROR: Could not locate jvm.dll. \n\
-			It seems that you dont have a properly installed Java Virtual Machine (JVM).\n\
+			It seems that you do not have a properly installed Java Virtual Machine (JVM).\n\
 			If so, please download (its free!) and install one from \n\n\
 			http://www.java.com/ \n\n\
 			If you already did that and see this message again, please add the path \n\
 			where the jvm.dll is located to your PATH environment variable.\n\n\
-			Per default, the jvm.dll is located in 'C:\\j2sdk1.4.2_05\\jre\\bin\\client'. But this \n\
+			By default, the jvm.dll is located at 'C:\\j2sdk1.4.2_05\\jre\\bin\\client'. But this \n\
 			may differ depending on your choice during installation. \n\
 			You can modify your PATH variable if you click \n\n\
 			Start/Settings/Control Panel/System/Advanced (Tab)/Environment Variables (Button)\n\
@@ -502,7 +523,7 @@ int initJVMFunctionPointers(char *vmlibpath) {
 		char buffer[5000] = {'\0'};
 		DWORD err = GetLastError();
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, err, LANG_NEUTRAL, buffer, sizeof(buffer), NULL);
-		log("**ERROR: LoadLibrary error %X: %s", err, buffer);
+		log("**ERROR: CreateJavaVM error %X: %s", err, buffer);
 #endif
 		return -1;
 	}
