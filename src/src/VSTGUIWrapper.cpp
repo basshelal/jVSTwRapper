@@ -249,7 +249,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 		//--> we fix this on the java side: last step of gui initilialization there is opening the gui
 #else
 		initJavaSide();
-		//can continue from here since we didnt start a new tread
+		//can continue from here since we did a invokeAndWait to init the java frame
 #endif
 	}
 
@@ -371,7 +371,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 
 					//window style
 					LONG style;
-					
+
 					//http://msdn.microsoft.com/en-us/library/ms633541%28VS.85%29.aspx
 					//do what msdn suggests: clear a possible WS_POPUP hint here, and add WS_CHILD
 					//java window
@@ -385,7 +385,7 @@ bool VSTGUIWrapper::open (void *ptr) {
 					//style=(LONG)GetWindowLong(((HWND)ptr), GWL_STYLE);
 					//SetWindowLong((HWND)ptr, GWL_STYLE, style | WS_CLIPCHILDREN);
 					// --> not needed, set by default
-					
+
 					//reparent windows
 					HWND ret = SetParent((HWND)JavaWindowHandle, (HWND)ptr);
 					log("reparent=%p", ret);
@@ -666,12 +666,6 @@ int VSTGUIWrapper::initJavaSide() {
 	if (!this) return -1;
 	if (this->checkException(env)) return -1;
 
-	//sleep 100ms to give the java thread some time to finish GUI initialization and avoid race conditions in directly following (open()) calls
-#if defined(MACX) || defined(linux)
-	usleep(1000*100);
-#else
-	Sleep(100);
-#endif
 	log("GUI initJavaSide OK -- ready for GUI calls!");
 
 	this->IsInitialized=true;
